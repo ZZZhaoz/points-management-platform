@@ -8,3 +8,12 @@ export async function login(utorid, password) {
     password,
   });
 }
+
+export async function getMe() {
+  const token = localStorage.getItem("token");
+  return axios.get(`${API}/users/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
