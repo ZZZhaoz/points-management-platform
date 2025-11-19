@@ -1,0 +1,79 @@
+# ------------------------
+# Node.js / Backend
+# ------------------------
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Keep package-lock.json (DO NOT IGNORE)
+# package-lock.json
+
+# Environment variables
+.env
+.env.local
+.env.dev
+.env.test
+.env.prod
+
+# Prisma (ignore DB files)
+prisma/dev.db
+prisma/dev.db-journal
+
+# Logs
+logs/
+*.log
+*.tmp
+
+# Coverage / build
+coverage/
+dist/
+build/
+.cache/
+temp/
+
+# ------------------------
+# Frontend (React)
+# ------------------------
+
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+frontend/.cache/
+
+frontend/.env
+frontend/.env.local
+frontend/.env.development
+frontend/.env.production
+frontend/.env.test
+
+# React cache
+*.eslintcache
+*.tsbuildinfo
+
+# ------------------------
+# Uploads (User avatars)
+# ------------------------
+
+# Ignore uploaded avatar files but keep directory
+uploads/*
+!uploads/avatars/
+uploads/avatars/*
+!uploads/avatars/.gitkeep
+
+# ------------------------
+# OS / Editor files
+# ------------------------
+
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+
+# Windows garbage
+desktop.ini
