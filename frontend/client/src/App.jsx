@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import UserQRPage from "./pages/user/UserQRPage";
 import ProtectedRoute from "./components/global/ProtectedRoute";
 import Layout from "./components/layout/Layout";
 
@@ -17,6 +18,7 @@ function App() {
           {/* Layout wrapper for logged-in pages */}
           <Route element={<Layout />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="user/qr" element={<UserQRPage />} />
 
             {/* future pages */}
             {/* <Route path="/promotions" element={<PromotionList />} /> */}
