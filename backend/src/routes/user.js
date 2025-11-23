@@ -138,6 +138,14 @@ router.get(
   transactionController.getUserTransactions
 );
 
+router.get(
+    '/lookup/:utorid',
+    authenticateToken, 
+    requireRole(["regular", "cashier", "manager", "superuser"]), 
+    userControllers.lookupByUtorid
+);
+
+
 router.all("*", (req, res) => {
   res.set("Allow", "GET, POST, PATCH");
   res.status(405).json({ error: "Method Not Allowed" });

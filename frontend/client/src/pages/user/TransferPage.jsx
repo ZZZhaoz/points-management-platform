@@ -19,22 +19,30 @@ export default function TransferPage() {
     }
 
     try {
+      // -----------------------------
+      // STEP 1: lookup recipient userId
+      // -----------------------------
       const lookupRes = await fetch(
-        `${BACKEND_URL}/users?name=${recipientUtorid}`,
+        `${BACKEND_URL}/users/lookup/${recipientUtorid}`,
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
-      const lookupData = await lookupRes.json();
-
-      if (!lookupRes.ok || !lookupData.results || lookupData.results.length === 0) {
+      if (!lookupRes.ok) {
         setMessage("User not found.");
         return;
       }
 
-      const recipientId = lookupData.results[0].id; 
+      const lookupData = await lookupRes.json();
+      const recipientId = lookupData.id; // numeric userId
 
+      // -----------------------------
+      // STEP 2: send transfer request
+      // POST /users/:userId/transactions
+      // -----------------------------
       const res = await fetch(
         `${BACKEND_URL}/users/${recipientId}/transactions`,
         {
@@ -54,14 +62,15 @@ export default function TransferPage() {
       const data = await res.json();
 
       if (res.ok) {
-        setMessage(`Successfully transferred ${amount} points to ${recipientUtorid}!`);
+        setMessage(
+          `Successfully transferred ${amount} points to ${recipientUtorid}!`
+        );
         setRecipientUtorid("");
         setAmount("");
         setRemark("");
       } else {
         setMessage(data.error || "Transfer failed.");
       }
-
     } catch (err) {
       console.error(err);
       setMessage("Network error.");
@@ -74,6 +83,7 @@ export default function TransferPage() {
       <p>Enter a user's UTORID to transfer points.</p>
 
       <form onSubmit={handleSubmit}>
+        {/* Recipient UTORID */}
         <div style={{ marginBottom: "10px" }}>
           <label>Recipient UTORID</label>
           <input
@@ -85,6 +95,7 @@ export default function TransferPage() {
           />
         </div>
 
+        {/* Amount */}
         <div style={{ marginBottom: "10px" }}>
           <label>Amount of Points</label>
           <input
@@ -96,6 +107,7 @@ export default function TransferPage() {
           />
         </div>
 
+        {/* Remark */}
         <div style={{ marginBottom: "10px" }}>
           <label>Remark (optional)</label>
           <input
