@@ -8,27 +8,23 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-
         {/* Public route */}
         <Route path="/" element={<Login />} />
 
-        {/* Private routes (all require login) */}
-        <Route
-          element={
-            <ProtectedRoute roles={["regular", "cashier", "manager", "superuser"]}>
-              <Layout />
-            </ProtectedRoute>
-          }
-        >
-          {/* All logged-in routes go here */}
-          <Route path="/dashboard" element={<Dashboard />} />
+        {/* Protected wrapper */}
+        <Route element={<ProtectedRoute roles={["regular", "cashier", "manager", "superuser"]} />}>
+          
+          {/* Layout wrapper for logged-in pages */}
+          <Route element={<Layout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
 
-          {/* Add more: */}
-          {/* <Route path="/promotions" element={<PromotionList />} /> */}
-          {/* <Route path="/events" element={<EventList />} /> */}
-          {/* <Route path="/transactions/my" element={<UserTransactions />} /> */}
+            {/* future pages */}
+            {/* <Route path="/promotions" element={<PromotionList />} /> */}
+            {/* <Route path="/events" element={<EventList />} /> */}
+            {/* <Route path="/transactions/my" element={<UserTransactions />} /> */}
+          </Route>
+
         </Route>
-
       </Routes>
     </BrowserRouter>
   );

@@ -1,27 +1,25 @@
 import { useState } from "react";
-import { login, getMe } from "../api/auth";
 import { useNavigate } from "react-router-dom";
-import Input from "../components/global/Input";  
-import Button from "../components/global/Button";  
+import Input from "../components/global/Input";
+import Button from "../components/global/Button";
+import { useAuth } from "../contexts/AuthContext";  
 
 export default function Login() {
   const nav = useNavigate();
+  const { login } = useAuth();   
+  
   const [utorid, setUtorid] = useState("");
   const [password, setPassword] = useState("");
 
   const submit = async () => {
-    try {
-      const res = await login(utorid, password);
-      localStorage.setItem("token", res.data.token);
+    const err = await login(utorid, password); 
 
-      const me = await getMe();
-      localStorage.setItem("role", me.data.role);
-
-      nav("/dashboard");
-    } catch (e) {
-      console.log(e);
-      alert("Login failed!");
+    if (err) {
+      alert(err);
+      return;
     }
+
+    nav("/dashboard"); 
   };
 
   return (
