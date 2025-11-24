@@ -105,7 +105,8 @@ async function main() {
       capacity: 100,
       numGuests: 3,
       pointsRemain: 500,
-      pointsAwarded: 10
+      pointsAwarded: 10,
+      published: true
     },
     {
       name: "Career Workshop",
@@ -116,7 +117,8 @@ async function main() {
       capacity: 50,
       numGuests: 2,
       pointsRemain: 300,
-      pointsAwarded: 20
+      pointsAwarded: 20,
+      published: true
     },
     {
       name: "Coding Night",
@@ -127,7 +129,8 @@ async function main() {
       capacity: 80,
       numGuests: 4,
       pointsRemain: 400,
-      pointsAwarded: 30
+      pointsAwarded: 30,
+      published: true
     },
     {
       name: "Networking Session",
@@ -138,7 +141,8 @@ async function main() {
       capacity: 60,
       numGuests: 1,
       pointsRemain: 600,
-      pointsAwarded: 15
+      pointsAwarded: 15,
+      published: true
     },
     {
       name: "AI Seminar",
@@ -149,7 +153,8 @@ async function main() {
       capacity: 120,
       numGuests: 5,
       pointsRemain: 200,
-      pointsAwarded: 25
+      pointsAwarded: 25,
+      published: true
     }
   ];
 
@@ -164,7 +169,7 @@ async function main() {
       where: { id: event.id },
       data: {
         organizers: { connect: [{ id: manager.id }, { id: superuser.id }] },
-        guests: { connect: regularUsers.slice(0, event.numGuests).map(u => ({ id: u.id })) }
+        guests: { connect: [] }
       }
     });
   }

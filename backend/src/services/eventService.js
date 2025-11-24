@@ -259,6 +259,19 @@ class EventService {
         };
     }
 
+    async getMyEvents(userId) {
+    const events = await prisma.event.findMany({
+        where: {
+        guests: {
+            some: { id: userId }
+        }
+        },
+        select: { id: true }     
+    });
+
+    return events.map(e => e.id);
+    }
+
     async updateEvent(eventId, updates, userRole, userId) {
         const event = await prisma.event.findUnique({
             where: { id: eventId },

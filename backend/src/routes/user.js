@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const userControllers = require("../controllers/userControllers");
 const transactionController = require("../controllers/transactionControllers");
+const eventsController = require("../controllers/eventControllers");
 const { authenticateToken } = require("../middleware/auth");
 const { requireRole } = require("../middleware/role");
 const { validateFields, validateQuery } = require("../middleware/validate");
@@ -137,6 +138,8 @@ router.get(
   ),
   transactionController.getUserTransactions
 );
+
+router.get("/me/events", authenticateToken, eventsController.getMyEvents);
 
 router.get(
     '/lookup/:utorid',

@@ -51,6 +51,21 @@ async function getEvent(req, res) {
     }
 }
 
+async function getMyEvents(req, res) {
+  try {
+    const userId = req.user.id;
+
+    const eventIds = await eventService.getMyEvents(userId);
+
+    return res.json(eventIds);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+
+
 async function updateEvent(req, res) {
     try {
         const eventId = parseInt(req.params.eventId, 10);
@@ -271,4 +286,5 @@ module.exports = {
     addGuestMe,
     removeGuestMe,
     createEventTransaction,
+    getMyEvents
 };
