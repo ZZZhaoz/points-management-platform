@@ -233,56 +233,60 @@ async function createRedemptionTransaction(req, res) {
 }
 
 async function getUserTransactions(req, res) {
-   try {
+  try {
     const {
       type,
       relatedId,
       amount,
       operator,
+      promotionId,
+      promotionName,
       page = 1,
-      limit = 10,
-      ...filters
+      limit = 10
     } = req.query;
-  
-  if (type && !VALID_TRANSACTION_TYPES.includes(type)) {
-    return res.status(400).json({ error: `Bad Request` });
-  }
 
-  if (relatedId && !type) {
-    return res.status(400).json({ error: `Bad Request` });
-  }
+    if (type && !VALID_TRANSACTION_TYPES.includes(type)) {
+      return res.status(400).json({ error: "Bad Request" });
+    }
 
-  if (operator && !amount) {
-      return res.status(400).json({ error: `Bad Request` });
-  }
+    if (relatedId && type !== "transfer") {
+      return res.status(400).json({ error: "Bad Request" });
+    }
 
-  if (operator && !VALID_OPERATORS.includes(operator)) {
-    return res.status(400).json({ error: `Bad Request` });
-  }
-  
-  if (page <= 0 || limit <= 0) {
-      return res.status(400).json({ error: `Bad Request` });
-  }
+    if (operator && !amount) {
+      return res.status(400).json({ error: "Bad Request" });
+    }
 
-  const transactions = await transactionService.getUserTransactions(
-    req.user.id,
-    {
-      type,
-      relatedId,
-      amount,
-      operator,
-      page,
-      limit,
-      ...filters
-  });
+    if (operator && !VALID_OPERATORS.includes(operator)) {
+      return res.status(400).json({ error: "Bad Request" });
+    }
 
-  return res.status(200).json(transactions);
-  }
-  catch (err) {
+    if (page <= 0 || limit <= 0) {
+      return res.status(400).json({ error: "Bad Request" });
+    }
+
+    const transactions = await transactionService.getUserTransactions(
+      req.user.id,
+      {
+        type, 
+        relatedId,
+        amount,
+        operator,
+        promotionId,
+        promotionName,
+        page,
+        limit
+      }
+    );
+
+    return res.status(200).json(transactions);
+
+  } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: `Internal server error` });
-  }   
+    return res.status(500).json({ error: "Internal server error" });
+  }
 }
+
 
 async function processRedemption(req, res) {
   try {
