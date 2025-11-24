@@ -1,0 +1,8 @@
+export { default as UserQRPage } from "./UserQRPage";
+export { default as TransferPage } from "./TransferPage";
+export { default as Dashboard } from "../Dashboard";
+export { default as RedemptionPage } from "./RedemptionPage";
+export { default as PromotionsPage } from "./PromotionsPage";
+export { default as EventsListPage } from "./EventsListPage";
+export { default as EventDetailPage } from "./EventDetailPage";
+export { default as TransactionsListPage } from "./TransactionsListPage";

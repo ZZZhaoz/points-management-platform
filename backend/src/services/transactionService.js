@@ -381,11 +381,11 @@ class TransactionService {
     };
   }
 
-  async getUserTransactions(userId, params) {
+    async getUserTransactions(userId, params) {
     const { type, relatedId, promotionId, amount, operator, page, limit } = params;
 
     const filters = { userId };
-    
+
     if (relatedId && type) {
       filters.relatedId = relatedId;
       filters.type = type;
@@ -418,19 +418,35 @@ class TransactionService {
       })
     ]);
 
-    const formatted = results.map(t => ({
-      id: t.id,
-      amount: t.amount,
-      type: t.type,
-      spent: t.spent ?? undefined,
-      relatedId: t.relatedId ?? undefined,
-      promotionIds: t.promotionIds.map(p => p.id),
-      remark: t.remark,
-      createdBy: t.createdBy.utorid 
-    }));
+    const formatted = await Promise.all(
+      results.map(async (t) => {
+        let relatedUtorid = null;
+
+        if (t.type === "transfer" && t.relatedId) {
+          const otherUser = await prisma.user.findUnique({
+            where: { id: t.relatedId },
+            select: { utorid: true }
+          });
+          relatedUtorid = otherUser ? otherUser.utorid : null;
+        }
+
+        return {
+          id: t.id,
+          amount: t.amount,
+          type: t.type,
+          spent: t.spent ?? undefined,
+          relatedId: t.relatedId ?? undefined,
+          relatedUtorid,       
+          promotionIds: t.promotionIds.map(p => p.id),
+          remark: t.remark,
+          createdBy: t.createdBy.utorid
+        };
+      })
+    );
 
     return { count, results: formatted };
   }
+
 
   async processRedemption(transactionId, processorId) {
     const transaction = await prisma.transaction.findUnique({

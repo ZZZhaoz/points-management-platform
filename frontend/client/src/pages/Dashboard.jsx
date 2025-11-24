@@ -16,7 +16,6 @@ export default function Dashboard() {
     })
       .then(async (res) => {
         if (!res.ok) {
-          // token 失效 → logout
           localStorage.removeItem("token");
           localStorage.removeItem("role");
           setUser(null);
