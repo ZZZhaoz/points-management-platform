@@ -166,75 +166,103 @@ export default function TransactionsListPage() {
       </div>
 
       {/* Transactions */}
-      <div style={{ display: "grid", gap: "15px" }}>
+        <div style={{ display: "grid", gap: "15px" }}>
         {transactions.map((t) => (
-          <div
+            <div
             key={t.id}
             style={{
-              border: "1px solid #ccc",
-              borderLeft: `8px solid ${typeColor[t.type] || "#000"}`,
-              padding: "15px",
-              borderRadius: "6px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
+                border: "1px solid #ccc",
+                borderLeft: `8px solid ${typeColor[t.type] || "#000"}`,
+                padding: "15px",
+                borderRadius: "6px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
             }}
-          >
+            >
             {/* Left side */}
             <div>
-              <h3 style={{ margin: 0 }}>
+                <h3 style={{ margin: 0 }}>
                 {t.type.toUpperCase()} – ID #{t.id}
-              </h3>
+                </h3>
 
-              <p style={{ margin: "6px 0" }}>
+                <p style={{ margin: "6px 0" }}>
                 <strong>Amount:</strong> {t.amount}
-              </p>
-
-              {t.spent != null && (
-                <p style={{ margin: "6px 0" }}>
-                  <strong>Spent:</strong> ${t.spent}
                 </p>
-              )}
 
-              {t.relatedUtorid && (
+                {t.spent != null && (
                 <p style={{ margin: "6px 0" }}>
-                  <strong>Recipient:</strong>{" "}
-                  <span style={{ fontWeight: "bold" }}>{t.relatedUtorid}</span>
+                    <strong>Spent:</strong> ${t.spent}
                 </p>
-              )}
+                )}
 
-              {/* Promotion names */}
-              {t.promotionIds?.length > 0 && (
+                {t.relatedUtorid && (
+                <p style={{ margin: "6px 0" }}>
+                    <strong>Recipient:</strong>{" "}
+                    <span style={{ fontWeight: "bold" }}>{t.relatedUtorid}</span>
+                </p>
+                )}
+
+                {/* Promotion names */}
+                {t.promotionIds?.length > 0 && (
                 <p>
-                  <strong>Promotions Used:</strong>{" "}
-                  {t.promotionIds.map((pid) => (
+                    <strong>Promotions Used:</strong>{" "}
+                    {t.promotionIds.map((pid) => (
                     <span key={pid} style={{ marginRight: "6px" }}>
-                      {promotionCache[pid] || "Loading..."}
+                        {promotionCache[pid] || "Loading..."}
                     </span>
-                  ))}
+                    ))}
                 </p>
-              )}
+                )}
 
-              <p style={{ margin: "6px 0" }}>
+                <p style={{ margin: "6px 0" }}>
                 <strong>Created By:</strong> {t.createdBy}
-              </p>
+                </p>
             </div>
 
-            {/* Right side remark */}
+            {/* Right side: remark + redemption status */}
             <div
-              style={{
+                style={{
                 marginLeft: "20px",
                 color: "#555",
                 fontStyle: "italic",
-                minWidth: "120px",
+                minWidth: "150px",
                 textAlign: "right",
-              }}
+                }}
             >
-              {t.remark && <span>Remark: {t.remark}</span>}
+
+                {/* Remark */}
+                {t.remark && <div>Remark: {t.remark}</div>}
+
+                {/* Redemption logic */}
+                {t.type === "redemption" && (
+                <div style={{ marginTop: "10px" }}>
+                    {t.spent != null ? (
+                    <span style={{ color: "green", fontWeight: "bold" }}>
+                        ✔ Processed
+                    </span>
+                    ) : (
+                    <button
+                        onClick={() => window.location.href = `/redeem/qr/${t.id}`}
+                        style={{
+                        padding: "6px 10px",
+                        background: "#007bff",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "4px",
+                        fontSize: "0.85rem",
+                        }}
+                    >
+                        Open QR Code
+                    </button>
+                    )}
+                </div>
+                )}
             </div>
-          </div>
+            </div>
         ))}
-      </div>
+        </div>
+
 
       {/* Pagination */}
       <div

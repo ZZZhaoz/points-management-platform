@@ -6,3 +6,4 @@ export { default as PromotionsPage } from "./PromotionsPage";
 export { default as EventsListPage } from "./EventsListPage";
 export { default as EventDetailPage } from "./EventDetailPage";
 export { default as TransactionsListPage } from "./TransactionsListPage";
+export { default as RedemptionQRPage } from "./RedemptionQRPage";

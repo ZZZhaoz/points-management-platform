@@ -9,6 +9,7 @@ export default function RedemptionPage() {
   const [amount, setAmount] = useState("");
   const [remark, setRemark] = useState("");
   const [message, setMessage] = useState(null);
+  const [transactionId, setTransactionId] = useState(null); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,20 +36,13 @@ export default function RedemptionPage() {
 
       const data = await res.json();
 
-      // ----- success -----
       if (res.status === 201) {
         setMessage("Redemption request created successfully!");
-
-        // 跳转到 Redemption QR Page
-        // 例如：/redeem/qr/:transactionId
-        setTimeout(() => {
-          navigate(`/redeem/qr/${data.id}`);
-        }, 800);
+        setTransactionId(data.id);   
 
         return;
       }
 
-      // ----- handle errors -----
       if (res.status === 400) {
         setMessage("Not enough points to redeem that amount.");
         return;
@@ -73,7 +67,6 @@ export default function RedemptionPage() {
       <p>Request to redeem points. A cashier will process the redemption.</p>
 
       <form onSubmit={handleSubmit}>
-        {/* Amount */}
         <div style={{ marginBottom: "10px" }}>
           <label>Amount</label>
           <input
@@ -85,7 +78,6 @@ export default function RedemptionPage() {
           />
         </div>
 
-        {/* Remark */}
         <div style={{ marginBottom: "10px" }}>
           <label>Remark (optional)</label>
           <input
@@ -113,9 +105,26 @@ export default function RedemptionPage() {
       </form>
 
       {message && (
-        <p style={{ marginTop: "15px", fontWeight: "bold", color: "red" }}>
+        <p style={{ marginTop: "15px", fontWeight: "bold" }}>
           {message}
         </p>
+      )}
+
+      {transactionId && (
+        <button
+          onClick={() => navigate(`/redeem/qr/${transactionId}`)}
+          style={{
+            marginTop: "15px",
+            padding: "10px 15px",
+            background: "#007bff",
+            color: "white",
+            border: "none",
+            width: "100%",
+            borderRadius: "5px",
+          }}
+        >
+          Open QR Code Page
+        </button>
       )}
     </div>
   );

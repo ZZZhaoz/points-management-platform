@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import { Dashboard, UserQRPage, TransferPage, RedemptionPage, 
-  PromotionsPage, EventsListPage, EventDetailPage, TransactionsListPage } from "./pages/regularuser";
+  PromotionsPage, EventsListPage, EventDetailPage, TransactionsListPage, RedemptionQRPage } from "./pages/regularuser";
 import ProtectedRoute from "./components/global/ProtectedRoute";
 import Layout from "./components/layout/Layout";
 
@@ -25,6 +25,8 @@ function App() {
             <Route path="/events" element={<EventsListPage />} />
             <Route path="/events/:eventId" element={<EventDetailPage />} />
             <Route path="/transactions/my" element={<TransactionsListPage />} />
+            <Route path="/redeem/qr/:transactionId" element={<RedemptionQRPage />} />
+
 
 
             {/* future pages */}
