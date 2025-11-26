@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Transactions from "./pages/cashier/transactions";
+import RedemptionTransaction from "./pages/cashier/RedemptionTransaction";
 import ProtectedRoute from "./components/global/ProtectedRoute";
 import Layout from "./components/layout/Layout";
 
@@ -22,6 +24,10 @@ function App() {
             {/* <Route path="/promotions" element={<PromotionList />} /> */}
             {/* <Route path="/events" element={<EventList />} /> */}
             {/* <Route path="/transactions/my" element={<UserTransactions />} /> */}
+
+            {/* cashier pages */}
+            <Route path="/cashier/transactions" element={<Transactions />} />
+            <Route path="/cashier/redemption" element={<RedemptionTransaction />} /> 
           </Route>
 
         </Route>

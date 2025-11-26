@@ -9,6 +9,7 @@ export default function NavBar() {
     <nav className="nav-bar">
       <Link to="/dashboard">Home</Link>
 
+      {/* Regular User Menu */}
       {role === "regular" && (
         <>
           <Link to="/promotions">Promotions</Link>
@@ -26,6 +27,18 @@ export default function NavBar() {
         </>
       )}
 
+      {/* Cashier Menu */}
+      {role === "cashier" && (
+        <>
+          <Dropdown title="Transactions">
+            <Dropdown.Item to="/cashier/transactions">Create Transaction</Dropdown.Item>
+          </Dropdown>
+
+          <Dropdown title="Redemption">
+            <Dropdown.Item to="/cashier/redemption">Request redemption points</Dropdown.Item>
+          </Dropdown>
+        </>
+      )}
       <LogoutButton />
     </nav>
   );
