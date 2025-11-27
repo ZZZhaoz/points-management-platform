@@ -31,7 +31,7 @@ router.get(
     authenticateToken,
     requireRole(["regular", "cashier", "manager", "superuser"]),
     validateQuery(
-        ["name", "location", "started", "ended", "showFull", "published", "page", "limit"],
+        ["name", "location", "started", "ended", "showFull", "published", "page", "limit", "organizer"],
         [],
         {
             name: "string",
@@ -42,9 +42,18 @@ router.get(
             published: "boolean",
             page: "number",
             limit: "number",
+            organizer: "string",
         }
     ),
     eventControllers.getAllEvents
+);
+
+// GET /events/organized/me - Get events organized by current user
+router.get(
+    "/organized/me",
+    authenticateToken,
+    requireRole(["regular", "cashier", "manager", "superuser"]),
+    eventControllers.listOrganizedEvents
 );
 
 // GET /events/:eventId - Get a single event

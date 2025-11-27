@@ -23,6 +23,7 @@ export default function NavBar() {
 
           <Dropdown title="Events">
             <Dropdown.Item to="/events">Event List</Dropdown.Item>
+            <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
           </Dropdown>
         </>
       )}
@@ -36,6 +37,29 @@ export default function NavBar() {
 
           <Dropdown title="Redemption">
             <Dropdown.Item to="/cashier/redemption">Request redemption points</Dropdown.Item>
+          </Dropdown>
+
+          <Dropdown title="Event">
+            <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
+          </Dropdown>
+        </>
+      )}
+
+
+      {/* Manager Menu */}
+      {role === "manager" && (
+        <>
+          <Dropdown title="Event">
+            <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
+          </Dropdown>
+        </>
+      )}
+
+      {/* Superuser Menu */}
+      {role === "superuser" && (
+        <>
+          <Dropdown title="Event">
+            <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
           </Dropdown>
         </>
       )}

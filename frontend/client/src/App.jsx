@@ -3,6 +3,8 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/cashier/transactions";
 import RedemptionTransaction from "./pages/cashier/RedemptionTransaction";
+import Events from "./pages/organizer/Events";
+import EventDetail from "./pages/organizer/EventDetail";
 import ProtectedRoute from "./components/global/ProtectedRoute";
 import Layout from "./components/layout/Layout";
 
@@ -27,7 +29,12 @@ function App() {
 
             {/* cashier pages */}
             <Route path="/cashier/transactions" element={<Transactions />} />
-            <Route path="/cashier/redemption" element={<RedemptionTransaction />} /> 
+            <Route path="/cashier/redemption" element={<RedemptionTransaction />} />
+
+            {/* organizer pages */}
+            <Route path="/organizer/events" element={<Events />} />
+            <Route path="/organizer/events/:eventId" element={<EventDetail />} />
+            {/* <Route path="/organizer/events/:eventId" element={<EventDetail />} />   */}
           </Route>
 
         </Route>

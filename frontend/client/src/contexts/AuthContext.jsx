@@ -147,8 +147,95 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  // --------------------------
+  // Get My Events (as organizer)
+  // --------------------------
+  const getMyEvents = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        return { error: "Not authenticated" };
+      }
+
+      const res = await fetch(`${BACKEND_URL}/events/organized/me`, {
+        headers: { 
+          Authorization: `Bearer ${token}`
+        },
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        return { error: err.error || "Failed to get events" };
+      }
+
+      const data = await res.json();
+      return { data: data || [] };
+    } catch (err) {
+      return { error: "Network error" };
+    }
+  };
+
+  // --------------------------
+  // Get Event By ID
+  // --------------------------
+  const getEventById = async (eventId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        return { error: "Not authenticated" };
+      }
+
+      const res = await fetch(`${BACKEND_URL}/events/${eventId}`, {
+        headers: { 
+          Authorization: `Bearer ${token}`
+        },
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        return { error: err.error || "Failed to get event" };
+      }
+
+      const data = await res.json();
+      return { data };
+    } catch (err) {
+      return { error: "Network error" };
+    }
+  };
+
+  // --------------------------
+  // Update Event
+  // --------------------------
+  const updateEvent = async (eventId, eventData) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        return { error: "Not authenticated" };
+      }
+
+      const res = await fetch(`${BACKEND_URL}/events/${eventId}`, {
+        method: "PATCH",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(eventData),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        return { error: err.error || "Failed to update event" };
+      }
+
+      const data = await res.json();
+      return { data };
+    } catch (err) {
+      return { error: "Network error" };
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, createTransaction, processRedemption }}>
+    <AuthContext.Provider value={{ user, login, logout, createTransaction, processRedemption, getMyEvents, getEventById, updateEvent }}>
       {children}
     </AuthContext.Provider>
   );

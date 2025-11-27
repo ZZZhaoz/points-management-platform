@@ -867,6 +867,73 @@ class EventService {
             return transactions;
         }
     }
+
+    async listOrganizedEvent(userId, userRole) {
+        const where = {
+            organizers: {
+                some: {
+                    id: userId
+                }
+            }
+        };
+
+        // Regular/Cashier can only see the published events
+        if (userRole === 'regular' || userRole === 'cashier') {
+            where.published = true;
+        }
+
+        const events = await prisma.event.findMany({
+            where,
+            include: {
+                organizers: {
+                    select: {
+                        id: true,
+                        utorid: true,
+                        name: true,
+                    },
+                },
+                guests: (userRole !== 'regular' && userRole !== 'cashier') ? {
+                    select: {
+                        id: true,
+                        utorid: true,
+                        name: true,
+                    },
+                } : false,
+            },
+        });
+
+        return events.map(event => {
+            if (userRole === 'regular' || userRole === 'cashier') {
+                return {
+                    id: event.id,
+                    name: event.name,
+                    description: event.description,
+                    location: event.location,
+                    startTime: event.startTime,
+                    endTime: event.endTime,
+                    capacity: event.capacity,
+                    numGuests: event.numGuests,
+                    organizers: event.organizers,
+                };
+            } else {
+                return {
+                    id: event.id,
+                    name: event.name,
+                    description: event.description,
+                    location: event.location,
+                    startTime: event.startTime,
+                    endTime: event.endTime,
+                    capacity: event.capacity,
+                    numGuests: event.numGuests,
+                    pointsRemain: event.pointsRemain,
+                    pointsAwarded: event.pointsAwarded,
+                    published: event.published,
+                    organizers: event.organizers,
+                    guests: event.guests || [],
+                };
+            }
+        });
+    }
 }
 
 module.exports = new EventService();
