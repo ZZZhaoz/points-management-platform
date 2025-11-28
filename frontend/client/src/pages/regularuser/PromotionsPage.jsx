@@ -30,7 +30,7 @@ export default function PromotionsPage() {
         }
 
         setTotalCount(data.count);
-        setPromotions(data.results); // backend always uses results[]
+        setPromotions(data.results);
       })
       .catch(() => setMessage("Network error."))
       .finally(() => setLoading(false));

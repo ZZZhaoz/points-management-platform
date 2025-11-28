@@ -19,9 +19,7 @@ export default function TransferPage() {
     }
 
     try {
-      // -----------------------------
-      // STEP 1: lookup recipient userId
-      // -----------------------------
+      //lookup recipient userId
       const lookupRes = await fetch(
         `${BACKEND_URL}/users/lookup/${recipientUtorid}`,
         {
@@ -37,12 +35,9 @@ export default function TransferPage() {
       }
 
       const lookupData = await lookupRes.json();
-      const recipientId = lookupData.id; // numeric userId
+      const recipientId = lookupData.id; 
 
-      // -----------------------------
-      // STEP 2: send transfer request
       // POST /users/:userId/transactions
-      // -----------------------------
       const res = await fetch(
         `${BACKEND_URL}/users/${recipientId}/transactions`,
         {
@@ -83,6 +78,7 @@ export default function TransferPage() {
       <p>Enter a user's UTORID to transfer points.</p>
 
       <form onSubmit={handleSubmit}>
+        
         {/* Recipient UTORID */}
         <div style={{ marginBottom: "10px" }}>
           <label>Recipient UTORID</label>

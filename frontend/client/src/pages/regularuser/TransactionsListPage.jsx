@@ -10,13 +10,11 @@ export default function TransactionsListPage() {
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // ========= Filters =========
   const [type, setType] = useState("");
   const [promotionName, setPromotionName] = useState("");
   const [amount, setAmount] = useState("");
   const [operator, setOperator] = useState("");
 
-  // Debounced filters
   const [debouncedFilters, setDebouncedFilters] = useState({
     type: "",
     promotionName: "",
@@ -24,12 +22,10 @@ export default function TransactionsListPage() {
     operator: "",
   });
 
-  // Pagination
   const [page, setPage] = useState(1);
   const limit = 6;
   const totalPages = Math.ceil(count / limit);
 
-  // Debounce inputs
   useEffect(() => {
     const t = setTimeout(() => {
       setDebouncedFilters({
@@ -74,7 +70,6 @@ export default function TransactionsListPage() {
       .finally(() => setLoading(false));
   }, [debouncedFilters, page]);
 
-  // Color for each transaction type
   const typeColor = {
     purchase: "#4caf50",
     redemption: "#ff9800",
@@ -83,10 +78,8 @@ export default function TransactionsListPage() {
     event: "#f44336",
   };
 
-  // ⭐ Promotion name cache
   const [promotionCache, setPromotionCache] = useState({});
 
-  // ⭐ Auto-load promotion names whenever transactions change
   useEffect(() => {
     const loadPromotions = async () => {
       const ids = [...new Set(transactions.flatMap((t) => t.promotionIds || []))];

@@ -13,15 +13,12 @@ export default function EventsListPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Filters
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
   const [started, setStarted] = useState("");
   const [ended, setEnded] = useState("");
   const [showFull, setShowFull] = useState(false);
   const [filterMessage, setFilterMessage] = useState("");
-
-  // Pagination
   const [page, setPage] = useState(1);
   const limit = 5;
   const [count, setCount] = useState(0);
@@ -38,9 +35,6 @@ export default function EventsListPage() {
       .catch(() => {});
   }, [BACKEND_URL, token]);
 
-  // ============================
-  // Debounce Logic (300 ms)
-  // ============================
 
   const [debouncedFilters, setDebouncedFilters] = useState({
     name: "",
@@ -50,21 +44,14 @@ export default function EventsListPage() {
     showFull: false
   });
 
-  // Watch filters — debounce after 300ms
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedFilters({ name, location, started, ended, showFull });
-      setPage(1); // whenever filter changes, reset to page 1
+      setPage(1); 
     }, 300);
 
     return () => clearTimeout(timer);
   }, [name, location, started, ended, showFull]);
-
-  // ============================
-  // Fetch events when: 
-  //   1) page changes
-  //   2) debouncedFilters changes
-  // ============================
 
   useEffect(() => {
     if (debouncedFilters.started !== "" && debouncedFilters.ended !== "") {
@@ -194,7 +181,7 @@ export default function EventsListPage() {
                 borderRadius: "8px"
               }}
             >
-              {/* ⭐ Attend badge */}
+              {/* Attend badge */}
               {isJoined && (
                 <span
                   style={{

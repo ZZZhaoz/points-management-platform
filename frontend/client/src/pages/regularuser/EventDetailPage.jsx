@@ -37,7 +37,7 @@ export default function EventDetailPage() {
       .catch(() => {});
   }, [eventId]);
 
-  // RSVP (join event)
+  // RSVP 
   const handleJoin = async () => {
     setMessage("");
 
