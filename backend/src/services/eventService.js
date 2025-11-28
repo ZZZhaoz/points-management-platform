@@ -178,7 +178,7 @@ class EventService {
             },
         });
 
-        const count = events.length;
+        
 
         if (!showFullBool) {
             events = events.filter(event => {
@@ -186,7 +186,8 @@ class EventService {
                 return event.numGuests < event.capacity;
             });
         }
-
+        
+        const count = events.length;
         events = events.slice((pageNum - 1) * limitNum, pageNum * limitNum);
 
         return {

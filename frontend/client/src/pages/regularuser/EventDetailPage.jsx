@@ -61,7 +61,7 @@ export default function EventDetailPage() {
     }
   };
 
-  // ⭐ 4. Cancel RSVP
+  // Cancel RSVP
   const handleCancel = async () => {
     setMessage("");
 

@@ -229,7 +229,92 @@ async function main() {
     pointsRemain: 0,
     pointsAwarded: 350,
     published: true
+    }, 
+    {
+    name: "Machine Learning Bootcamp",
+    startTime: new Date(Date.now() + 86400000 * 3),
+    endTime: new Date(Date.now() + 86400000 * 3 + 3 * 3600000),
+    location: "Myhal 370",
+    description: "Hands-on introduction to ML models and tools.",
+    capacity: 150,
+    numGuests: 30,
+    pointsRemain: 700,
+    pointsAwarded: 120,
+    published: true
+  },
+  {
+    name: "Entrepreneurship Talk",
+    startTime: new Date(Date.now() + 86400000 * 7),
+    endTime: new Date(Date.now() + 86400000 * 7 + 2 * 3600000),
+    location: "SS 1088",
+    description: "Learn how to build products and pitch to investors.",
+    capacity: 200,
+    numGuests: 15,
+    pointsRemain: 500,
+    pointsAwarded: 80,
+    published: true
+  },
+  {
+    name: "Cloud Computing Workshop",
+    startTime: new Date(Date.now() + 86400000 * 12),
+    endTime: new Date(Date.now() + 86400000 * 12 + 2 * 3600000),
+    location: "BA 3175",
+    description: "AWS + GCP intro with hands-on labs.",
+    capacity: 100,
+    numGuests: 45,
+    pointsRemain: 900,
+    pointsAwarded: 150,
+    published: true
+  },
+  {
+    name: "Startup Networking Night",
+    startTime: new Date(Date.now() + 86400000 * 15),
+    endTime: new Date(Date.now() + 86400000 * 15 + 3 * 3600000),
+    location: "Innov8 Hub",
+    description: "Meet founders and discuss startup opportunities.",
+    capacity: 120,
+    numGuests: 60,
+    pointsRemain: 600,
+    pointsAwarded: 170,
+    published: true
+  },
+  {
+    name: "Cybersecurity Crash Course",
+    startTime: new Date(Date.now() + 86400000 * 18),
+    endTime: new Date(Date.now() + 86400000 * 18 + 2 * 3600000),
+    location: "BA 1200",
+    description: "Introduction to ethical hacking and system security.",
+    capacity: 80,
+    numGuests: 40,
+    pointsRemain: 400,
+    pointsAwarded: 90,
+    published: true
+  },
+  {
+    name: "Robotics Expo",
+    startTime: new Date(Date.now() + 86400000 * 22),
+    endTime: new Date(Date.now() + 86400000 * 22 + 4 * 3600000),
+    location: "Myhal Atrium",
+    description: "Experience demos from the Robotics Institute.",
+    capacity: 200,
+    numGuests: 120,
+    pointsRemain: 1000,
+    pointsAwarded: 200,
+    published: true
+  },
+  {
+    name: "SWE Career Panel",
+    startTime: new Date(Date.now() + 86400000 * 28),
+    endTime: new Date(Date.now() + 86400000 * 28 + 2 * 3600000),
+    location: "BA 1130",
+    description: "Engineers from industry share interview tips and career paths.",
+    capacity: 180,
+    numGuests: 70,
+    pointsRemain: 500,
+    pointsAwarded: 140,
+    published: true
   }
+
   ];
 
   await prisma.event.createMany({ data: eventData });
