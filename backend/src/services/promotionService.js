@@ -38,6 +38,8 @@ class PromotionService {
         let formatted = [];
         let count = 0;
 
+        console.log(name);
+
         if (role === "regular" || role === "cashier") {
             const nameFilter = name ? {
                 name: {

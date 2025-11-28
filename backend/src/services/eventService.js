@@ -144,12 +144,16 @@ class EventService {
         if (userRole === 'regular' || userRole === 'cashier') {
             // Regular and cashier users always see only published events
             where.published = true;
-        } else if (published !== undefined) {
-            // Manager and superuser can filter by published status
-            where.published = published === true || published === 'true';
-        } else {
-            // Manager and superuser see only published events by default
-            where.published = true;
+        } 
+        else {
+            if (published === "true" || published === true) {
+                // filter on published
+                where.published = true;
+            } 
+            else if (published === "false" || published === false) {
+                // filter on NOT published
+                where.published = false;
+            }
         }
 
         

@@ -26,6 +26,36 @@ export default function NavBar() {
         </>
       )}
 
+
+      {(role === "superuser") && (
+        <>
+           <br></br>
+          <Link to="/manager/users">Users</Link>
+
+          <br></br>
+
+        <Dropdown title="Promotions">
+          <Dropdown.Item to="/manager/promotions/create">Create Promotion</Dropdown.Item>
+          <Dropdown.Item to="/manager/promotions">View Promotions</Dropdown.Item>
+        </Dropdown>
+
+        <br></br>
+
+        <Dropdown title="Events">
+          <Dropdown.Item to="/manager/events/create">Create Event</Dropdown.Item>
+          <Dropdown.Item to="/manager/events">View Events</Dropdown.Item>
+        </Dropdown>
+
+        <br></br>
+             
+          <Link to="/manager/transactions">Transactions</Link>
+          <br></br>
+        </>
+      )}
+
+
+
+
       <LogoutButton />
     </nav>
   );
