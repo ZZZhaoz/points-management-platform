@@ -5,6 +5,7 @@ import Transactions from "./pages/cashier/transactions";
 import RedemptionTransaction from "./pages/cashier/RedemptionTransaction";
 import Events from "./pages/organizer/Events";
 import EventDetail from "./pages/organizer/EventDetail";
+import EventEdit from "./pages/organizer/EventEdit";
 import ProtectedRoute from "./components/global/ProtectedRoute";
 import Layout from "./components/layout/Layout";
 
@@ -34,7 +35,7 @@ function App() {
             {/* organizer pages */}
             <Route path="/organizer/events" element={<Events />} />
             <Route path="/organizer/events/:eventId" element={<EventDetail />} />
-            {/* <Route path="/organizer/events/:eventId" element={<EventDetail />} />   */}
+            <Route path="/organizer/events/:eventId/edit" element={<EventEdit />} />  
           </Route>
 
         </Route>

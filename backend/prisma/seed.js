@@ -131,8 +131,8 @@ async function main() {
     },
     {
       name: "Networking Session",
-      startTime: new Date(),
-      endTime: new Date(Date.now() + 3600000),
+      startTime: new Date(Date.now() + 3600000),
+      endTime: new Date(Date.now() + 360000000),
       location: "SS 2135",
       description: "Meet recruiters",
       capacity: 60,

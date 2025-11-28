@@ -31,7 +31,7 @@ router.get(
     authenticateToken,
     requireRole(["regular", "cashier", "manager", "superuser"]),
     validateQuery(
-        ["name", "location", "started", "ended", "showFull", "published", "page", "limit", "organizer"],
+        ["name", "location", "started", "ended", "showFull", "published", "page", "limit"],
         [],
         {
             name: "string",
@@ -42,7 +42,6 @@ router.get(
             published: "boolean",
             page: "number",
             limit: "number",
-            organizer: "string",
         }
     ),
     eventControllers.getAllEvents
