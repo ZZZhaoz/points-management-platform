@@ -6,7 +6,15 @@ export default function NavBar() {
   const role = localStorage.getItem("role");
 
   return (
-    <nav className="nav-bar">
+    <nav className="nav-bar"   style={{
+        display: "flex",          
+        alignItems: "center",     
+        gap: "20px",             
+        padding: "10px 20px",
+        background: "#f7f7f7",
+        borderBottom: "1px solid #ddd"
+      }}
+      >
       <Link to="/dashboard">Home</Link>
 
       {role === "regular" && (

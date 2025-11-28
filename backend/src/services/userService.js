@@ -426,6 +426,12 @@ class UserService {
         };
         }
 
+    async getUserByUtorid(utorid) {
+        return await prisma.user.findUnique({
+            where: { utorid }
+        });
+    }
+
 
 }
 module.exports = new UserService();

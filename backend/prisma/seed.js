@@ -99,58 +99,222 @@ async function main() {
     {
       name: "Campus Tour",
       startTime: new Date(),
-      endTime: new Date(Date.now() + 3600000),
+      endTime: new Date(Date.now() + 360000000),
       location: "UofT Front Campus",
       description: "Welcome to UofT!",
       capacity: 100,
       numGuests: 3,
       pointsRemain: 500,
-      pointsAwarded: 10
+      pointsAwarded: 10,
+      published: true
     },
     {
       name: "Career Workshop",
       startTime: new Date(),
-      endTime: new Date(Date.now() + 7200000),
+      endTime: new Date(Date.now() + 720000000),
       location: "BA 1130",
       description: "Resume workshop",
       capacity: 50,
       numGuests: 2,
       pointsRemain: 300,
-      pointsAwarded: 20
+      pointsAwarded: 20,
+      published: true
     },
     {
       name: "Coding Night",
       startTime: new Date(),
-      endTime: new Date(Date.now() + 5400000),
+      endTime: new Date(Date.now() + 540000000),
       location: "BA 2220",
       description: "Leetcode practice",
       capacity: 80,
       numGuests: 4,
       pointsRemain: 400,
-      pointsAwarded: 30
+      pointsAwarded: 30,
+      published: true
     },
     {
       name: "Networking Session",
       startTime: new Date(),
-      endTime: new Date(Date.now() + 3600000),
+      endTime: new Date(Date.now() + 360000000),
       location: "SS 2135",
       description: "Meet recruiters",
       capacity: 60,
       numGuests: 1,
       pointsRemain: 600,
-      pointsAwarded: 15
+      pointsAwarded: 15,
+      published: true
     },
     {
       name: "AI Seminar",
       startTime: new Date(),
-      endTime: new Date(Date.now() + 1800000),
+      endTime: new Date(Date.now() + 1800000000),
       location: "BA 1200",
       description: "Introduction to LLMs",
       capacity: 120,
       numGuests: 5,
       pointsRemain: 200,
-      pointsAwarded: 25
-    }
+      pointsAwarded: 25,
+      published: true
+    },
+
+    {
+    name: "Tech Career Fair",
+    startTime: new Date(Date.now() + 86400000 * 2),
+    endTime: new Date(Date.now() + 86400000 * 2 + 7200000),
+    location: "Myhal Lobby",
+    description: "Meet recruiters from top tech companies.",
+    capacity: 300,
+    numGuests: 12,
+    pointsRemain: 800,
+    pointsAwarded: 50,
+    published: true
+  },
+  {
+    name: "Frontend Workshop",
+    startTime: new Date(Date.now() + 86400000 * 5),
+    endTime: new Date(Date.now() + 86400000 * 5 + 5400000),
+    location: "IC 2200",
+    description: "React + Tailwind live coding session.",
+    capacity: 80,
+    numGuests: 10,
+    pointsRemain: 400,
+    pointsAwarded: 30,
+    published: true
+  },
+  {
+    name: "Hackathon Kickoff",
+    startTime: new Date(Date.now() + 86400000 * 1),
+    endTime: new Date(Date.now() + 86400000 * 1 + 10800000),
+    location: "BA 1130",
+    description: "Start your 24-hour coding marathon!",
+    capacity: 150,
+    numGuests: 20,
+    pointsRemain: 1000,
+    pointsAwarded: 100,
+    published: true
+  },
+
+    {
+    name: "Quantum Computing Talk",
+    startTime: new Date(Date.now() - 86400000 * 5),
+    endTime: new Date(Date.now() - 86400000 * 5 + 7200000),
+    location: "BA 2155",
+    description: "Intro to quantum circuits.",
+    capacity: 100,
+    numGuests: 55,
+    pointsRemain: 0,
+    pointsAwarded: 300,
+    published: true
+  },
+  {
+    name: "Resume Clinic",
+    startTime: new Date(Date.now() - 86400000 * 10),
+    endTime: new Date(Date.now() - 86400000 * 10 + 3600000),
+    location: "SS 1088",
+    description: "One-on-one resume review session.",
+    capacity: 60,
+    numGuests: 40,
+    pointsRemain: 0,
+    pointsAwarded: 200,
+    published: true
+  },
+  {
+    name: "Python Crash Course",
+    startTime: new Date(Date.now() - 86400000 * 15),
+    endTime: new Date(Date.now() - 86400000 * 15 + 5400000),
+    location: "BA 3008",
+    description: "Introduction to Python for beginners.",
+    capacity: 120,
+    numGuests: 100,
+    pointsRemain: 0,
+    pointsAwarded: 350,
+    published: true
+    }, 
+    {
+    name: "Machine Learning Bootcamp",
+    startTime: new Date(Date.now() + 86400000 * 3),
+    endTime: new Date(Date.now() + 86400000 * 3 + 3 * 3600000),
+    location: "Myhal 370",
+    description: "Hands-on introduction to ML models and tools.",
+    capacity: 150,
+    numGuests: 30,
+    pointsRemain: 700,
+    pointsAwarded: 120,
+    published: true
+  },
+  {
+    name: "Entrepreneurship Talk",
+    startTime: new Date(Date.now() + 86400000 * 7),
+    endTime: new Date(Date.now() + 86400000 * 7 + 2 * 3600000),
+    location: "SS 1088",
+    description: "Learn how to build products and pitch to investors.",
+    capacity: 200,
+    numGuests: 15,
+    pointsRemain: 500,
+    pointsAwarded: 80,
+    published: true
+  },
+  {
+    name: "Cloud Computing Workshop",
+    startTime: new Date(Date.now() + 86400000 * 12),
+    endTime: new Date(Date.now() + 86400000 * 12 + 2 * 3600000),
+    location: "BA 3175",
+    description: "AWS + GCP intro with hands-on labs.",
+    capacity: 100,
+    numGuests: 45,
+    pointsRemain: 900,
+    pointsAwarded: 150,
+    published: true
+  },
+  {
+    name: "Startup Networking Night",
+    startTime: new Date(Date.now() + 86400000 * 15),
+    endTime: new Date(Date.now() + 86400000 * 15 + 3 * 3600000),
+    location: "Innov8 Hub",
+    description: "Meet founders and discuss startup opportunities.",
+    capacity: 120,
+    numGuests: 60,
+    pointsRemain: 600,
+    pointsAwarded: 170,
+    published: true
+  },
+  {
+    name: "Cybersecurity Crash Course",
+    startTime: new Date(Date.now() + 86400000 * 18),
+    endTime: new Date(Date.now() + 86400000 * 18 + 2 * 3600000),
+    location: "BA 1200",
+    description: "Introduction to ethical hacking and system security.",
+    capacity: 80,
+    numGuests: 40,
+    pointsRemain: 400,
+    pointsAwarded: 90,
+    published: true
+  },
+  {
+    name: "Robotics Expo",
+    startTime: new Date(Date.now() + 86400000 * 22),
+    endTime: new Date(Date.now() + 86400000 * 22 + 4 * 3600000),
+    location: "Myhal Atrium",
+    description: "Experience demos from the Robotics Institute.",
+    capacity: 200,
+    numGuests: 120,
+    pointsRemain: 1000,
+    pointsAwarded: 200,
+    published: true
+  },
+  {
+    name: "SWE Career Panel",
+    startTime: new Date(Date.now() + 86400000 * 28),
+    endTime: new Date(Date.now() + 86400000 * 28 + 2 * 3600000),
+    location: "BA 1130",
+    description: "Engineers from industry share interview tips and career paths.",
+    capacity: 180,
+    numGuests: 70,
+    pointsRemain: 500,
+    pointsAwarded: 140,
+    published: true
+  }
+
   ];
 
   await prisma.event.createMany({ data: eventData });
@@ -164,7 +328,7 @@ async function main() {
       where: { id: event.id },
       data: {
         organizers: { connect: [{ id: manager.id }, { id: superuser.id }] },
-        guests: { connect: regularUsers.slice(0, event.numGuests).map(u => ({ id: u.id })) }
+        guests: { connect: [] }
       }
     });
   }
