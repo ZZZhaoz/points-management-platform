@@ -329,7 +329,10 @@ class UserService {
 
 
         const { name, email, birthday, avatar } = body || {};
-        const avatarPath = file ? file.path : undefined;
+        const avatarPath = file
+        ? `/uploads/${file.filename}` 
+        : undefined;
+
 
 
 

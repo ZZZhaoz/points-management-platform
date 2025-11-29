@@ -4,7 +4,7 @@ export default function Dashboard() {
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
   const token = localStorage.getItem("token");
 
-  const [user, setUser] = useState(null);
+  const [points, setPoints] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,35 +18,36 @@ export default function Dashboard() {
         if (!res.ok) {
           localStorage.removeItem("token");
           localStorage.removeItem("role");
-          setUser(null);
           return;
         }
         const data = await res.json();
-        setUser(data);
+        setPoints(data.points);
       })
       .finally(() => setLoading(false));
   }, [BACKEND_URL, token]);
 
   if (loading) return <p>Loading...</p>;
-  if (!user) return <p>Not logged in.</p>;
+  if (points === null) return <p>Not logged in.</p>;
 
   return (
-    <div className="dashboard">
-      <h1>Welcome, {user.name}!</h1>
+    <div style={{ padding: "30px", textAlign: "center" }}>
+      <h1>Your Points</h1>
 
-      <div className="card">
-        <h3>Account Information</h3>
-        <p><strong>UTorID:</strong> {user.utorid}</p>
-        <p><strong>Email:</strong> {user.email}</p>
-        <p><strong>Role:</strong> {user.role}</p>
-        <p><strong>Verified:</strong> {user.verified ? "Yes" : "No"}</p>
-      </div>
-
-      <div className="card" style={{ marginTop: "20px" }}>
-        <h3>Your Points</h3>
-        <p style={{ fontSize: "24px", fontWeight: "bold" }}>
-          {user.points} pts
+      <div
+        style={{
+          marginTop: "20px",
+          padding: "20px",
+          background: "white",
+          borderRadius: "12px",
+          boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+          display: "inline-block",
+          minWidth: "200px",
+        }}
+      >
+        <p style={{ fontSize: "40px", fontWeight: "bold", margin: 0 }}>
+          {points}
         </p>
+        <p style={{ margin: 0, fontSize: "18px", color: "#555" }}>points</p>
       </div>
     </div>
   );

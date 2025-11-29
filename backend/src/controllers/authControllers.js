@@ -51,31 +51,27 @@ async function tokenReset(req, res) {
 async function passwordReset(req, res) {
   try {
     await authService.resetPassword(req.body, req.params);
-    return res.sendStatus(200);
+    return res.status(200).json({ success: true });
   } 
   catch (err) {
-    if (err.message === "Unauthorized"){  
-      return res.sendStatus(401);
+
+    if (err.message === "Unauthorized") {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    if (err.message === "Not Found") {
+      return res.status(404).json({ error: "Not Found" });
+    }
+    if (err.message === "Gone") {
+      return res.status(410).json({ error: "Expired reset token" });
+    }
+    if (err.message === "Bad Request") {
+      return res.status(400).json({ error: "Bad Request" });
     }
 
-    if (err.message === "Not Found"){
-      return res.sendStatus(404);
-    }
-      
-    if (err.message === "Gone"){
-      return res.sendStatus(410);
-    }
-
-    if (err.message == "Bad Request"){
-     return res.sendStatus(400); 
-    }
-  
     console.error(err);
-    return res.sendStatus(500);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
-
 }
-
 
 
 module.exports = {
