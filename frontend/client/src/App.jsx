@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import { Dashboard, UserQRPage, TransferPage, RedemptionPage, 
   PromotionsPage, EventsListPage, EventDetailPage, TransactionsListPage, RedemptionQRPage } from "./pages/regularuser";
 import ProtectedRoute from "./components/global/ProtectedRoute";
@@ -11,6 +13,8 @@ function App() {
       <Routes>
         {/* Public route */}
         <Route path="/" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset/:token" element={<ResetPasswordPage />} />
 
         {/* Protected wrapper */}
         <Route element={<ProtectedRoute roles={["regular", "cashier", "manager", "superuser"]} />}>
