@@ -108,8 +108,8 @@ export default function EventDetail() {
                     <p><strong>Capacity:</strong> {event.numGuests || 0} / {event.capacity}</p>
                 )}
 
-                {event.points !== null && (
-                    <p><strong>Points:</strong> {event.points}</p>
+                {event.pointsAwarded !== null && (
+                    <p><strong>Points:</strong> {event.pointsAwarded}</p>
                 )}
 
                 {event.pointsRemain !== undefined && (

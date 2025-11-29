@@ -234,8 +234,40 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+
+  // --------------------------
+  // Add a guest to the event
+  // --------------------------
+  const addGuest = async (eventId, eventData) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        return { error: "Not authenticated" };
+      }
+
+      const res = await fetch(`${BACKEND_URL}/events/${eventId}/guests`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(eventData),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        return { error: err.error || "Failed to update event" };
+      }
+
+      const data = await res.json();
+      return { data };
+    } catch (err) {
+      return { error: "Network error" };
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, createTransaction, processRedemption, getMyEvents, getEventById, updateEvent }}>
+    <AuthContext.Provider value={{ user, login, logout, createTransaction, processRedemption, getMyEvents, getEventById, updateEvent, addGuest }}>
       {children}
     </AuthContext.Provider>
   );

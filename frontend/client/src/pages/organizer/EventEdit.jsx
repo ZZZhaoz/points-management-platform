@@ -8,10 +8,11 @@ import Input from "../../components/global/Input";
 export default function EventEdit() {
     const { eventId } = useParams();
     const navigate = useNavigate();
-    const { getEventById, updateEvent } = useAuth();
+    const { getEventById, updateEvent, addGuest } = useAuth();
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [utorid, setUtorid] = useState(null);
     const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -150,6 +151,19 @@ export default function EventEdit() {
         setFormData({ ...prevFormData });
     };
 
+    const addUser = async() => {
+        const res = await addGuest(eventId, { utorid });
+
+        if (res.error) {
+            setError(res.error);
+            setUtorid(null);
+        } else {
+            // Success 
+            alert("Success to add guest to the event");
+            setUtorid(null);
+        }
+    }
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -232,6 +246,19 @@ export default function EventEdit() {
                     </Button>
                     <Button onClick={handleCancel} variant="secondary" disabled={saving}>
                         Cancel
+                    </Button>
+                </div>
+            </Card>
+            <Card>
+                <input
+                    value={utorid || ""}
+                    onChange={(e) => setUtorid(e.target.value)}
+                    placeholder="Add a guest's utorid"
+                />
+
+                <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
+                    <Button onClick={addUser} variant="secondary">
+                        Add
                     </Button>
                 </div>
             </Card>
