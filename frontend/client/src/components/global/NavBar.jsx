@@ -27,7 +27,7 @@ export default function NavBar() {
         gap: "20px",
         padding: "10px 20px",
         background: "#f7f7f7",
-        borderBottom: "1px solid #ddd",
+        borderBottom: "none",
       }}
     >
       {/* Home */}
