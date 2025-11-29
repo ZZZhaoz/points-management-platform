@@ -42,7 +42,8 @@ model User {
   createdAt              DateTime          @default(now())
   lastLogin              DateTime?
   activated              Boolean           @default(false) 
-  avatarUrl              String?
+  
+  
 
   resetToken             String?
   expiresAt              DateTime?

@@ -1,40 +1,64 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import LogoutButton from "./LogoutButton";
-import Dropdown from "./Dropdown";
 
 export default function NavBar() {
-  const role = localStorage.getItem("role");
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const isAuthPage =
+    location.pathname === "/" ||
+    location.pathname === "/forgot-password" ||
+    location.pathname.startsWith("/reset/");
+
+  if (isAuthPage) return null;
+
+  const utorid = localStorage.getItem("utorid") || "U";
+  const avatarUrl = localStorage.getItem("avatarUrl");
+
+  // fallback: 首字母头像
+  const displayLetter = utorid[0].toUpperCase();
 
   return (
-    <nav className="nav-bar"   style={{
-        display: "flex",          
-        alignItems: "center",     
-        gap: "20px",             
-        padding: "10px 20px",
-        background: "#f7f7f7",
-        borderBottom: "1px solid #ddd"
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "20px",
       }}
-      >
+    >
       <Link to="/dashboard">Home</Link>
 
-      {role === "regular" && (
-        <>
-          <Link to="/promotions">Promotions</Link>
-          <Link to="/user/qr">My QR</Link>
-
-          <Dropdown title="Transactions">
-            <Dropdown.Item to="/transactions/my">My Transactions</Dropdown.Item>
-            <Dropdown.Item to="/transfer">Transfer Points</Dropdown.Item>
-            <Dropdown.Item to="/redeem">Redeem Points</Dropdown.Item>
-          </Dropdown>
-
-          <Dropdown title="Events">
-            <Dropdown.Item to="/events">Event List</Dropdown.Item>
-          </Dropdown>
-        </>
-      )}
-
-      <LogoutButton />
-    </nav>
+      {/* ⭐ Avatar 在右侧 */}
+      <div
+        onClick={() => navigate("/profile")}
+        style={{
+          width: 40,
+          height: 40,
+          borderRadius: "50%",
+          overflow: "hidden",
+          cursor: "pointer",
+          backgroundColor: "#ddd",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          userSelect: "none",
+          fontWeight: 700,
+        }}
+      >
+        {avatarUrl ? (
+          <img
+            src={`${process.env.REACT_APP_BACKEND_URL}${avatarUrl}`}
+            alt="avatar"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
+          />
+        ) : (
+          displayLetter
+        )}
+      </div>
+    </div>
   );
 }
