@@ -4,6 +4,7 @@ import LogoutButton from "./LogoutButton";
 export default function NavBar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const role = localStorage.getItem("role");
 
   const isAuthPage =
     location.pathname === "/" ||
@@ -12,23 +13,39 @@ export default function NavBar() {
 
   if (isAuthPage) return null;
 
+  // Avatar info
   const utorid = localStorage.getItem("utorid") || "U";
   const avatarUrl = localStorage.getItem("avatarUrl");
-
-  // fallback: 首字母头像
   const displayLetter = utorid[0].toUpperCase();
 
   return (
-    <div
+    <nav
+      className="nav-bar"
       style={{
         display: "flex",
         alignItems: "center",
         gap: "20px",
+        padding: "10px 20px",
+        background: "#f7f7f7",
+        borderBottom: "1px solid #ddd",
       }}
     >
+      {/* Home */}
       <Link to="/dashboard">Home</Link>
 
-      {/* ⭐ Avatar 在右侧 */}
+      {/* Regular User Pages (no dropdown, list directly) */}
+      {role === "regular" && (
+        <>
+          <Link to="/promotions">Promotions</Link>
+          <Link to="/user/qr">My QR</Link>
+          <Link to="/transactions/my">My Transactions</Link>
+          <Link to="/transfer">Transfer Points</Link>
+          <Link to="/redeem">Redeem Points</Link>
+          <Link to="/events">Events</Link>
+        </>
+      )}
+
+      {/* Avatar = Profile Page */}
       <div
         onClick={() => navigate("/profile")}
         style={{
@@ -59,6 +76,7 @@ export default function NavBar() {
           displayLetter
         )}
       </div>
-    </div>
+
+    </nav>
   );
 }
