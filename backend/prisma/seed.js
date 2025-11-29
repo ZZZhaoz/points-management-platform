@@ -20,7 +20,8 @@ async function main() {
     { utorid: "david4", name: "David Tan", email: "david@mail.utoronto.ca", role: "regular", verified: false, student: true, points: 80 },
     { utorid: "ella5", name: "Ella Smith", email: "ella@mail.utoronto.ca", role: "regular", verified: true, student: false, points: 300 },
     { utorid: "frank6", name: "Frank Lee", email: "frank@mail.utoronto.ca", role: "regular", verified: false, student: true, points: 0 },
-    { utorid: "george7", name: "George Wu", email: "george@mail.utoronto.ca", role: "regular", verified: true, student: false, points: 120 }
+    { utorid: "george7", name: "George Wu", email: "george@mail.utoronto.ca", role: "regular", verified: true, student: false, points: 120 },
+    { utorid: "zhaoz188", name: "Jason Zhao", email: "zzhao.zhao@mail.utoronto.ca", role: "regular", verified: true, student: false, points: 120 }
   ];
 
   const usersData = [];
