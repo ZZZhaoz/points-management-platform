@@ -3,40 +3,76 @@ import { useParams, useNavigate } from "react-router-dom";
 import Input from "../components/global/Input";
 import Button from "../components/global/Button";
 
-
 export default function ResetPasswordPage() {
-  const { token } = useParams();              
+  const { token } = useParams();
   const navigate = useNavigate();
 
-  const [utorid, setUtorid] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const submit = async () => {
     setLoading(true);
+    setErrorMessage("");
+    setSuccessMessage("");
+
+    // check passwords match
+    if (password !== confirmPassword) {
+      setErrorMessage("Passwords do not match.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/auth/resets/${token}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            utorid,
-            password,
-          }),
+          body: JSON.stringify({ password }),  
         }
       );
 
-      const data = await res.json();
-    console.log("token = ", token);
-    console.log("backend url = ", process.env.REACT_APP_BACKEND_URL);
-      if (!res.ok) {
-        alert(data.error || "Reset failed.");
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        const text = await res.text();
+        setErrorMessage(text);
         return;
       }
 
-      alert("Password reset successfully! Please log in.");
-      navigate("/");
+      if (!res.ok) {
+        if (res.status === 400) {
+          setErrorMessage(
+            "Invalid password format. Password must:\n" +
+              "• Be 8-20 characters\n" +
+              "• Include 1 uppercase letter\n" +
+              "• Include 1 lowercase letter\n" +
+              "• Include 1 number\n" +
+              "• Include 1 special character (@$!%*?&)"
+          );
+          return;
+        }
+        if (res.status === 404) {
+          setErrorMessage("Reset token not found.");
+          return;
+        }
+        if (res.status === 410) {
+          setErrorMessage("Reset token has expired.");
+          return;
+        }
+
+        setErrorMessage("Reset failed.");
+        return;
+      }
+
+      setSuccessMessage("Password reset successfully! Redirecting...");
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
 
     } finally {
       setLoading(false);
@@ -48,14 +84,6 @@ export default function ResetPasswordPage() {
       <h1>Reset Password</h1>
 
       <Input
-        label="UTORid"
-        placeholder="Enter your UTORid"
-        value={utorid}
-        onChange={setUtorid}
-        required
-      />
-
-      <Input
         label="New Password"
         type="password"
         placeholder="Enter a new password"
@@ -64,9 +92,56 @@ export default function ResetPasswordPage() {
         required
       />
 
+      <Input
+        label="Confirm Password"
+        type="password"
+        placeholder="Confirm your new password"
+        value={confirmPassword}
+        onChange={setConfirmPassword}
+        required
+      />
+
+      {/* Password rules */}
+      <p style={{ marginTop: 10, color: "#666", fontSize: "14px" }}>
+        Password requirements:
+        <br />• 8-20 characters
+        <br />• At least 1 uppercase letter
+        <br />• At least 1 lowercase letter
+        <br />• At least 1 number
+        <br />• At least 1 special character (@$!%*?&)
+      </p>
+
       <Button onClick={submit} disabled={loading}>
         {loading ? "Resetting..." : "Reset Password"}
       </Button>
+
+      {/* Error message */}
+      {errorMessage && (
+        <div
+          style={{
+            marginTop: 12,
+            color: "red",
+            whiteSpace: "pre-line",
+            fontSize: "14px",
+          }}
+        >
+          {errorMessage}
+        </div>
+      )}
+
+      {/* Success message */}
+      {successMessage && (
+        <div
+          style={{
+            marginTop: 12,
+            color: "green",
+            whiteSpace: "pre-line",
+            fontSize: "14px",
+          }}
+        >
+          {successMessage}
+        </div>
+      )}
     </div>
   );
 }

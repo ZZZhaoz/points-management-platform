@@ -99,11 +99,11 @@ class AuthService{
 
     
     async resetPassword({ utorid, password }, { resetToken }) {
-        if (!utorid || !password || !resetToken) {
-            throw new Error("Bad Request");
+        if (!password || !resetToken) {
+                throw new Error("Bad Request");
         }
-
-         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
+            
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
         if (!passwordRegex.test(password)) {
             throw new Error("Bad Request");
         }
@@ -116,8 +116,8 @@ class AuthService{
             throw new Error("Not Found");
         }
 
-        if (user.utorid !== utorid) {
-            throw new Error("Unauthorized");
+        if (utorid && user.utorid !== utorid) {
+             throw new Error("Unauthorized");
         }
 
         if (!user.expiresAt || user.expiresAt.getTime() <= Date.now()) {
@@ -127,7 +127,7 @@ class AuthService{
         const hashedPassword = await bcrypt.hash(password, 10);
 
         await prisma.user.update({
-            where: { utorid: utorid},
+            where: { utorid: user.utorid},
             data: {
             password: hashedPassword,
             resetToken: null,

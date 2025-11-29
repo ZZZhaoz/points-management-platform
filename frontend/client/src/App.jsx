@@ -12,6 +12,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* Public route */}
+        <Route element={<Layout />}>
         <Route path="/" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset/:token" element={<ResetPasswordPage />} />
@@ -20,7 +21,7 @@ function App() {
         <Route element={<ProtectedRoute roles={["regular", "cashier", "manager", "superuser"]} />}>
           
           {/* Layout wrapper for logged-in pages */}
-          <Route element={<Layout />}>
+          
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="user/qr" element={<UserQRPage />} />
             <Route path="/transfer" element={<TransferPage />} />

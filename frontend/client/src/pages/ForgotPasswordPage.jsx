@@ -15,7 +15,7 @@ export default function ForgotPasswordPage() {
       const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/resets`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ utorid }),
+        body: JSON.stringify({ utorid }),  
       });
 
       const data = await res.json();
@@ -40,6 +40,7 @@ export default function ForgotPasswordPage() {
         placeholder="Enter your UTORid"
         value={utorid}
         onChange={setUtorid}
+        required
       />
 
       <Button onClick={submit} disabled={loading}>
