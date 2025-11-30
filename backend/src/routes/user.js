@@ -121,6 +121,7 @@ router.get(
       "promotionName",
       "amount",
       "operator",
+      "remark",
       "page",
       "limit"
     ],
