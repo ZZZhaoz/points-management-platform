@@ -241,6 +241,7 @@ async function getUserTransactions(req, res) {
       operator,
       promotionId,
       promotionName,
+      remark,
       page = 1,
       limit = 10
     } = req.query;
@@ -253,7 +254,7 @@ async function getUserTransactions(req, res) {
       return res.status(400).json({ error: "Bad Request" });
     }
 
-    if (operator && !amount) {
+    if (operator && (amount == null || amount === "")) {
       return res.status(400).json({ error: "Bad Request" });
     }
 
@@ -274,6 +275,7 @@ async function getUserTransactions(req, res) {
         operator,
         promotionId,
         promotionName,
+        remark,
         page,
         limit
       }

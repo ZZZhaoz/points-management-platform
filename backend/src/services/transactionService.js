@@ -383,43 +383,46 @@ class TransactionService {
 
   async getUserTransactions(userId, params) {
     const { 
-      type, 
-      relatedId, 
+      type,
+      relatedId,
       promotionId,
-      promotionName, 
-      amount, 
-      operator, 
-      page, 
-      limit 
+      promotionName,
+      remark,
+      amount,
+      operator,
+      page,
+      limit
     } = params;
 
     const filters = { userId };
 
+    if (type) filters.type = type;
+
     if (relatedId && type) {
       filters.relatedId = Number(relatedId);
-      filters.type = type;
-    } else if (type) {
-      filters.type = type;
     }
 
     if (promotionId) {
-        filters.promotionIds = {
-          some: { id: Number(promotionId) }
-        };
-      } 
+      filters.promotionIds = {
+        some: { id: Number(promotionId) }
+      };
+    }
+
     if (promotionName && promotionName.trim() !== "") {
       filters.promotionIds = {
         some: {
-          name: {
-            contains: promotionName.trim(),
-            
-          },
-        },
+          name: { contains: promotionName.trim() }
+        }
       };
     }
-            
 
-    if (amount && operator) {
+    if (remark && remark.trim() !== "") {
+      filters.remark = {
+        contains: remark.trim()
+      };
+    }
+
+    if (operator && amount !== undefined && amount !== null && amount !== "") {
       const op = operator === "gte" ? "gte" : "lte";
       filters.amount = { [op]: Number(amount) };
     }
@@ -435,7 +438,8 @@ class TransactionService {
         take: limit,
         include: {
           createdBy: { select: { utorid: true } },
-          promotionIds: { select: { id: true, name: true } } 
+          processedBy: { select: { utorid: true } },
+          promotionIds: { select: { id: true, name: true } }
         },
         orderBy: { id: "asc" }
       })
@@ -457,11 +461,13 @@ class TransactionService {
           id: t.id,
           amount: t.amount,
           type: t.type,
+          processed: t.processed,
+          processedBy: t.processedBy ?? null,
           spent: t.spent ?? undefined,
           relatedId: t.relatedId ?? undefined,
           relatedUtorid,
           promotionIds: t.promotionIds.map((p) => p.id),
-          promotionNames: t.promotionIds.map((p) => p.name), 
+          promotionNames: t.promotionIds.map((p) => p.name),
           remark: t.remark,
           createdBy: t.createdBy.utorid
         };

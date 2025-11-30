@@ -12,12 +12,14 @@ export default function TransactionsListPage() {
 
   const [type, setType] = useState("");
   const [promotionName, setPromotionName] = useState("");
+  const [remark, setRemark] = useState("");       
   const [amount, setAmount] = useState("");
   const [operator, setOperator] = useState("");
 
   const [debouncedFilters, setDebouncedFilters] = useState({
     type: "",
     promotionName: "",
+    remark: "",          
     amount: "",
     operator: "",
   });
@@ -31,6 +33,7 @@ export default function TransactionsListPage() {
       setDebouncedFilters({
         type,
         promotionName,
+        remark,          
         amount,
         operator,
       });
@@ -38,7 +41,7 @@ export default function TransactionsListPage() {
     }, 300);
 
     return () => clearTimeout(t);
-  }, [type, promotionName, amount, operator]);
+  }, [type, promotionName, remark, amount, operator]);
 
   // Fetch transactions
   useEffect(() => {
@@ -52,6 +55,10 @@ export default function TransactionsListPage() {
     if (debouncedFilters.type) params.append("type", debouncedFilters.type);
     if (debouncedFilters.promotionName)
       params.append("promotionName", debouncedFilters.promotionName);
+
+    if (debouncedFilters.remark)
+      params.append("remark", debouncedFilters.remark);
+
     if (debouncedFilters.amount && debouncedFilters.operator) {
       params.append("amount", debouncedFilters.amount);
       params.append("operator", debouncedFilters.operator);
@@ -110,152 +117,167 @@ export default function TransactionsListPage() {
       <p>All past transactions</p>
 
       {/* Filters */}
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "12px",
-          marginBottom: "20px",
-        }}
-      >
-        <label>
-          Type
-          <select value={type} onChange={(e) => setType(e.target.value)}>
-            <option value="">Any</option>
-            <option value="purchase">Purchase</option>
-            <option value="redemption">Redemption</option>
-            <option value="adjustment">Adjustment</option>
-            <option value="transfer">Transfer</option>
-            <option value="event">Event</option>
-          </select>
-        </label>
+      <div style={{ marginBottom: "20px" }}>
+        
+        <div
+          style={{
+            display: "flex",
+            gap: "12px",
+            marginBottom: "12px",
+          }}
+        >
+          <Input
+            label="Remark"
+            value={remark}
+            onChange={setRemark}
+            placeholder="Search remark text..."
+          />
+        </div>
 
-        {/* Search promotion name */}
-        <Input
-          label="Promotion Name"
-          value={promotionName}
-          onChange={setPromotionName}
-          placeholder="Search Promotion Name"
-        />
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "12px",
+          }}
+        >
+          <label>
+            Type
+            <select value={type} onChange={(e) => setType(e.target.value)}>
+              <option value="">Any</option>
+              <option value="purchase">Purchase</option>
+              <option value="redemption">Redemption</option>
+              <option value="adjustment">Adjustment</option>
+              <option value="transfer">Transfer</option>
+              <option value="event">Event</option>
+            </select>
+          </label>
 
-        <Input
-          label="Amount"
-          value={amount}
-          onChange={setAmount}
-          placeholder="e.g. 50"
-        />
+          <Input
+            label="Promotion Name"
+            value={promotionName}
+            onChange={setPromotionName}
+            placeholder="Search Promotion Name"
+          />
 
-        <label>
-          Operator
-          <select
-            value={operator}
-            onChange={(e) => setOperator(e.target.value)}
-          >
-            <option value="">None</option>
-            <option value="gte">≥</option>
-            <option value="lte">≤</option>
-          </select>
-        </label>
+          <Input
+            label="Amount"
+            value={amount}
+            onChange={setAmount}
+            placeholder="e.g. 50"
+          />
+
+          <label>
+            Operator
+            <select
+              value={operator}
+              onChange={(e) => setOperator(e.target.value)}
+            >
+              <option value="">None</option>
+              <option value="gte">≥</option>
+              <option value="lte">≤</option>
+            </select>
+          </label>
+        </div>
       </div>
 
       {/* Transactions */}
-        <div style={{ display: "grid", gap: "15px" }}>
+      <div style={{ display: "grid", gap: "15px" }}>
         {transactions.map((t) => (
-            <div
+          <div
             key={t.id}
             style={{
-                border: "1px solid #ccc",
-                borderLeft: `8px solid ${typeColor[t.type] || "#000"}`,
-                padding: "15px",
-                borderRadius: "6px",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
+              border: "1px solid #ccc",
+              borderLeft: `8px solid ${typeColor[t.type] || "#000"}`,
+              padding: "15px",
+              borderRadius: "6px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
             }}
-            >
+          >
             {/* Left side */}
             <div>
-                <h3 style={{ margin: 0 }}>
+              <h3 style={{ margin: 0 }}>
                 {t.type.toUpperCase()} – ID #{t.id}
-                </h3>
+              </h3>
 
-                <p style={{ margin: "6px 0" }}>
+              <p style={{ margin: "6px 0" }}>
                 <strong>Amount:</strong> {t.amount}
-                </p>
+              </p>
 
-                {t.spent != null && (
+              {t.spent != null && (
                 <p style={{ margin: "6px 0" }}>
-                    <strong>Spent:</strong> ${t.spent}
+                  <strong>Spent:</strong> ${t.spent}
                 </p>
-                )}
+              )}
 
-                {t.relatedUtorid && (
+              {t.relatedUtorid && (
                 <p style={{ margin: "6px 0" }}>
-                    <strong>Recipient:</strong>{" "}
-                    <span style={{ fontWeight: "bold" }}>{t.relatedUtorid}</span>
+                  <strong>Recipient:</strong>{" "}
+                  <span style={{ fontWeight: "bold" }}>{t.relatedUtorid}</span>
                 </p>
-                )}
+              )}
 
-                {/* Promotion names */}
-                {t.promotionIds?.length > 0 && (
+              {t.promotionIds?.length > 0 && (
                 <p>
-                    <strong>Promotions Used:</strong>{" "}
-                    {t.promotionIds.map((pid) => (
+                  <strong>Promotions Used:</strong>{" "}
+                  {t.promotionIds.map((pid) => (
                     <span key={pid} style={{ marginRight: "6px" }}>
-                        {promotionCache[pid] || "Loading..."}
+                      {promotionCache[pid] || "Loading..."}
                     </span>
-                    ))}
+                  ))}
                 </p>
-                )}
+              )}
 
-                <p style={{ margin: "6px 0" }}>
+              <p style={{ margin: "6px 0" }}>
                 <strong>Created By:</strong> {t.createdBy}
-                </p>
+              </p>
             </div>
 
-            {/* Right side: remark + redemption status */}
+            {/* Right side */}
             <div
-                style={{
+              style={{
                 marginLeft: "20px",
                 color: "#555",
                 fontStyle: "italic",
                 minWidth: "150px",
                 textAlign: "right",
-                }}
+              }}
             >
+              {/* Remark */}
+              {t.remark && <div>Remark: {t.remark}</div>}
 
-                {/* Remark */}
-                {t.remark && <div>Remark: {t.remark}</div>}
-
-                {/* Redemption logic */}
-                {t.type === "redemption" && (
+              {/* Redemption logic */}
+              {t.type === "redemption" && (
                 <div style={{ marginTop: "10px" }}>
-                    {t.spent != null ? (
+                  {t.processed ? (
                     <span style={{ color: "green", fontWeight: "bold" }}>
-                        ✔ Processed
+                      ✔ Processed by {t.processedBy?.utorid || "cashier"}
                     </span>
-                    ) : (
+                  ) : (
                     <button
-                        onClick={() => window.location.href = `/redeem/qr/${t.id}`}
-                        style={{
+                      onClick={() =>
+                        (window.location.href = `/redeem/qr/${t.id}`)
+                      }
+                      style={{
                         padding: "6px 10px",
                         background: "#007bff",
                         color: "white",
                         border: "none",
                         borderRadius: "4px",
                         fontSize: "0.85rem",
-                        }}
+                      }}
                     >
-                        Open QR Code
+                      Open QR Code
                     </button>
-                    )}
+                  )}
                 </div>
-                )}
+              )}
             </div>
-            </div>
+          </div>
         ))}
-        </div>
-
+      </div>
 
       {/* Pagination */}
       <div
