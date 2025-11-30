@@ -435,6 +435,7 @@ class TransactionService {
         take: limit,
         include: {
           createdBy: { select: { utorid: true } },
+          processedBy: { select: { utorid: true } },
           promotionIds: { select: { id: true, name: true } } 
         },
         orderBy: { id: "asc" }
@@ -452,11 +453,13 @@ class TransactionService {
           });
           relatedUtorid = otherUser ? otherUser.utorid : null;
         }
-
+        console.log(t);
         return {
           id: t.id,
           amount: t.amount,
           type: t.type,
+          processed: t.processed, 
+          processedBy: t.processedBy ?? null,
           spent: t.spent ?? undefined,
           relatedId: t.relatedId ?? undefined,
           relatedUtorid,

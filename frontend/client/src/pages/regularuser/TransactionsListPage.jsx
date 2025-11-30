@@ -230,27 +230,27 @@ export default function TransactionsListPage() {
                 {/* Redemption logic */}
                 {t.type === "redemption" && (
                 <div style={{ marginTop: "10px" }}>
-                    {t.spent != null ? (
+                  {t.processed ? (
                     <span style={{ color: "green", fontWeight: "bold" }}>
-                        ✔ Processed
+                      ✔ Processed by {t.processedBy?.utorid || "cashier"}
                     </span>
-                    ) : (
+                  ) : (
                     <button
-                        onClick={() => window.location.href = `/redeem/qr/${t.id}`}
-                        style={{
+                      onClick={() => window.location.href = `/redeem/qr/${t.id}`}
+                      style={{
                         padding: "6px 10px",
                         background: "#007bff",
                         color: "white",
                         border: "none",
                         borderRadius: "4px",
                         fontSize: "0.85rem",
-                        }}
+                      }}
                     >
-                        Open QR Code
+                      Open QR Code
                     </button>
-                    )}
+                  )}
                 </div>
-                )}
+              )}
             </div>
             </div>
         ))}

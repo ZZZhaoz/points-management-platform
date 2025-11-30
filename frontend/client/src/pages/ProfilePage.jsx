@@ -21,6 +21,7 @@ export default function ProfilePage() {
 
       const data = await res.json();
       setProfile(data);
+      localStorage.setItem("avatarUrl", data.avatarUrl || "");
 
       // Initialize editing fields
       setName(data.name || "");
@@ -59,6 +60,7 @@ export default function ProfilePage() {
     } else {
       alert("Failed to upload avatar");
     }
+
   };
 
   // --------------------------
@@ -79,6 +81,9 @@ export default function ProfilePage() {
     if (res.ok) {
       const updated = await res.json();
       setProfile(updated);
+      if (updated.avatarUrl) {
+        localStorage.setItem("avatarUrl", updated.avatarUrl);
+      }
       setEditing(false);
     } else {
       alert("Failed to update profile");

@@ -342,7 +342,7 @@ async function main() {
 
   const updatedEvents = await prisma.event.findMany();
 
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 100; i++) {
     const type = txTypes[i % txTypes.length];
     const user = regularUsers[Math.floor(Math.random() * regularUsers.length)];
     const receiver = regularUsers[(i + 1) % regularUsers.length];
