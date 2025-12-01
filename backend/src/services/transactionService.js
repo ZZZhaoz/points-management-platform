@@ -67,7 +67,8 @@ class TransactionService {
       earned: earnedAmount,
       remark,
       promotionIds,
-      createdBy: req.user.utorid
+      createdBy: req.user.utorid,
+      createdAt: transaction.createdAt,
     };
   }
 
@@ -122,7 +123,9 @@ class TransactionService {
       relatedId,
       remark,
       promotionIds,
-      createdBy: req.user.utorid
+      createdBy: req.user.utorid,
+      createdAt: transaction.createdAt
+
     };
   }
 
@@ -190,7 +193,8 @@ class TransactionService {
       promotionIds: t.promotionIds.map(p => p.id),
       suspicious: t.suspicious,
       remark: t.remark,
-      createdBy: t.createdBy.utorid 
+      createdBy: t.createdBy.utorid,
+      createdAt: t.createdAt,
     }));
 
     return { count, results: formatted };
@@ -219,6 +223,7 @@ class TransactionService {
       suspicious: transaction.suspicious,
       remark: transaction.remark,
       createdBy: transaction.createdBy.utorid,
+      createdAt: transaction.createdAt
     };
   }
 
@@ -268,6 +273,7 @@ class TransactionService {
       suspicious: updatedTransaction.suspicious,
       remark: updatedTransaction.remark,
       createdBy: updatedTransaction.createdBy.utorid,
+      createdAt: updatedTransaction.createdAt
     };
   }
 
@@ -339,7 +345,8 @@ class TransactionService {
         type: "transfer",
         sent: amount,
         remark,
-        createdBy: senderUser.utorid
+        createdBy: senderUser.utorid,
+        createdAt: sendTransaction.createdAt
       };
     return formatted;
   }
@@ -377,7 +384,8 @@ class TransactionService {
       processedBy: null,
       amount: transaction.amount,
       remark: transaction.remark,
-      createdBy: dbUser.utorid
+      createdBy: dbUser.utorid,
+      createdAt: transaction.createdAt
     };
   }
 
@@ -441,7 +449,10 @@ class TransactionService {
           processedBy: { select: { utorid: true } },
           promotionIds: { select: { id: true, name: true } }
         },
-        orderBy: { id: "asc" }
+        orderBy: [
+        { createdAt: "desc" },
+        { id: "desc" }
+      ]
       })
     ]);
 
@@ -469,7 +480,8 @@ class TransactionService {
           promotionIds: t.promotionIds.map((p) => p.id),
           promotionNames: t.promotionIds.map((p) => p.name),
           remark: t.remark,
-          createdBy: t.createdBy.utorid
+          createdBy: t.createdBy.utorid,
+          createdAt: t.createdAt,
         };
       })
     );
@@ -537,7 +549,8 @@ class TransactionService {
       processedBy: cashier.utorid,
       redeemed: amount,
       remark: transaction.remark,
-      createdBy: transaction.createdBy.utorid
+      createdBy: transaction.createdBy.utorid,
+      createdAt: transaction.createdAt
     };
   }
 }

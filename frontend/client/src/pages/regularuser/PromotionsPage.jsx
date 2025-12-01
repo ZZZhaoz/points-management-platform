@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardSubtitle, CardContent } from "../../components/global/Card";
+import Input from "../../components/global/Input";
 
 export default function PromotionsPage() {
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
@@ -13,10 +14,26 @@ export default function PromotionsPage() {
   const [limit] = useState(5);
   const [totalCount, setTotalCount] = useState(0);
 
+  const [searchName, setSearchName] = useState("");
+  const [debouncedSearchName, setDebouncedSearchName] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchName(searchName);
+    }, 500);  
+
+    return () => clearTimeout(timer);  
+  }, [searchName]);
+
   useEffect(() => {
     setLoading(true);
 
-    fetch(`${BACKEND_URL}/promotions?page=${page}&limit=${limit}`, {
+    const queryName =
+      debouncedSearchName.trim() !== "" 
+        ? `&name=${encodeURIComponent(debouncedSearchName)}` 
+        : "";
+
+    fetch(`${BACKEND_URL}/promotions?page=${page}&limit=${limit}${queryName}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -31,13 +48,11 @@ export default function PromotionsPage() {
 
         setTotalCount(data.count);
         setPromotions(data.results);
+        setMessage(null);  
       })
       .catch(() => setMessage("Network error."))
       .finally(() => setLoading(false));
-  }, [BACKEND_URL, token, page, limit]);
-
-  if (loading) return <p>Loading promotions...</p>;
-  if (message) return <p style={{ color: "red" }}>{message}</p>;
+  }, [BACKEND_URL, token, debouncedSearchName, page, limit]);
 
   const totalPages = Math.ceil(totalCount / limit);
 
@@ -46,29 +61,41 @@ export default function PromotionsPage() {
       <h2>Available Promotions</h2>
       <p>Here are all currently published promotions:</p>
 
+      {/* Search box */}
+      <div style={{ maxWidth: "300px", marginTop: "20px" }}>
+        <Input
+          label="Search by name"
+          placeholder="e.g. Summer Sale"
+          value={searchName}
+          onChange={(value) => { 
+            setPage(1);  
+            setSearchName(value);
+          }}
+        />
+      </div>
+
+      {/* Loading state */}
+      {loading && <p style={{ marginTop: "10px", color: "#999" }}>Searching...</p>}
+
+      {/* Error message */}
+      {message && <p style={{ color: "red", marginTop: "10px" }}>{message}</p>}
+
+      {/* results */}
       <div style={{ display: "grid", gap: "20px", marginTop: "20px" }}>
         {promotions.map((promo) => (
           <PromotionCard key={promo.id} promo={promo} />
         ))}
       </div>
 
-      {/* Pagination Controls */}
-      <div style={{ marginTop: "30px", display: "flex", gap: "10px" }}>
-        <button
-          disabled={page === 1}
-          onClick={() => setPage(page - 1)}
-        >
+      {/* pagination */}
+      <div style={{ marginTop: "30px", display: "flex", gap: "10px", alignItems: "center" }}>
+        <button disabled={page === 1} onClick={() => setPage(page - 1)}>
           Previous
         </button>
 
-        <span>
-          Page {page} / {totalPages}
-        </span>
+        <span>Page {page} / {totalPages || 1}</span>
 
-        <button
-          disabled={page === totalPages}
-          onClick={() => setPage(page + 1)}
-        >
+        <button disabled={page >= totalPages} onClick={() => setPage(page + 1)}>
           Next
         </button>
       </div>
@@ -80,13 +107,7 @@ function PromotionCard({ promo }) {
   const color = promo.type === "automatic" ? "#2196f3" : "#4caf50";
 
   return (
-    <Card
-      style={{
-        borderLeft: `6px solid ${color}`,
-        padding: "16px",
-        background: "#f9f9f9",
-      }}
-    >
+    <Card style={{ borderLeft: `6px solid ${color}`, padding: "16px", background: "#f9f9f9" }}>
       <CardHeader>
         <CardTitle>{promo.name}</CardTitle>
         <CardSubtitle>{promo.description}</CardSubtitle>

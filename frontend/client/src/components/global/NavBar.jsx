@@ -76,6 +76,7 @@ export default function NavBar() {
           displayLetter
         )}
       </div>
+     <LogoutButton />
 
     </nav>
   );
