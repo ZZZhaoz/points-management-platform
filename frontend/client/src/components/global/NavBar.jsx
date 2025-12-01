@@ -33,19 +33,66 @@ export default function NavBar() {
       {/* Home */}
       <Link to="/dashboard">Home</Link>
 
-      {/* Regular User Pages (no dropdown, list directly) */}
+      {/* Regular User Menu */}
       {role === "regular" && (
         <>
           <Link to="/promotions">Promotions</Link>
           <Link to="/user/qr">My QR</Link>
-          <Link to="/transactions/my">My Transactions</Link>
-          <Link to="/transfer">Transfer Points</Link>
-          <Link to="/redeem">Redeem Points</Link>
-          <Link to="/events">Events</Link>
+        
+      {/* REGULAR USER MENU */}
+      {role === "regular" && (
+        <>
+          <Dropdown title="Transactions">
+            <Dropdown.Item to="/transactions/my">My Transactions</Dropdown.Item>
+            <Dropdown.Item to="/transfer">Transfer Points</Dropdown.Item>
+            <Dropdown.Item to="/redeem">Redeem Points</Dropdown.Item>
+          </Dropdown>
+
+          <Dropdown title="Events">
+            <Dropdown.Item to="/events">Event List</Dropdown.Item>
+            <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
+          </Dropdown>
         </>
       )}
 
-      {/* Avatar = Profile Page */}
+      /* CASHIER MENU */
+      {role === "cashier" && (
+        <>
+          <Dropdown title="Transactions">
+            <Dropdown.Item to="/cashier/transactions">Create Transaction</Dropdown.Item>
+          </Dropdown>
+
+          <Dropdown title="Redemption">
+            <Dropdown.Item to="/cashier/redemption">Request redemption points</Dropdown.Item>
+          </Dropdown>
+
+          <Dropdown title="Event">
+            <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
+          </Dropdown>
+        </>
+      )}
+
+      /* MANAGER MENU */
+      {role === "manager" && (
+        <>
+          <Dropdown title="Event">
+            <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
+            <Dropdown.Item to="/organizer/events/:eventId/award-points">Award Points</Dropdown.Item>
+          </Dropdown>
+        </>
+      )}
+
+      /* SUPERUSER MENU */
+      {role === "superuser" && (
+        <>
+          <Dropdown title="Event">
+            <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
+            <Dropdown.Item to="/superuser/user-promotion">User Promotion</Dropdown.Item>
+          </Dropdown>
+        </>
+      )}
+
+      /* Avatar = Profile Page */
       <div
         onClick={() => navigate("/profile")}
         style={{
@@ -76,7 +123,8 @@ export default function NavBar() {
           displayLetter
         )}
       </div>
-     <LogoutButton />
+
+      <LogoutButton />
 
     </nav>
   );
