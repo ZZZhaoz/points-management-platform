@@ -8,6 +8,8 @@ import EventDetail from "./pages/organizer/EventDetail";
 import EventEdit from "./pages/organizer/EventEdit";
 import ProtectedRoute from "./components/global/ProtectedRoute";
 import Layout from "./components/layout/Layout";
+import AwardPoints from "./pages/organizer/AwardPoints";
+import UserPromotion from "./pages/superuser/UserPromotion";
 
 function App() {
   return (
@@ -35,7 +37,11 @@ function App() {
             {/* organizer pages */}
             <Route path="/organizer/events" element={<Events />} />
             <Route path="/organizer/events/:eventId" element={<EventDetail />} />
-            <Route path="/organizer/events/:eventId/edit" element={<EventEdit />} />  
+            <Route path="/organizer/events/:eventId/edit" element={<EventEdit />} /> 
+            <Route path="/organizer/events/:eventId/award-points" element={<AwardPoints />} />
+
+            {/* superuser pages */}
+            <Route path="/superuser/user-promotion" element={<UserPromotion />} />
           </Route>
 
         </Route>

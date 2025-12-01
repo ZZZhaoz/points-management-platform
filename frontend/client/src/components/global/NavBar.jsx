@@ -51,6 +51,7 @@ export default function NavBar() {
         <>
           <Dropdown title="Event">
             <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
+            <Dropdown.Item to="/organizer/events/:eventId/award-points">Award Points</Dropdown.Item>
           </Dropdown>
         </>
       )}
@@ -60,6 +61,7 @@ export default function NavBar() {
         <>
           <Dropdown title="Event">
             <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
+            <Dropdown.Item to="/superuser/user-promotion">User Promotion</Dropdown.Item>
           </Dropdown>
         </>
       )}

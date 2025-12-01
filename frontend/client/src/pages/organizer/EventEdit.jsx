@@ -45,6 +45,7 @@ export default function EventEdit() {
         
         if (result.error) {
             setError(result.error);
+            alert("Error: " + result.error);
         } else {
             const eventData = result.data;
             
@@ -130,6 +131,7 @@ export default function EventEdit() {
         const result = await updateEvent(eventId, updateData);
 
         if (result.error) {
+            alert("Error: " + result.error);
             setError(result.error);
             setSaving(false);
         } else {
@@ -157,6 +159,7 @@ export default function EventEdit() {
         if (res.error) {
             setError(res.error);
             setUtorid(null);
+            alert("Error: " + res.error);
         } else {
             // Success 
             alert("Success to add guest to the event");
@@ -238,7 +241,7 @@ export default function EventEdit() {
                     </label>
                 </div>
 
-                {error && <div style={{ color: "red", marginBottom: "1rem" }}>Error: {error}</div>}
+                {/* {error && <div style={{ color: "red", marginBottom: "1rem" }}>Error: {error}</div>} */}
 
                 <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
                     <Button onClick={handleSave} disabled={saving}>

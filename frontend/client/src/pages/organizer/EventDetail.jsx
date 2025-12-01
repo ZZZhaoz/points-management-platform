@@ -96,7 +96,12 @@ export default function EventDetail() {
             <Card>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
                     <h2>{event.name}</h2>
-                    <Button onClick={() => navigate(`/organizer/events/${eventId}/edit`)}>Edit</Button>
+                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                        <Button onClick={() => navigate(`/organizer/events/${eventId}/award-points`)} variant="secondary">
+                            Award Points
+                        </Button>
+                        <Button onClick={() => navigate(`/organizer/events/${eventId}/edit`)}>Edit</Button>
+                    </div>
                 </div>
 
                 <p><strong>Description:</strong> {event.description}</p>

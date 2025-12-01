@@ -266,8 +266,106 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // --------------------------
+  // Award points to a guest or all guests
+  // --------------------------
+  const awardPoints = async (eventId, { type, utorid, amount, remark }) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        return { error: "Not authenticated" };
+      }
+
+      const body = { type, amount };
+      if (utorid) {
+        body.utorid = utorid;
+      }
+      if (remark) {
+        body.remark = remark;
+      }
+
+      const res = await fetch(`${BACKEND_URL}/events/${eventId}/transactions`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        return { error: err.error || "Failed to award points" };
+      }
+
+      const data = await res.json();
+      return { data };
+    } catch (err) {
+      return { error: "Network error" };
+    }
+  };
+
+  // --------------------------
+  // Get User By ID
+  // --------------------------
+  const getUserById = async (userId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        return { error: "Not authenticated" };
+      }
+
+      const res = await fetch(`${BACKEND_URL}/users/${userId}`, {
+        headers: { 
+          Authorization: `Bearer ${token}`
+        },
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        return { error: err.error || "Failed to get user" };
+      }
+
+      const data = await res.json();
+      return { data };
+    } catch (err) {
+      return { error: "Network error" };
+    }
+  };
+
+  // --------------------------
+  // Update User Role
+  // --------------------------
+  const updateUserRole = async (userId, role) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        return { error: "Not authenticated" };
+      }
+
+      const res = await fetch(`${BACKEND_URL}/users/${userId}`, {
+        method: "PATCH",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ role }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        return { error: err.error || "Failed to update user role" };
+      }
+
+      const data = await res.json();
+      return { data };
+    } catch (err) {
+      return { error: "Network error" };
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, createTransaction, processRedemption, getMyEvents, getEventById, updateEvent, addGuest }}>
+    <AuthContext.Provider value={{ user, login, logout, createTransaction, processRedemption, getMyEvents, getEventById, updateEvent, addGuest, awardPoints, getUserById, updateUserRole }}>
       {children}
     </AuthContext.Provider>
   );
