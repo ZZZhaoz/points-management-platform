@@ -38,9 +38,7 @@ export default function ProfilePage() {
     ? `${BACKEND_URL}${profile.avatarUrl}`
     : null;
 
-  // --------------------------
   // Avatar upload handler
-  // --------------------------
   const handleAvatarUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -63,9 +61,8 @@ export default function ProfilePage() {
 
   };
 
-  // --------------------------
+  
   // Save profile edits
-  // --------------------------
   const handleSave = async () => {
     const formData = new FormData();
     formData.append("name", name);
@@ -247,9 +244,26 @@ export default function ProfilePage() {
         )}
 
         <div style={{ marginTop: 20 }}>
-          <LogoutButton />
         </div>
       </div>
+
+      <button
+      onClick={() => window.location.href = "/change-password"}
+      style={{
+        backgroundColor: "#ff9800",
+        color: "white",
+        padding: "10px 20px",
+        borderRadius: 8,
+        border: "none",
+        cursor: "pointer",
+        margin: "20px auto 0 auto",   
+        display: "block",              
+      }}
+    >
+      Change Password
+    </button>
+
+
     </div>
   );
 }
