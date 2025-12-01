@@ -26,24 +26,40 @@ export default function Login() {
     <div>
       <h1>Login</h1>
 
-      <Input
-        label="UTORid"
-        placeholder="Enter your UTORid"
-        value={utorid}
-        onChange={setUtorid}
-        required
-      />
+        <Input
+          label="UTORid"
+          placeholder="Enter your UTORid"
+          value={utorid}
+          onChange={setUtorid}
+          required
+        />
 
-      <Input
-        label="Password"
-        type="password"
-        placeholder="Enter your password"
-        value={password}
-        onChange={setPassword}
-        required
-      />
+        <Input
+          label="Password"
+          type="password"
+          placeholder="Enter your password"
+          value={password}
+          onChange={setPassword}
+          required
+        />
 
       <Button onClick={submit}>Login</Button>
+      
+      <div style={{ marginTop: "16px" }}>
+        <a
+          onClick={() => nav("/forgot-password")}
+          style={{
+            cursor: "pointer",
+            color: "#007bff",
+            textDecoration: "underline",
+          }}
+          onMouseEnter={(e) => (e.target.style.color = "#0056b3")}
+          onMouseLeave={(e) => (e.target.style.color = "#007bff")}
+        >
+          Forgot password?
+        </a>
+      </div>
+
     </div>
   );
 }

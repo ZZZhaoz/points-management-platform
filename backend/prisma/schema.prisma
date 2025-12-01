@@ -43,7 +43,7 @@ model User {
   lastLogin              DateTime?
   activated              Boolean           @default(false) 
   avatarUrl              String?
-
+  
   resetToken             String?
   expiresAt              DateTime?
 
@@ -69,6 +69,9 @@ model Transaction {
   relatedId     Int?
   processed     Boolean       @default(false)
   awarded       Int?
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now()) @updatedAt
 
 
   userId        Int

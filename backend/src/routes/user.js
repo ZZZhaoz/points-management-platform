@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const userControllers = require("../controllers/userControllers");
 const transactionController = require("../controllers/transactionControllers");
+const eventsController = require("../controllers/eventControllers");
 const { authenticateToken } = require("../middleware/auth");
 const { requireRole } = require("../middleware/role");
 const { validateFields, validateQuery } = require("../middleware/validate");
@@ -117,8 +118,10 @@ router.get(
       "type",
       "relatedId",
       "promotionId",
+      "promotionName",
       "amount",
       "operator",
+      "remark",
       "page",
       "limit"
     ],
@@ -129,6 +132,7 @@ router.get(
       type: "string",
       relatedId: "number",
       promotionId: "number",
+      promotionName: "string",
       amount: "number",
       operator: "string",
       page: "number",
@@ -137,6 +141,16 @@ router.get(
   ),
   transactionController.getUserTransactions
 );
+
+router.get("/me/events", authenticateToken, eventsController.getMyEvents);
+
+router.get(
+    '/lookup/:utorid',
+    authenticateToken, 
+    requireRole(["regular", "cashier", "manager", "superuser"]), 
+    userControllers.lookupByUtorid
+);
+
 
 router.all("*", (req, res) => {
   res.set("Allow", "GET, POST, PATCH");

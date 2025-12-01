@@ -1,12 +1,36 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import LogoutButton from "./LogoutButton";
-import Dropdown from "./Dropdown";
 
 export default function NavBar() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const role = localStorage.getItem("role");
 
+  const isAuthPage =
+    location.pathname === "/" ||
+    location.pathname === "/forgot-password" ||
+    location.pathname.startsWith("/reset/");
+
+  if (isAuthPage) return null;
+
+  // Avatar info
+  const utorid = localStorage.getItem("utorid") || "U";
+  const avatarUrl = localStorage.getItem("avatarUrl");
+  const displayLetter = utorid[0].toUpperCase();
+
   return (
-    <nav className="nav-bar">
+    <nav
+      className="nav-bar"
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "20px",
+        padding: "10px 20px",
+        background: "#f7f7f7",
+        borderBottom: "none",
+      }}
+    >
+      {/* Home */}
       <Link to="/dashboard">Home</Link>
 
       {/* Regular User Menu */}
@@ -14,7 +38,10 @@ export default function NavBar() {
         <>
           <Link to="/promotions">Promotions</Link>
           <Link to="/user/qr">My QR</Link>
-
+        
+      {/* REGULAR USER MENU */}
+      {role === "regular" && (
+        <>
           <Dropdown title="Transactions">
             <Dropdown.Item to="/transactions/my">My Transactions</Dropdown.Item>
             <Dropdown.Item to="/transfer">Transfer Points</Dropdown.Item>
@@ -28,7 +55,7 @@ export default function NavBar() {
         </>
       )}
 
-      {/* Cashier Menu */}
+      /* CASHIER MENU */
       {role === "cashier" && (
         <>
           <Dropdown title="Transactions">
@@ -45,8 +72,7 @@ export default function NavBar() {
         </>
       )}
 
-
-      {/* Manager Menu */}
+      /* MANAGER MENU */
       {role === "manager" && (
         <>
           <Dropdown title="Event">
@@ -56,7 +82,7 @@ export default function NavBar() {
         </>
       )}
 
-      {/* Superuser Menu */}
+      /* SUPERUSER MENU */
       {role === "superuser" && (
         <>
           <Dropdown title="Event">
@@ -65,7 +91,41 @@ export default function NavBar() {
           </Dropdown>
         </>
       )}
+
+      /* Avatar = Profile Page */
+      <div
+        onClick={() => navigate("/profile")}
+        style={{
+          width: 40,
+          height: 40,
+          borderRadius: "50%",
+          overflow: "hidden",
+          cursor: "pointer",
+          backgroundColor: "#ddd",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          userSelect: "none",
+          fontWeight: 700,
+        }}
+      >
+        {avatarUrl ? (
+          <img
+            src={`${process.env.REACT_APP_BACKEND_URL}${avatarUrl}`}
+            alt="avatar"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
+          />
+        ) : (
+          displayLetter
+        )}
+      </div>
+
       <LogoutButton />
+
     </nav>
   );
 }

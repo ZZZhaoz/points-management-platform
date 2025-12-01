@@ -42,7 +42,6 @@ class PromotionService {
             const nameFilter = name ? {
                 name: {
                     contains: name,
-                    mode: "insensitive"
                 }
             } : {};
 
@@ -90,7 +89,6 @@ class PromotionService {
             if (name) {
                 where.name = {
                     contains: name,
-                    mode: "insensitive"
                 };
             }
 
@@ -136,7 +134,7 @@ class PromotionService {
             }));
 
         }
-
+       
         return { count, results: formatted };
 
     }

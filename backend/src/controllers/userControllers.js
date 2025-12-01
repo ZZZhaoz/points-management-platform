@@ -111,6 +111,30 @@ async function updateInfo(req, res) {
   }
 }
 
+async function lookupByUtorid(req, res) {
+  try {
+    const utorid = req.params.utorid;
+
+    const user = await userService.getUserByUtorid(utorid);
+
+    if (!user) {
+      return res.status(404).json({ error: "Not Found" });
+    }
+
+    return res.json({
+      id: user.id,
+      utorid: user.utorid,
+      name: user.name,
+      role: user.role,
+      verified: user.verified
+    });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
 
 module.exports = {
     createUser,
@@ -119,5 +143,6 @@ module.exports = {
     updateUser,
     getCurrentUser,
     updatePassword,
-    updateInfo
+    updateInfo,
+    lookupByUtorid,
 };

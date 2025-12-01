@@ -329,7 +329,10 @@ class UserService {
 
 
         const { name, email, birthday, avatar } = body || {};
-        const avatarPath = file ? file.path : undefined;
+        const avatarPath = file
+        ? `/uploads/${file.filename}` 
+        : undefined;
+
 
 
 
@@ -425,6 +428,12 @@ class UserService {
             avatarUrl: updatedUser.avatarUrl, 
         };
         }
+
+    async getUserByUtorid(utorid) {
+        return await prisma.user.findUnique({
+            where: { utorid }
+        });
+    }
 
 
 }
