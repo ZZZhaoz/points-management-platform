@@ -79,7 +79,6 @@ async function getValidAutomaticPromotions(spent, filters = {}, now) {
   if (filters.name) {
     where.name = {
       contains: filters.name,
-      mode: "insensitive"
     };
   }
 

@@ -16,7 +16,7 @@ router.post("/resets", validateFields(['utorid'], ['utorid'],
 
 
 router.post("/resets/:resetToken", 
-        validateFields(['utorid', 'password'], ['utorid', 'password'], { utorid: "string", password: 'string'}), 
+        validateFields(['utorid', 'password'], ['password'], { utorid: "string", password: 'string'}), 
                 authControllers.passwordReset
         );
 

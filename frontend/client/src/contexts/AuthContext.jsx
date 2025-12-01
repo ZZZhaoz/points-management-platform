@@ -53,29 +53,34 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({ utorid, password }),
       });
 
+      const data = await res.json();  
+
       if (!res.ok) {
-        const err = await res.json();
-        return err.error || "Login failed";
+        return data.error || "Login failed";
       }
 
-      const { token } = await res.json();
+      localStorage.setItem("token", data.token);
 
-      localStorage.setItem("token", token);
-
-      // Fetch profile
       const me = await fetch(`${BACKEND_URL}/users/me`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${data.token}` },
       });
 
       const meData = await me.json();
-      setUser(meData);
 
       localStorage.setItem("role", meData.role);
+      localStorage.setItem("utorid", meData.utorid);
+      localStorage.setItem("avatarUrl", meData.avatarUrl || "");
+
+      setUser(meData);  
+
       return null;
+
     } catch (err) {
       return "Network error";
     }
   };
+
+
 
   // --------------------------
   // Logout
