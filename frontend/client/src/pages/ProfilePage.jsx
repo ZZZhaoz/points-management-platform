@@ -21,7 +21,16 @@ export default function ProfilePage() {
 
       const data = await res.json();
       setProfile(data);
-      localStorage.setItem("avatarUrl", data.avatarUrl || "");
+      if (data.avatarUrl) {
+        localStorage.setItem("avatarUrl", data.avatarUrl);
+      } else {
+        localStorage.removeItem("avatarUrl");
+      }
+      const value = localStorage.getItem("avatarUrl");
+      console.log("value:", value);
+      console.log("type:", typeof value);  
+      console.log("value === null:", value === null);  
+      console.log("value === 'null':", value === "null");  
 
       // Initialize editing fields
       setName(data.name || "");
@@ -60,6 +69,8 @@ export default function ProfilePage() {
     }
 
   };
+
+  console.log("avatarUrl:", localStorage.getItem("avatarUrl"));
 
   
   // Save profile edits
