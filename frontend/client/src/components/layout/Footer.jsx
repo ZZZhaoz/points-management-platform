@@ -1,7 +1,13 @@
+import "./Footer.css";
+
 export default function Footer() {
   return (
-    <footer>
-      <p>© 2025 Loyalty Program · CSC309 Project</p>
+    <footer className="footer">
+      <div className="footer-content">
+        <p className="footer-text">
+          © 2025 <span className="footer-emoji">✨</span> LoyaltyHub <span className="footer-emoji">🎉</span> CSC309 Project
+        </p>
+      </div>
     </footer>
   );
 }

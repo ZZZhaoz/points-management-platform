@@ -1,20 +1,24 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Button from "../components/global/Button";
+import "./Dashboard.css";
+
+const typeIcons = {
+  purchase: "🛒",
+  redemption: "🎫",
+  adjustment: "⚙️",
+  transfer: "💸",
+  event: "🎪",
+};
 
 export default function Dashboard() {
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   const [points, setPoints] = useState(null);
   const [recentTx, setRecentTx] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const typeColor = {
-    purchase: "#4caf50",
-    redemption: "#ff9800",
-    adjustment: "#9c27b0",
-    transfer: "#2196f3",
-    event: "#f44336",
-  };
 
   useEffect(() => {
     async function loadDashboard() {
@@ -44,151 +48,154 @@ export default function Dashboard() {
     loadDashboard();
   }, [BACKEND_URL, token]);
 
-  if (loading) return <p>Loading...</p>;
-  if (points === null) return <p>Not logged in.</p>;
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading your dashboard...</p>
+      </div>
+    );
+  }
+
+  if (points === null) {
+    return (
+      <div className="page-container">
+        <div className="empty-state">
+          <div className="empty-state-icon">🔒</div>
+          <div className="empty-state-title">Not logged in</div>
+          <div className="empty-state-text">Please log in to view your dashboard</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ padding: "30px", maxWidth: "900px", margin: "0 auto" }}>
-      <h1 style={{ textAlign: "center" }}>Your Points</h1>
+    <div className="dashboard">
+      <div className="dashboard-header">
+        <h1 className="dashboard-title">Welcome Back! 👋</h1>
+        <p className="dashboard-subtitle">Here's your loyalty program overview</p>
+      </div>
 
-      {/* Points Box */}
-      <div
-        style={{
-          marginTop: "20px",
-          padding: "20px",
-          background: "white",
-          borderRadius: "12px",
-          boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-          textAlign: "center",
-        }}
-      >
-        <p style={{ fontSize: "40px", fontWeight: "bold", margin: 0 }}>
-          {points}
-        </p>
-        <p style={{ margin: 0, fontSize: "18px", color: "#555" }}>points</p>
+      {/* Points Card */}
+      <div className="points-card">
+        <div className="points-label">Your Current Balance</div>
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <span className="points-value">
+            {points.toLocaleString()}
+          </span>
+          <span className="points-emoji">⭐</span>
+        </div>
+        <div style={{ marginTop: "1rem", opacity: 0.9, fontSize: "1.125rem" }}>
+          points available
+        </div>
       </div>
 
       {/* Recent Transactions */}
-      <h2 style={{ marginTop: "40px" }}>Recent Transactions</h2>
-      <p>Your last 5 transactions</p>
-
-      <div style={{ display: "grid", gap: "15px" }}>
-        {recentTx.length === 0 && <p>No recent transactions.</p>}
-
-        {recentTx.map((t) => (
-          <div
-            key={t.id}
-            style={{
-              border: "1px solid #ccc",
-              borderLeft: `8px solid ${typeColor[t.type] || "#000"}`,
-              padding: "15px",
-              borderRadius: "6px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-            }}
-          >
-            {/* Left side */}
-            <div>
-              <h3 style={{ margin: 0 }}>
-                {t.type.toUpperCase()} – ID #{t.id}
-              </h3>
-
-              <p style={{ margin: "6px 0" }}>
-                <strong>Amount:</strong> {t.amount}
-              </p>
-
-              {t.spent != null && (
-                <p style={{ margin: "6px 0" }}>
-                  <strong>Spent:</strong> ${t.spent}
-                </p>
-              )}
-
-              {t.relatedUtorid && (
-                <p style={{ margin: "6px 0" }}>
-                  <strong>Recipient:</strong>{" "}
-                  <span style={{ fontWeight: "bold" }}>{t.relatedUtorid}</span>
-                </p>
-              )}
-
-              {t.promotionNames?.length > 0 && (
-                <p>
-                  <strong>Promotions Used:</strong>{" "}
-                  {t.promotionNames.map((name, idx) => (
-                    <span key={idx} style={{ marginRight: "6px" }}>
-                      {name}
-                    </span>
-                  ))}
-                </p>
-              )}
-
-              <p style={{ margin: "6px 0" }}>
-                <strong>Created By:</strong> {t.createdBy}
-              </p>
-
-              <p style={{ marginTop: "6px", fontSize: "0.9rem", color: "#666" }}>
-                <strong>Time:</strong>{" "}
-                {new Date(t.createdAt).toLocaleString()}
-              </p>
-            </div>
-
-            {/* Right side */}
-            <div
-              style={{
-                textAlign: "right",
-                minWidth: "150px",
-                color: "#555",
-                fontStyle: "italic",
-              }}
-            >
-              {/* Remark */}
-              {t.remark && <div>Remark: {t.remark}</div>}
-
-              {/* Redemption QR button */}
-              {t.type === "redemption" && !t.processed && (
-                <button
-                  onClick={() =>
-                    (window.location.href = `/redeem/qr/${t.id}`)
-                  }
-                  style={{
-                    marginTop: "10px",
-                    padding: "6px 10px",
-                    background: "#007bff",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    fontSize: "0.85rem",
-                  }}
-                >
-                  Open QR Code
-                </button>
-              )}
-
-              {t.type === "redemption" && t.processed && (
-                <span style={{ color: "green", fontWeight: "bold" }}>
-                  ✔ Processed by {t.processedBy?.utorid || "cashier"}
-                </span>
-              )}
-            </div>
+      <div>
+        <div className="section-header">
+          <div>
+            <h2 className="section-title">Recent Transactions</h2>
+            <p className="section-subtitle">Your last 5 transactions</p>
           </div>
-        ))}
-      </div>
+        </div>
 
-      {/* Link to full transactions */}
-      <div style={{ textAlign: "center", marginTop: "25px" }}>
-        <button
-          onClick={() => (window.location.href = "/transactions/my")}
-          style={{
-            padding: "8px 16px",
-            background: "#444",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            fontSize: "1rem",
-          }}
-        >
-          View All Transactions →
-        </button>
+        {recentTx.length === 0 ? (
+          <div className="empty-transactions">
+            <div className="empty-transactions-icon">📭</div>
+            <div className="empty-transactions-text">No transactions yet. Start earning points!</div>
+          </div>
+        ) : (
+          <div className="transactions-grid">
+            {recentTx.map((t) => (
+              <div key={t.id} className={`transaction-card ${t.type}`}>
+                <div className="transaction-header">
+                  <div>
+                    <div className="transaction-type">
+                      {typeIcons[t.type] || "📄"} {t.type}
+                      <span className="transaction-id"> #{t.id}</span>
+                    </div>
+                  </div>
+                  <div className="transaction-amount">
+                    {t.amount > 0 ? "+" : ""}{t.amount} pts
+                  </div>
+                </div>
+
+                <div className="transaction-details">
+                  {t.spent != null && (
+                    <div className="transaction-detail">
+                      <strong>Spent:</strong>
+                      <span>${t.spent}</span>
+                    </div>
+                  )}
+
+                  {t.relatedUtorid && (
+                    <div className="transaction-detail">
+                      <strong>{t.type === "transfer" ? "To:" : "With:"}</strong>
+                      <span style={{ fontWeight: "600" }}>{t.relatedUtorid}</span>
+                    </div>
+                  )}
+
+                  {t.promotionNames?.length > 0 && (
+                    <div className="transaction-detail">
+                      <strong>Promotions:</strong>
+                      <span>
+                        {t.promotionNames.map((name, idx) => (
+                          <span key={idx} className="badge badge-primary" style={{ marginLeft: "0.5rem" }}>
+                            {name}
+                          </span>
+                        ))}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="transaction-detail">
+                    <strong>Created By:</strong>
+                    <span>{t.createdBy}</span>
+                  </div>
+
+                  {t.remark && (
+                    <div className="transaction-detail">
+                      <strong>Note:</strong>
+                      <span style={{ fontStyle: "italic" }}>"{t.remark}"</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="transaction-footer">
+                  <div className="transaction-time">
+                    📅 {new Date(t.createdAt).toLocaleString()}
+                  </div>
+                  <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                    {t.type === "redemption" && !t.processed && (
+                      <Button
+                        size="sm"
+                        onClick={() => navigate(`/redeem/qr/${t.id}`)}
+                        className="btn-primary"
+                      >
+                        📱 View QR
+                      </Button>
+                    )}
+                    {t.type === "redemption" && t.processed && (
+                      <span className="badge badge-success">
+                        ✔ Processed by {t.processedBy?.utorid || "cashier"}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="view-all-button">
+          <Button
+            onClick={() => navigate("/transactions/my")}
+            variant="outline"
+            size="lg"
+          >
+            View All Transactions →
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -1,3 +1,5 @@
+import "./Button.css";
+
 export default function Button({
   children,
   onClick,
@@ -5,13 +7,16 @@ export default function Button({
   variant = "primary",
   disabled = false,
   className = "",
+  size = "md",
 }) {
+  const sizeClass = size !== "md" ? `btn-${size}` : "";
+  
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`btn btn-${variant} ${disabled ? "btn-disabled" : ""} ${className}`}
+      className={`btn btn-${variant} ${sizeClass} ${disabled ? "btn-disabled" : ""} ${className}`.trim()}
     >
       {children}
     </button>

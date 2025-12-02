@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Input from "../components/global/Input";
 import Button from "../components/global/Button";
+import "./auth/AuthPage.css";
 
 export default function ResetPasswordPage() {
   const { token } = useParams();
@@ -13,7 +14,8 @@ export default function ResetPasswordPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  const submit = async () => {
+  const submit = async (e) => {
+    e?.preventDefault();
     setLoading(true);
     setErrorMessage("");
     setSuccessMessage("");
@@ -80,68 +82,76 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Reset Password</h1>
-
-      <Input
-        label="New Password"
-        type="password"
-        placeholder="Enter a new password"
-        value={password}
-        onChange={setPassword}
-        required
-      />
-
-      <Input
-        label="Confirm Password"
-        type="password"
-        placeholder="Confirm your new password"
-        value={confirmPassword}
-        onChange={setConfirmPassword}
-        required
-      />
-
-      {/* Password rules */}
-      <p style={{ marginTop: 10, color: "#666", fontSize: "14px" }}>
-        Password requirements:
-        <br />• 8-20 characters
-        <br />• At least 1 uppercase letter
-        <br />• At least 1 lowercase letter
-        <br />• At least 1 number
-        <br />• At least 1 special character (@$!%*?&)
-      </p>
-
-      <Button onClick={submit} disabled={loading}>
-        {loading ? "Resetting..." : "Reset Password"}
-      </Button>
-
-      {/* Error message */}
-      {errorMessage && (
-        <div
-          style={{
-            marginTop: 12,
-            color: "red",
-            whiteSpace: "pre-line",
-            fontSize: "14px",
-          }}
-        >
-          {errorMessage}
+    <div className="auth-page">
+      <div className="auth-container">
+        <div className="auth-header">
+          <span className="auth-icon">🔐</span>
+          <h1 className="auth-title">Reset Password</h1>
+          <p className="auth-subtitle">Enter your new password below</p>
         </div>
-      )}
 
-      {/* Success message */}
-      {successMessage && (
-        <div
-          style={{
-            marginTop: 12,
-            color: "green",
-            whiteSpace: "pre-line",
-            fontSize: "14px",
-          }}
-        >
-          {successMessage}
-        </div>
-      )}
+        <form className="auth-form" onSubmit={submit}>
+          <Input
+            label="New Password"
+            type="password"
+            placeholder="Enter a new password"
+            value={password}
+            onChange={setPassword}
+            required
+          />
+
+          <Input
+            label="Confirm Password"
+            type="password"
+            placeholder="Confirm your new password"
+            value={confirmPassword}
+            onChange={setConfirmPassword}
+            required
+          />
+
+          {/* Password rules */}
+          <div style={{ 
+            marginTop: "0.5rem", 
+            padding: "1rem",
+            background: "var(--gray-100)",
+            borderRadius: "var(--radius-lg)",
+            fontSize: "0.875rem",
+            color: "var(--text-secondary)"
+          }}>
+            <strong style={{ display: "block", marginBottom: "0.5rem", color: "var(--text-primary)" }}>
+              Password requirements:
+            </strong>
+            <ul style={{ margin: 0, paddingLeft: "1.25rem", lineHeight: "1.8" }}>
+              <li>8-20 characters</li>
+              <li>At least 1 uppercase letter</li>
+              <li>At least 1 lowercase letter</li>
+              <li>At least 1 number</li>
+              <li>At least 1 special character (@$!%*?&)</li>
+            </ul>
+          </div>
+
+          {errorMessage && (
+            <div className="alert alert-error" style={{ marginTop: "1rem", whiteSpace: "pre-line" }}>
+              {errorMessage}
+            </div>
+          )}
+
+          {successMessage && (
+            <div className="alert alert-success" style={{ marginTop: "1rem" }}>
+              {successMessage}
+            </div>
+          )}
+
+          <Button 
+            onClick={submit} 
+            type="submit"
+            disabled={loading}
+            style={{ width: "100%", marginTop: "1rem" }}
+          >
+            {loading ? "Resetting..." : "✨ Reset Password"}
+          </Button>
+        </form>
+      </div>
     </div>
   );
 }

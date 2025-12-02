@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom"; 
+import "./Dropdown.css";
 
 export default function Dropdown({ title, children }) {
   const [open, setOpen] = useState(false);
@@ -10,7 +11,9 @@ export default function Dropdown({ title, children }) {
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
     >
-      <button className="dropdown-btn">{title} ▼</button>
+      <button className="dropdown-btn">
+        {title} <span style={{ fontSize: '0.75rem' }}>▼</span>
+      </button>
 
       {open && (
         <div className="dropdown-menu">

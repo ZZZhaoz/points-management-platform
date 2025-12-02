@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
-import LogoutButton from "../components/global/LogoutButton";
+import { useNavigate } from "react-router-dom";
+import Button from "../components/global/Button";
+import Input from "../components/global/Input";
+import "./ProfilePage.css";
 
 export default function ProfilePage() {
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   const [profile, setProfile] = useState(null);
   const [editing, setEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Editable fields
   const [name, setName] = useState("");
@@ -15,33 +20,54 @@ export default function ProfilePage() {
 
   useEffect(() => {
     const loadProfile = async () => {
-      const res = await fetch(`${BACKEND_URL}/users/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      try {
+        const res = await fetch(`${BACKEND_URL}/users/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-      const data = await res.json();
-      setProfile(data);
-      if (data.avatarUrl) {
-        localStorage.setItem("avatarUrl", data.avatarUrl);
-      } else {
-        localStorage.removeItem("avatarUrl");
+        const data = await res.json();
+        setProfile(data);
+        if (data.avatarUrl) {
+          localStorage.setItem("avatarUrl", data.avatarUrl);
+        } else {
+          localStorage.removeItem("avatarUrl");
+        }
+
+        // Initialize editing fields
+        setName(data.name || "");
+        setEmail(data.email || "");
+        setBirthday(data.birthday || "");
+      } catch (err) {
+        console.error("Failed to load profile:", err);
+      } finally {
+        setLoading(false);
       }
-      const value = localStorage.getItem("avatarUrl");
-      console.log("value:", value);
-      console.log("type:", typeof value);  
-      console.log("value === null:", value === null);  
-      console.log("value === 'null':", value === "null");  
-
-      // Initialize editing fields
-      setName(data.name || "");
-      setEmail(data.email || "");
-      setBirthday(data.birthday || "");
     };
 
     loadProfile();
   }, [BACKEND_URL, token]);
 
-  if (!profile) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="page-container">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading your profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="page-container">
+        <div className="empty-state">
+          <div className="empty-state-icon">😕</div>
+          <div className="empty-state-title">Failed to load profile</div>
+        </div>
+      </div>
+    );
+  }
 
   const avatarUrl = profile.avatarUrl
     ? `${BACKEND_URL}${profile.avatarUrl}`
@@ -98,183 +124,161 @@ export default function ProfilePage() {
     }
   };
 
+  const getRoleBadgeClass = (role) => {
+    return `role-badge ${role}`;
+  };
+
+  const roleIcons = {
+    regular: "👤",
+    cashier: "💰",
+    manager: "👔",
+    superuser: "👑",
+  };
+
   return (
-    <div
-      style={{
-        maxWidth: 600,
-        margin: "40px auto",
-        padding: "30px",
-        background: "white",
-        borderRadius: 12,
-        boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-      }}
-    >
-      <h1 style={{ textAlign: "center", marginBottom: 30 }}>My Profile</h1>
+    <div className="profile-page">
+      <div className="profile-header">
+        <h1 className="profile-title">My Profile 👤</h1>
+      </div>
 
-      {/* Hidden file input for avatar */}
-      <input
-        type="file"
-        id="avatarInput"
-        accept="image/*"
-        style={{ display: "none" }}
-        onChange={handleAvatarUpload}
-      />
+      <div className="profile-card">
+        {/* Hidden file input for avatar */}
+        <input
+          type="file"
+          id="avatarInput"
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={handleAvatarUpload}
+        />
 
-      {/* Avatar – click to upload */}
-      <div
-        style={{
-          textAlign: "center",
-          marginBottom: 30,
-          cursor: "pointer",
-        }}
-        onClick={() => document.getElementById("avatarInput").click()}
-      >
-        {avatarUrl ? (
-          <img
-            src={avatarUrl}
-            alt="avatar"
-            style={{
-              width: 120,
-              height: 120,
-              borderRadius: "50%",
-              objectFit: "cover",
-            }}
-          />
-        ) : (
+        {/* Avatar Section */}
+        <div className="avatar-section">
           <div
-            style={{
-              width: 120,
-              height: 120,
-              borderRadius: "50%",
-              background: "#ddd",
-              fontSize: 40,
-              fontWeight: 700,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              margin: "0 auto",
-            }}
+            className="avatar-wrapper"
+            onClick={() => document.getElementById("avatarInput").click()}
+            title="Click to upload avatar"
           >
-            {profile.utorid[0].toUpperCase()}
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt="avatar"
+                className="avatar-image"
+              />
+            ) : (
+              <div className="avatar-placeholder">
+                {profile.utorid[0].toUpperCase()}
+              </div>
+            )}
           </div>
-        )}
+          <p className="avatar-hint">Click on your avatar to upload a new one</p>
+        </div>
+
+        {/* Info Section */}
+        <div className="profile-info">
+          {!editing ? (
+            <>
+              <div className="profile-field">
+                <span className="profile-field-label">UTORid</span>
+                <span className="profile-field-value">{profile.utorid}</span>
+              </div>
+              
+              <div className="profile-field">
+                <span className="profile-field-label">Name</span>
+                <span className="profile-field-value">{profile.name}</span>
+              </div>
+              
+              <div className="profile-field">
+                <span className="profile-field-label">Email</span>
+                <span className="profile-field-value">{profile.email}</span>
+              </div>
+              
+              <div className="profile-field">
+                <span className="profile-field-label">Birthday</span>
+                <span className="profile-field-value">
+                  {profile.birthday ? new Date(profile.birthday).toLocaleDateString() : "Not set"}
+                </span>
+              </div>
+              
+              <div className="profile-field">
+                <span className="profile-field-label">Role</span>
+                <span className={`${getRoleBadgeClass(profile.role)}`}>
+                  {roleIcons[profile.role] || "👤"} {profile.role}
+                </span>
+              </div>
+              
+              <div className="profile-field">
+                <span className="profile-field-label">Points Balance</span>
+                <span className="profile-field-value" style={{ fontWeight: 700, fontSize: "1.25rem", color: "var(--primary)" }}>
+                  ⭐ {profile.points?.toLocaleString() || 0}
+                </span>
+              </div>
+              
+              <div className="profile-field">
+                <span className="profile-field-label">Member Since</span>
+                <span className="profile-field-value">
+                  {new Date(profile.createdAt).toLocaleDateString()}
+                </span>
+              </div>
+              
+              {profile.lastLogin && (
+                <div className="profile-field">
+                  <span className="profile-field-label">Last Login</span>
+                  <span className="profile-field-value">
+                    {new Date(profile.lastLogin).toLocaleString()}
+                  </span>
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              <Input
+                label="Name"
+                value={name}
+                onChange={setName}
+                placeholder="Enter your name"
+              />
+              
+              <Input
+                label="Email"
+                type="email"
+                value={email}
+                onChange={setEmail}
+                placeholder="Enter your email"
+              />
+              
+              <Input
+                label="Birthday"
+                type="date"
+                value={birthday || ""}
+                onChange={setBirthday}
+              />
+            </>
+          )}
+        </div>
+
+        {/* Actions */}
+        <div className="profile-actions">
+          {!editing ? (
+            <>
+              <Button onClick={() => setEditing(true)} variant="primary">
+                ✏️ Edit Profile
+              </Button>
+              <Button onClick={() => navigate("/change-password")} variant="warning">
+                🔑 Change Password
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button onClick={handleSave} variant="success">
+                💾 Save Changes
+              </Button>
+              <Button onClick={() => setEditing(false)} variant="secondary">
+                ❌ Cancel
+              </Button>
+            </>
+          )}
+        </div>
       </div>
-
-      {/* Info Section */}
-      {!editing ? (
-        <div style={{ fontSize: 18, lineHeight: "1.8" }}>
-          <p><strong>UTORid:</strong> {profile.utorid}</p>
-          <p><strong>Name:</strong> {profile.name}</p>
-          <p><strong>Email:</strong> {profile.email}</p>
-          <p><strong>Birthday:</strong> {profile.birthday || "N/A"}</p>
-          <p><strong>Role:</strong> {profile.role}</p>
-          <p><strong>Points:</strong> {profile.points}</p>
-          <p><strong>Created At:</strong> {new Date(profile.createdAt).toLocaleString()}</p>
-          <p><strong>Last Login:</strong> {new Date(profile.lastLogin).toLocaleString()}</p>
-        </div>
-      ) : (
-        <div style={{ fontSize: 18, lineHeight: "1.8" }}>
-          <label>
-            <strong>Name:</strong><br />
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              style={{ width: "100%", padding: 8, marginBottom: 10 }}
-            />
-          </label>
-
-          <label>
-            <strong>Email:</strong><br />
-            <input
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={{ width: "100%", padding: 8, marginBottom: 10 }}
-            />
-          </label>
-
-          <label>
-            <strong>Birthday:</strong><br />
-            <input
-              type="date"
-              value={birthday || ""}
-              onChange={(e) => setBirthday(e.target.value)}
-              style={{ width: "100%", padding: 8, marginBottom: 10 }}
-            />
-          </label>
-        </div>
-      )}
-
-      {/* Buttons */}
-      <div style={{ marginTop: 30, textAlign: "center" }}>
-        {!editing ? (
-          <button
-            onClick={() => setEditing(true)}
-            style={{
-              backgroundColor: "#1976d2",
-              color: "white",
-              padding: "10px 20px",
-              borderRadius: 8,
-              border: "none",
-              cursor: "pointer",
-              marginRight: 10
-            }}
-          >
-            Edit
-          </button>
-        ) : (
-          <>
-            <button
-              onClick={handleSave}
-              style={{
-                backgroundColor: "#4caf50",
-                color: "white",
-                padding: "10px 20px",
-                borderRadius: 8,
-                border: "none",
-                cursor: "pointer",
-                marginRight: 10
-              }}
-            >
-              Save
-            </button>
-
-            <button
-              onClick={() => setEditing(false)}
-              style={{
-                backgroundColor: "#9e9e9e",
-                color: "white",
-                padding: "10px 20px",
-                borderRadius: 8,
-                border: "none",
-                cursor: "pointer"
-              }}
-            >
-              Cancel
-            </button>
-          </>
-        )}
-
-        <div style={{ marginTop: 20 }}>
-        </div>
-      </div>
-
-      <button
-      onClick={() => window.location.href = "/change-password"}
-      style={{
-        backgroundColor: "#ff9800",
-        color: "white",
-        padding: "10px 20px",
-        borderRadius: 8,
-        border: "none",
-        cursor: "pointer",
-        margin: "20px auto 0 auto",   
-        display: "block",              
-      }}
-    >
-      Change Password
-    </button>
-
-
     </div>
   );
 }
