@@ -10,6 +10,11 @@ import ProtectedRoute from "./components/global/ProtectedRoute";
 import Layout from "./components/layout/Layout";
 import AwardPoints from "./pages/organizer/AwardPoints";
 import UserPromotion from "./pages/superuser/UserPromotion";
+import Transactions from "./pages/cashier/transactions";
+import RedemptionTransaction from "./pages/cashier/RedemptionTransaction";
+import Events from "./pages/organizer/Events";
+import EventDetail from "./pages/organizer/EventDetail";
+import EventEdit from "./pages/organizer/EventEdit";
 
 function App() {
   return (

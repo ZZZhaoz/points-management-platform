@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import LogoutButton from "./LogoutButton";
+import Dropdown from "./Dropdown";
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -38,10 +39,7 @@ export default function NavBar() {
         <>
           <Link to="/promotions">Promotions</Link>
           <Link to="/user/qr">My QR</Link>
-        
-      {/* REGULAR USER MENU */}
-      {role === "regular" && (
-        <>
+          
           <Dropdown title="Transactions">
             <Dropdown.Item to="/transactions/my">My Transactions</Dropdown.Item>
             <Dropdown.Item to="/transfer">Transfer Points</Dropdown.Item>
@@ -55,7 +53,7 @@ export default function NavBar() {
         </>
       )}
 
-      /* CASHIER MENU */
+      {/* CASHIER MENU */}
       {role === "cashier" && (
         <>
           <Dropdown title="Transactions">
@@ -72,7 +70,7 @@ export default function NavBar() {
         </>
       )}
 
-      /* MANAGER MENU */
+      {/* MANAGER MENU */}
       {role === "manager" && (
         <>
           <Dropdown title="Event">
@@ -82,7 +80,7 @@ export default function NavBar() {
         </>
       )}
 
-      /* SUPERUSER MENU */
+      {/* SUPERUSER MENU */}
       {role === "superuser" && (
         <>
           <Dropdown title="Event">
@@ -92,7 +90,7 @@ export default function NavBar() {
         </>
       )}
 
-      /* Avatar = Profile Page */
+      {/* Avatar = Profile Page */}
       <div
         onClick={() => navigate("/profile")}
         style={{
