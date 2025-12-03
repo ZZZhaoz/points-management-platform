@@ -7,7 +7,7 @@ async function validatePromotions(promotionIds, userId) {
   }
 
   if (promotionIds.length !== new Set(promotionIds).size) {
-    return { valid: false, error: `Bad Request` };
+    return { valid: false, error: "Duplicate promotion IDs are not allowed" };
   }
 
   const promotions = await prisma.promotion.findMany({
@@ -18,31 +18,33 @@ async function validatePromotions(promotionIds, userId) {
   const foundIds = new Set(promotions.map(p => p.id));
   for (const id of promotionIds) {
     if (!foundIds.has(id)) {
-      return { valid: false, error: `Bad Request` };
+      return { valid: false, error: `Promotion ID ${id} does not exist` };
     }
   }
 
   const now = new Date();
+
   for (const promo of promotions) {
+
     if (now < promo.startTime || now > promo.endTime) {
-      return { valid: false, error: `Bad Request` };
+      return { valid: false, error: `Promotion '${promo.name}' is expired or not active` };
     }
 
     if (promo.type === "automatic") {
-      return { valid: false, error: `Bad Request` };
+      return { valid: false, error: `Promotion '${promo.name}' is automatic and cannot be manually applied` };
     }
 
     if (promo.type === "onetime") {
       const used = promo.users.some(u => u.id === userId);
       if (used) {
-        return { valid: false, error: `Bad Request` };
+        return { valid: false, error: `Promotion '${promo.name}' has already been used` };
       }
     }
-
   }
 
   return { valid: true, promotions };
 }
+
 
 
 async function checkActivePromotion(promotionId, userRole) {
