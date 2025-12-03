@@ -19,11 +19,14 @@ export default function EventsCreate() {
   // Optional field
   const [capacity, setCapacity] = useState("");
 
+  // Organizer input
+  const [organizerUtorid, setOrganizerUtorid] = useState("");
+
   // Messages
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const handleCreate = (e) => {
+  const handleCreate = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
@@ -51,46 +54,73 @@ export default function EventsCreate() {
       points: Number(points),
     };
 
-    // Optional capacity
     if (capacity.trim() !== "") {
       payload.capacity = Number(capacity);
     }
 
-    fetch(`${BACKEND_URL}/events`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          const msg = await res.text();
-          setError("Failed to create event: " + msg);
-          return;
+    try {
+      // STEP 1 — create event
+      const res = await fetch(`${BACKEND_URL}/events`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const created = await res.json();
+
+      if (!res.ok) {
+        return setError("Failed to create event: " + JSON.stringify(created));
+      }
+
+      const eventId = created.id;
+
+      // STEP 2 — add organizer if input is not empty
+      if (organizerUtorid.trim() !== "") {
+        const orgRes = await fetch(
+          `${BACKEND_URL}/events/${eventId}/organizers`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ utorid: organizerUtorid }),
+          }
+        );
+
+        if (!orgRes.ok) {
+          const msg = await orgRes.text();
+          return setError(
+            `Event created but failed to add organizer: ${msg}`
+          );
         }
+      }
 
-        setSuccess("Event created!");
+      setSuccess("Event created successfully!");
+      // reset inputs
+      setName("");
+      setDescription("");
+      setLocation("");
+      setStartTime("");
+      setEndTime("");
+      setPoints("");
+      setCapacity("");
+      setOrganizerUtorid("");
 
-        // Reset fields
-        setName("");
-        setDescription("");
-        setLocation("");
-        setStartTime("");
-        setEndTime("");
-        setPoints("");
-        setCapacity("");
-      })
-      .catch((err) => setError("Network error: " + err.message));
+    } catch (err) {
+      setError("Network error: " + err.message);
+    }
   };
 
   return (
     <div>
       <h1>Create Event</h1>
 
-      {error && <p>{error}</p>}
-      {success && <p>{success}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {success && <p style={{ color: "green" }}>{success}</p>}
 
       <form onSubmit={handleCreate}>
         {/* Event Name */}
@@ -155,6 +185,15 @@ export default function EventsCreate() {
             type="number"
             value={points}
             onChange={(e) => setPoints(e.target.value)}
+          />
+        </div>
+
+        {/* Organizer */}
+        <div>
+          <label>Organizer UTORID (optional): </label>
+          <input
+            value={organizerUtorid}
+            onChange={(e) => setOrganizerUtorid(e.target.value)}
           />
         </div>
 

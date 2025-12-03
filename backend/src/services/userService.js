@@ -279,7 +279,20 @@ class UserService {
             throw new Error('Not Found');
         }
 
-        return user;
+        const organizerOfEvents = await prisma.event.findFirst({
+            where: {
+                organizers: {
+                    some: { id: userId }
+                }
+            }
+        });
+
+        const isOrganizer = organizerOfEvents !== null;
+
+        return {
+            ...user,
+            isOrganizer   
+        };
     }
 
 

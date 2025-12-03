@@ -12,67 +12,92 @@ const e = require("express");
 class TransactionService {
 
   async createPurchase (req) {
-    const { utorid, type, spent, promotionIds = [], remark = "" } = req.body;
-    const creatorId = req.user.id;
-    const suspiciousCreator = req.user.suspicious;
-    let amount = Math.round(spent / 0.25);
+      const { utorid, type, spent, promotionIds = [], remark = "" } = req.body;
+      const creatorId = req.user.id;
+      const suspiciousCreator = req.user.suspicious;
 
-    const customer = await prisma.user.findUnique({
-      where: { utorid }
-    });
+      if (typeof spent !== "number" || isNaN(spent) || spent <= 0) {
+          throw new Error("Spent amount must be a positive number");
+      }
 
-    if (!customer) {
-      throw new Error("Customer not found");
-    }
+      if (type !== "purchase") {
+          throw new Error("Transaction type must be 'purchase'");
+      }
 
-    const { valid, promotions, error } = await validatePromotions(promotionIds, customer.id);
-    if (!valid) {
-      throw new Error(error || "Invalid promotions");
-    }
-    amount += applyPromotions(spent, promotions);
+      let amount = Math.round(spent / 0.25);
 
-    const validAutomaticPromotions = await getValidAutomaticPromotions(spent);
-    amount += applyPromotions(spent, validAutomaticPromotions);
-
-    const earnedAmount = suspiciousCreator ? 0 : amount;
-
-    if (!suspiciousCreator) {
-      await prisma.user.update({
-        where: { utorid },
-        data: { points: { increment: amount } }
+      const customer = await prisma.user.findUnique({
+          where: { utorid }
       });
-    }
-    const transactionData = {
-      userId: customer.id,
-      type,
-      spent,
-      amount,
-      remark,
-      createdById: creatorId,
-      suspicious: suspiciousCreator,
-      promotionIds: promotionIds.length > 0 ? {
-        connect: promotionIds.map(id => ({ id }))  
-      } : undefined
-    };
 
-    const transaction = await prisma.transaction.create({ data: transactionData });
+      if (!customer) {
+          throw new Error("Customer not found");
+      }
 
-    await markPromotionsAsUsed(customer.id, promotionIds);
+      const { valid, promotions, error } = await validatePromotions(promotionIds, customer.id);
+      if (!valid) {
+          throw new Error(error || "Selected promotions are invalid");
+      }
 
-    return {
-      id: transaction.id,
-      utorid,
-      type,
-      spent,
-      earned: earnedAmount,
-      remark,
-      promotionIds,
-      createdBy: req.user.utorid
-    };
+      amount += applyPromotions(spent, promotions);
+
+      const validAutomaticPromotions = await getValidAutomaticPromotions(spent);
+      amount += applyPromotions(spent, validAutomaticPromotions);
+
+      const earnedAmount = suspiciousCreator ? 0 : amount;
+
+      if (!suspiciousCreator) {
+          await prisma.user.update({
+              where: { utorid },
+              data: { points: { increment: amount } }
+          });
+      }
+
+      const transactionData = {
+          userId: customer.id,
+          type,
+          spent,
+          amount,
+          remark,
+          createdById: creatorId,
+          suspicious: suspiciousCreator,
+          promotionIds: promotionIds.length > 0 
+              ? { connect: promotionIds.map(id => ({ id })) }
+              : undefined
+      };
+
+      const transaction = await prisma.transaction.create({ data: transactionData });
+
+      await markPromotionsAsUsed(customer.id, promotionIds);
+
+      return {
+          id: transaction.id,
+          utorid,
+          type,
+          spent,
+          earned: earnedAmount,
+          remark,
+          promotionIds,
+          createdBy: req.user.utorid,
+          createdAt: transaction.createdAt,
+      };
   }
+
 
   async createAdjustment (req) {
     const { utorid, type, amount, relatedId, promotionIds = [], remark = "" } = req.body;
+
+    if (type !== "adjustment") {
+      throw new Error("Transaction type must be 'adjustment'");
+    }
+
+    if (amount == null || isNaN(amount)) {
+      throw new Error("Adjustment amount must be a valid number");
+    }
+
+    if (amount === 0) {
+      throw new Error("Adjustment amount cannot be zero");
+    }
 
     const customer = await prisma.user.findUnique({
       where: { utorid }
@@ -88,14 +113,18 @@ class TransactionService {
     });
 
     if (!relatedTx) {
-      throw new Error("Not Found");
+      throw new Error("Related transaction not found");
+    }
+
+    if (relatedTx.userId !== customer.id) {
+      throw new Error("Adjustment must be made on the same customer as the related transaction");
     }
 
     await prisma.user.update({
       where: { utorid },
       data: { points: { increment: amount } }
     });
-      
+
     const transactionData = {
       userId: customer.id,
       type,
@@ -103,9 +132,9 @@ class TransactionService {
       relatedId,
       remark,
       createdById: req.user.id,
-      promotionIds: promotionIds.length > 0 ? {
-        connect: promotionIds.map(id => ({ id }))
-      } : undefined
+      promotionIds: promotionIds.length > 0
+        ? { connect: promotionIds.map(id => ({ id })) }
+        : undefined
     };
 
     const transaction = await prisma.transaction.create({ data: transactionData });
@@ -122,9 +151,11 @@ class TransactionService {
       relatedId,
       remark,
       promotionIds,
-      createdBy: req.user.utorid
+      createdBy: req.user.utorid,
+      createdAt: transaction.createdAt
     };
-  }
+}
+
 
   async getAllTransactions(params) {
     const { name, createdBy, suspicious, promotionId, type, relatedId, amount, operator, page, limit } = params;
@@ -434,67 +465,69 @@ class TransactionService {
   }
 
   async processRedemption(transactionId, processorId) {
-    const transaction = await prisma.transaction.findUnique({
-      where: { id: transactionId },
-      include: {
-        createdBy: { select: { utorid: true } },
-        user: { select: { utorid: true, id: true, points: true } },
-      },
-    });
-
-    if (!transaction) {
-      throw new Error("Not Found");
-    }
-
-    if (transaction.type !== "redemption") {
-      throw new Error("Bad Request");
-    }
-
-    if (transaction.processed) {
-      throw new Error("Bad Request");
-    }
-
-    const amount = transaction.amount;
-    const user = transaction.user;
-
-    if (user.points < amount) {
-      throw new Error("Bad Request");
-    }
-
-    const cashier = await prisma.user.findUnique({
-      where: { id: processorId },
-      select: { utorid: true },
-    });
-
-    if (!cashier) {
-      throw new Error("Bad Request");
-    }
-
-    await prisma.$transaction([
-    prisma.user.update({
-      where: { id: user.id },
-      data: { points: { decrement: amount } },
-    }),
-
-    prisma.transaction.update({
-        where: { id: transaction.id },
-        data: {
-          processedById: processorId,
-          processed: true,
+      const transaction = await prisma.transaction.findUnique({
+        where: { id: transactionId },
+        include: {
+          createdBy: { select: { utorid: true } },
+          user: { select: { utorid: true, id: true, points: true } },
         },
-      }),
-    ]);
+      });
 
-    return {
-      id: transaction.id,
-      utorid: user.utorid,
-      type: transaction.type,
-      processedBy: cashier.utorid,
-      redeemed: amount,
-      remark: transaction.remark,
-      createdBy: transaction.createdBy.utorid
-    };
+      if (!transaction) {
+        throw new Error("Transaction not found");
+      }
+
+      if (transaction.type !== "redemption") {
+        throw new Error("This transaction is not a redemption request");
+      }
+
+      if (transaction.processed) {
+        throw new Error("This redemption request has already been processed");
+      }
+
+      const amount = transaction.amount;
+      const user = transaction.user;
+
+      if (user.points < amount) {
+        throw new Error("User does not have enough points for redemption");
+      }
+
+      const cashier = await prisma.user.findUnique({
+        where: { id: processorId },
+        select: { utorid: true },
+      });
+
+      if (!cashier) {
+        throw new Error("Processor (cashier) does not exist");
+      }
+
+      await prisma.$transaction([
+          prisma.user.update({
+            where: { id: user.id },
+            data: { points: { decrement: amount } },
+          }),
+
+          prisma.transaction.update({
+            where: { id: transaction.id },
+            data: {
+              processedById: processorId,
+              processed: true,
+            },
+          }),
+      ]);
+
+      return {
+        id: transaction.id,
+        utorid: user.utorid,
+        type: transaction.type,
+        processedBy: cashier.utorid,
+        redeemed: amount,
+        remark: transaction.remark,
+        createdBy: transaction.createdBy.utorid,
+        createdAt: transaction.createdAt
+      };
   }
+
 }
 
 module.exports = new TransactionService();

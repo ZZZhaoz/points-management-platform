@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
+import { useEvents } from "../../contexts/EventContext";
 import { Card } from "../../components/global/Card";
 import Button from "../../components/global/Button";
 import Input from "../../components/global/Input";
@@ -8,7 +8,7 @@ import Input from "../../components/global/Input";
 export default function AwardPoints() {
   const { eventId } = useParams();
   const navigate = useNavigate();
-  const { getEventById, awardPoints } = useAuth();
+  const { awardPoints, getEventById } = useEvents();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

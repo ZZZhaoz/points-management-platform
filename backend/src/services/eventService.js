@@ -292,13 +292,12 @@ class EventService {
         });
 
         if (!event) {
-            throw new Error('Not Found');
+            throw new Error("Event not found");
         }
 
-        
         const isOrganizer = event.organizers.some(org => org.id === userId);
-        if (!isOrganizer && userRole !== 'manager' && userRole !== 'superuser') {
-            throw new Error('Forbidden');
+        if (!isOrganizer && userRole !== "manager" && userRole !== "superuser") {
+            throw new Error("You do not have permission to edit this event");
         }
 
         const data = {};
@@ -308,99 +307,108 @@ class EventService {
 
         if (updates.name !== undefined) {
             if (originalStartTime < now) {
-                throw new Error("Bad Request");
+                throw new Error("Cannot edit event name after event has started");
             }
+
             const existingEvent = await prisma.event.findUnique({
                 where: { name: updates.name },
             });
             if (existingEvent && existingEvent.id !== eventId) {
-                throw new Error('Conflict');
+                throw new Error("Another event with this name already exists");
             }
+
             data.name = updates.name;
         }
 
         if (updates.description !== undefined) {
             if (originalStartTime < now) {
-                throw new Error("Bad Request");
+                throw new Error("Cannot edit event description after event has started");
             }
             data.description = updates.description;
         }
 
         if (updates.location !== undefined) {
             if (originalStartTime < now) {
-                throw new Error("Bad Request");
+                throw new Error("Cannot edit event location after event has started");
             }
             data.location = updates.location;
         }
 
         if (updates.startTime !== undefined) {
             const startTime = new Date(updates.startTime);
-            if (startTime < now || originalStartTime < now) {
-                throw new Error("Bad Request");
+
+            if (startTime < now) {
+                throw new Error("Start time cannot be in the past");
+            }
+            if (originalStartTime < now) {
+                throw new Error("Cannot update start time after event has started");
             }
             if (updates.endTime === undefined && startTime >= new Date(event.endTime)) {
-                throw new Error("Bad Request");
+                throw new Error("Start time must be earlier than end time");
             }
+
             data.startTime = startTime;
         }
 
         if (updates.endTime !== undefined) {
             const endTime = new Date(updates.endTime);
             const startTime = updates.startTime ? new Date(updates.startTime) : originalStartTime;
-            if (endTime < now || originalEndTime < now) {
-                throw new Error("Bad Request");
+
+            if (endTime < now) {
+                throw new Error("End time cannot be in the past");
+            }
+            if (originalEndTime < now) {
+                throw new Error("Cannot update end time after event has ended");
             }
             if (endTime <= startTime) {
-                throw new Error("Bad Request");
+                throw new Error("End time must be later than start time");
             }
+
             data.endTime = endTime;
         }
 
-        if (updates.capacity !== undefined && updates.capacity !== null && updates.capacity !== 'null' ) {
+        if (updates.capacity !== undefined && updates.capacity !== null && updates.capacity !== "null") {
             if (originalStartTime < now) {
-                throw new Error("Bad Request");
+                throw new Error("Cannot change event capacity after event has started");
             }
-            
 
-                
-            const newCapacity = typeof updates.capacity === 'number' 
-                ? updates.capacity 
-                : parseInt(updates.capacity, 10);
+            const newCapacity =
+                typeof updates.capacity === "number"
+                    ? updates.capacity
+                    : parseInt(updates.capacity, 10);
+
             if (isNaN(newCapacity) || newCapacity <= 0) {
-                throw new Error("Bad Request");
+                throw new Error("Capacity must be a positive number");
             }
+
             if (event.numGuests > newCapacity) {
-                throw new Error("Bad Request");
+                throw new Error("New capacity cannot be smaller than current number of guests");
             }
+
             data.capacity = newCapacity;
-            
         }
 
-        
-        if (userRole === 'manager' || userRole === 'superuser') {
+        if (userRole === "manager" || userRole === "superuser") {
             if (updates.points !== undefined) {
                 const newTotalPoints = parseInt(updates.points, 10);
-                if (newTotalPoints <= 0) {
-                    throw new Error("Bad Request");
+                if (isNaN(newTotalPoints) || newTotalPoints <= 0) {
+                    throw new Error("Points must be a positive number");
                 }
-                
                 const newRemain = newTotalPoints - event.pointsAwarded;
                 if (newRemain < 0) {
-                    throw new Error("Bad Request");
+                    throw new Error("Total points cannot be less than points already awarded");
                 }
                 data.pointsRemain = newRemain;
             }
 
             if (updates.published !== undefined) {
-                
-                if (typeof updates.published !== 'boolean') {
-                    throw new Error("Bad Request");
+                if (typeof updates.published !== "boolean") {
+                    throw new Error("Published must be a boolean");
                 }
                 data.published = updates.published;
             }
-        }
-        else {
-            throw new Error('Forbidden');
+        } else {
+            throw new Error("Only managers or superusers may update points or publication status");
         }
 
         const updated = await prisma.event.update({
@@ -414,31 +422,14 @@ class EventService {
             location: updated.location,
         };
 
-        
-        if (updates.name !== undefined) {
-            response.name = updated.name;
-        }
-        if (updates.description !== undefined) {
-            response.description = updated.description;
-        }
-        if (updates.location !== undefined) {
-            response.location = updated.location;
-        }
-        if (updates.startTime !== undefined) {
-            response.startTime = updated.startTime;
-        }
-        if (updates.endTime !== undefined) {
-            response.endTime = updated.endTime;
-        }
-        if (updates.capacity !== undefined) {
-            response.capacity = updated.capacity;
-        }
-        if (updates.points !== undefined && (userRole === 'manager' || userRole === 'superuser')) {
-            response.pointsRemain = updated.pointsRemain;
-        }
-        if (updates.published !== undefined && (userRole === 'manager' || userRole === 'superuser')) {
-            response.published = updated.published;
-        }
+        if (updates.name !== undefined) response.name = updated.name;
+        if (updates.description !== undefined) response.description = updated.description;
+        if (updates.location !== undefined) response.location = updated.location;
+        if (updates.startTime !== undefined) response.startTime = updated.startTime;
+        if (updates.endTime !== undefined) response.endTime = updated.endTime;
+        if (updates.capacity !== undefined) response.capacity = updated.capacity;
+        if (updates.points !== undefined) response.pointsRemain = updated.pointsRemain;
+        if (updates.published !== undefined) response.published = updated.published;
 
         return response;
     }
@@ -559,22 +550,22 @@ class EventService {
         });
 
         if (!event) {
-            throw new Error('Not Found');
+            throw new Error("Event not found");
         }
 
-        
         const isOrganizer = event.organizers.some(org => org.id === userId);
+
         if (isOrganizer && !event.published) {
-            throw new Error('Not Found');
+            throw new Error("Event is not visible to organizers yet (not published)");
         }
 
         const now = new Date();
         if (event.endTime < now) {
-            throw new Error("Gone");
+            throw new Error("Event has already ended");
         }
 
         if (event.capacity !== null && event.numGuests >= event.capacity) {
-            throw new Error("Gone");
+            throw new Error("Event is full");
         }
 
         const user = await prisma.user.findUnique({
@@ -582,17 +573,15 @@ class EventService {
         });
 
         if (!user) {
-            throw new Error('Not Found');
+            throw new Error("User not found");
         }
 
-        
         if (event.organizers.some(org => org.id === user.id)) {
-            throw new Error("Bad Request");
+            throw new Error("User is already an organizer — cannot also be a guest");
         }
 
-        
         if (event.guests.some(guest => guest.id === user.id)) {
-            throw new Error("Bad Request");
+            throw new Error("User is already a guest of this event");
         }
 
         const updated = await prisma.event.update({
@@ -617,6 +606,7 @@ class EventService {
             numGuests: updated.numGuests,
         };
     }
+
 
     async removeGuest(eventId, userId) {
         const event = await prisma.event.findUnique({
@@ -645,7 +635,7 @@ class EventService {
         });
     }
 
-    async addGuestMe(eventId, userId) {
+    async addGuestMe(eventId, utorid) {
         const event = await prisma.event.findUnique({
             where: { id: eventId },
             include: {
@@ -671,28 +661,33 @@ class EventService {
             throw new Error("Gone");
         }
 
-        
-        if (event.organizers.some(org => org.id === userId)) {
-            throw new Error("Bad Request");
-        }
-
-        
-        if (event.guests.some(guest => guest.id === userId)) {
-            throw new Error("Bad Request");
-        }
-
         const user = await prisma.user.findUnique({
-            where: { id: userId },
+            where: { utorid },
         });
+
+        if (!user) {
+            throw new Error("Not Found");
+        }
+
+        if (event.organizers.some(org => org.id === user.id)) {
+            throw new Error("Bad Request");
+        }
+
+        if (event.guests.some(guest => guest.id === user.id)) {
+            throw new Error("Bad Request");
+        }
 
         const updated = await prisma.event.update({
             where: { id: eventId },
             data: {
                 guests: {
-                    connect: { id: userId },
+                    connect: { id: user.id },
                 },
                 numGuests: { increment: 1 },
             },
+            include: {
+                guests: true,
+            }
         });
 
         return {
@@ -741,8 +736,9 @@ class EventService {
     }
 
     async createEventTransaction(eventId, { type, utorid, amount, remark }, userRole, userId) {
+
         if (type !== 'event') {
-            throw new Error("Bad Request");
+            throw new Error("Type must be 'event'");
         }
 
         const event = await prisma.event.findUnique({
@@ -754,40 +750,36 @@ class EventService {
         });
 
         if (!event) {
-            throw new Error('Not Found');
+            throw new Error("Event not found");
         }
 
-        
         const isOrganizer = event.organizers.some(org => org.id === userId);
         if (!isOrganizer && userRole !== 'manager' && userRole !== 'superuser') {
-            throw new Error('Forbidden');
+            throw new Error("You do not have permission to award points for this event");
         }
 
         const points = parseInt(amount, 10);
-        if (points <= 0) {
-            throw new Error("Bad Request");
+        if (isNaN(points) || points <= 0) {
+            throw new Error("Awarded points must be a positive number");
         }
 
         if (event.pointsRemain < points) {
-            throw new Error("Bad Request");
+            throw new Error("Not enough remaining points in this event");
         }
 
         if (utorid) {
-            
             const user = await prisma.user.findUnique({
                 where: { utorid },
             });
 
             if (!user) {
-                throw new Error('Not Found');
+                throw new Error("User not found");
             }
 
-            
             if (!event.guests.some(guest => guest.id === user.id)) {
-                throw new Error("Bad Request");
+                throw new Error("This user is not a guest of the event");
             }
 
-            
             const transaction = await prisma.transaction.create({
                 data: {
                     type: 'event',
@@ -799,7 +791,6 @@ class EventService {
                 },
             });
 
-            
             await prisma.user.update({
                 where: { id: user.id },
                 data: {
@@ -807,7 +798,6 @@ class EventService {
                 },
             });
 
-            
             await prisma.event.update({
                 where: { id: eventId },
                 data: {
@@ -829,67 +819,64 @@ class EventService {
                 remark: remark || '',
                 createdBy: creator.utorid,
             };
-        } else {
-            
-            if (event.guests.length === 0) {
-                throw new Error("Bad Request");
-            }
+        }
 
-            const totalPoints = points * event.guests.length;
-            if (event.pointsRemain < totalPoints) {
-                throw new Error("Bad Request");
-            }
+        if (event.guests.length === 0) {
+            throw new Error("Cannot award points: no guests have RSVPed");
+        }
 
-            const creator = await prisma.user.findUnique({
-                where: { id: userId },
-            });
+        const totalPoints = points * event.guests.length;
+        if (event.pointsRemain < totalPoints) {
+            throw new Error("Not enough remaining points to award all guests");
+        }
 
-            const transactions = [];
+        const creator = await prisma.user.findUnique({
+            where: { id: userId },
+        });
 
-            
-            for (const guest of event.guests) {
-                const transaction = await prisma.transaction.create({
-                    data: {
-                        type: 'event',
-                        amount: points,
-                        remark: remark || '',
-                        userId: guest.id,
-                        createdById: userId,
-                        relatedId: eventId,
-                    },
-                });
+        const transactions = [];
 
-                
-                await prisma.user.update({
-                    where: { id: guest.id },
-                    data: {
-                        points: { increment: points },
-                    },
-                });
-
-                transactions.push({
-                    id: transaction.id,
-                    recipient: guest.utorid,
-                    awarded: points,
-                    type: 'event',
-                    relatedId: eventId,
-                    remark: remark || '',
-                    createdBy: creator.utorid,
-                });
-            }
-
-            
-            await prisma.event.update({
-                where: { id: eventId },
+        for (const guest of event.guests) {
+            const transaction = await prisma.transaction.create({
                 data: {
-                    pointsRemain: { decrement: totalPoints },
-                    pointsAwarded: { increment: totalPoints },
+                    type: 'event',
+                    amount: points,
+                    remark: remark || '',
+                    userId: guest.id,
+                    createdById: userId,
+                    relatedId: eventId,
                 },
             });
 
-            return transactions;
+            await prisma.user.update({
+                where: { id: guest.id },
+                data: {
+                    points: { increment: points },
+                },
+            });
+
+            transactions.push({
+                id: transaction.id,
+                recipient: guest.utorid,
+                awarded: points,
+                type: 'event',
+                relatedId: eventId,
+                remark: remark || '',
+                createdBy: creator.utorid,
+            });
         }
+
+        await prisma.event.update({
+            where: { id: eventId },
+            data: {
+                pointsRemain: { decrement: totalPoints },
+                pointsAwarded: { increment: totalPoints },
+            },
+        });
+
+        return transactions;
     }
+
 
     async listOrganizedEvent(userId, userRole) {
         const where = {
@@ -957,6 +944,28 @@ class EventService {
             }
         });
     }
+
+    async getEventsOrganizedBy(userId) {
+        const events = await prisma.event.findMany({
+            where: {
+                organizers: {
+                    some: { id: userId }
+                }
+            },
+            select: {
+                id: true,
+                name: true,
+                location: true,
+                startTime: true,
+                endTime: true,
+                published: true,
+                numGuests: true
+            }
+        });
+
+        return events;
+    }
+
 }
 
 module.exports = new EventService();

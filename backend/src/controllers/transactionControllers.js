@@ -15,53 +15,86 @@ async function createTransaction(req, res) {
 
   try {
     if (type && !VALID_TRANSACTION_TYPES.includes(type)) {
-      return res.status(400).json({ error: `Bad Request` });
+      return res.status(400).json({ error: "Invalid transaction type" });
     }
 
     if (type === "purchase") {
       const { spent } = req.body;
+
       if (spent == null || spent <= 0) {
-        return res.status(400).json({ error: `Bad Request` });
+        return res.status(400).json({ error: "Spent amount must be a positive number" });
       }
+
       const transaction = await transactionService.createPurchase(req);
       return res.status(201).json(transaction);
     }
 
     if (type === "adjustment") {
       const { amount, relatedId } = req.body;
+
       if (amount == null || relatedId == null) {
-        return res.status(400).json({ error: `Bad Request` });
+        return res.status(400).json({ error: "Amount and relatedId are required" });
       }
-      
+
       const role = req.user.role;
       if (!["manager", "superuser"].includes(role)) {
-        return res.status(403).json({ error: `Forbidden` });
+        return res.status(403).json({ error: "Only managers or superusers can create adjustments" });
       }
 
       const transaction = await transactionService.createAdjustment(req);
       return res.status(201).json(transaction);
     }
 
-    return res.status(400).json({ error: `Bad Request` });
+    return res.status(400).json({ error: "Transaction type is required" });
 
     } catch (err) {
-      console.error(err);
-      if (err.message === "Not Found") {
-        return res.status(404).json({ error: "Not Found" });
+      const msg = err.message;
+
+      if ([
+        "Customer not found",
+        "Transaction not found",
+        "Promotion not found",
+        "Related transaction not found",
+      ].includes(msg)) {
+        return res.status(404).json({ error: msg });
       }
 
-      if (err.message === "Customer not found") {
-        return res.status(404).json({ error: "Not Found" });
+      const badRequestPatterns = [
+        "Spent amount must be a positive number",
+        "Transaction type must be 'purchase'",
+        "Selected promotions are invalid",
+        "Invalid promotions",
+        "This transaction type is not allowed",
+        "Amount must be a positive number",
+        "Invalid promotion selection",
+        "Invalid transaction type",
+        "Transaction type must be 'adjustment'",
+        "Adjustment amount must be a valid number",
+        "Adjustment amount cannot be zero",
+        "Adjustment must be made on the same customer as the related transaction",
+
+        "Duplicate promotion IDs are not allowed",
+        "Promotion ID",
+        "Promotion '",   
+      ];
+
+      if (badRequestPatterns.some(prefix => msg.startsWith(prefix))) {
+        return res.status(400).json({ error: msg });
       }
 
-      if (err.message === "Invalid promotions" || err.message === "Bad Request") {
-        return res.status(400).json({ error: "Bad Request" });
+      if ([
+        "Only managers or superusers can create adjustments",
+        "You do not have permission",
+      ].includes(msg)) {
+        return res.status(403).json({ error: msg });
       }
 
-      return res.status(500).json({ error: `Internal server error` });
+      console.error("UNHANDLED ERROR:", err);
+      return res.status(500).json({ error: "Internal server error" });
     }
-}
 
+
+}
 
 async function getTransactions(req, res) {
   try {
@@ -295,33 +328,41 @@ async function processRedemption(req, res) {
     const transactionId = parseInt(req.params.transactionId, 10);
     const { processed } = req.body;
 
+    // --- Validate input (400) ---
     if (isNaN(transactionId)) {
-      return res.status(400).json({ error: `Bad Request` });
+      return res.status(400).json({ error: "Invalid transaction ID" });
     }
 
     if (processed !== true) {
-      return res.status(400).json({ error: `Bad Request` });
+      return res.status(400).json({ error: "Processed flag must be true" });
     }
 
-    const updatedTransaction = await transactionService.processRedemption(
-      transactionId, 
+    const result = await transactionService.processRedemption(
+      transactionId,
       req.user.id
     );
 
-    return res.status(200).json(updatedTransaction);
+    return res.status(200).json(result);
+
   } catch (err) {
-    if (err.message === "Not Found") {
-      return res.status(404).json({ error: `Not Found` });
+    const msg = err.message;
+
+    if (msg === "Transaction not found") {
+      return res.status(404).json({ error: msg });
     }
 
-    if (err.message === "Bad Request") {
-      return res.status(400).json({ error: `Bad Request` });
+    if ([
+      "This transaction is not a redemption request",
+      "This redemption request has already been processed",
+      "User does not have enough points for redemption",
+      "Processor (cashier) does not exist",
+    ].includes(msg)) {
+      return res.status(400).json({ error: msg });
     }
 
     console.error(err);
-    return res.status(500).json({ error: `Internal server error` });
+    return res.status(500).json({ error: "Internal server error" });
   }
-
 }
 
 

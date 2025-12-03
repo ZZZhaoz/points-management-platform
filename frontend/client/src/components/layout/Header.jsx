@@ -1,10 +1,11 @@
 import { useLocation } from "react-router-dom";
 import NavBar from "../global/NavBar";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function Header() {
   const location = useLocation();
+  const { viewRole } = useAuth();  
 
-  // auth pages: hide navbar entirely
   const isAuthPage =
     location.pathname === "/" ||
     location.pathname === "/forgot-password" ||
@@ -23,7 +24,7 @@ export default function Header() {
     >
       <h2 style={{ margin: 0 }}>Loyalty Program</h2>
 
-      {!isAuthPage && <NavBar showOnlyLinks={true} />}
+      {!isAuthPage && <NavBar key={viewRole} />}   
     </header>
   );
 }

@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
+import { useEvents } from "../../contexts/EventContext";
 import { Card } from "../../components/global/Card";
 import Button from "../../components/global/Button";
 
 export default function EventDetail() {
     const { eventId } = useParams();
     const navigate = useNavigate();
-    const { getEventById } = useAuth();
+    const { getEventById } = useEvents();
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    
+
     // const [isEditing, setIsEditing] = useState(false);
     // const [saving, setSaving] = useState(false);
 
@@ -83,6 +85,10 @@ export default function EventDetail() {
         );
     }
 
+    if (!event) return null;
+
+    const hasStarted = new Date(event.startTime) < new Date();
+
     return (
         <div>
             <div style={{ marginBottom: "1rem" }}>
@@ -100,7 +106,19 @@ export default function EventDetail() {
                         <Button onClick={() => navigate(`/organizer/events/${eventId}/award-points`)} variant="secondary">
                             Award Points
                         </Button>
-                        <Button onClick={() => navigate(`/organizer/events/${eventId}/edit`)}>Edit</Button>
+                        <Button
+                            onClick={() => !hasStarted && navigate(`/organizer/events/${eventId}/edit`)}
+                            disabled={hasStarted}
+                            title={hasStarted ? "Event has started - editing disabled" : ""}
+                            variant={hasStarted ? "disabled" : "primary"}
+                            style={{
+                                opacity: hasStarted ? 0.5 : 1,
+                                cursor: hasStarted ? "not-allowed" : "pointer"
+                            }}
+                        >
+                            Edit
+                        </Button>
+
                     </div>
                 </div>
 
