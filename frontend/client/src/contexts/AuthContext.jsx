@@ -3,44 +3,65 @@ import { createContext, useContext, useEffect, useState } from "react";
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
+  const BACKEND_URL =
+    process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
 
   const [user, setUser] = useState(null);
+  
+
+  const [viewRole, setViewRole] = useState(
+    localStorage.getItem("viewRole") || null
+  );
 
   // --------------------------
   // Load user after refresh
   // --------------------------
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setUser(null);
-      localStorage.removeItem("role");
-      return;
-    }
+ useEffect(() => {
+  const token = localStorage.getItem("token");
 
-    fetch(`${BACKEND_URL}/users/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("role");
-          setUser(null);
-          return;
-        }
+  if (!token) {
+    setUser(null);
+    setViewRole(null);
+    localStorage.removeItem("role");
+    return;
+  }
 
-        const data = await res.json();
-        setUser(data);
-
-        // store role for ProtectedRoute
-        localStorage.setItem("role", data.role);
-      })
-      .catch(() => {
+  fetch(`${BACKEND_URL}/users/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+    .then(async (res) => {
+      if (!res.ok) {
         localStorage.removeItem("token");
         localStorage.removeItem("role");
+        localStorage.removeItem("viewRole");
         setUser(null);
-      });
-  }, [BACKEND_URL]);
+        setViewRole(null);
+        return;
+      }
+
+      const data = await res.json();
+      setUser(data);
+
+      localStorage.setItem("role", data.role);
+
+      if (viewRole === null) {
+        const savedRole = localStorage.getItem("viewRole");
+        if (savedRole) {
+          setViewRole(savedRole);
+        } else {
+          localStorage.setItem("viewRole", data.role);
+          setViewRole(data.role);
+        }
+      }
+    })
+    .catch(() => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      localStorage.removeItem("viewRole");
+      setUser(null);
+      setViewRole(null);
+    });
+}, [BACKEND_URL]); 
 
   // --------------------------
   // Login
@@ -53,7 +74,7 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({ utorid, password }),
       });
 
-      const data = await res.json();  
+      const data = await res.json();
 
       if (!res.ok) {
         return data.error || "Login failed";
@@ -73,16 +94,16 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("avatarUrl", meData.avatarUrl || "");
       localStorage.setItem("isOrganizer", meData.isOrganizer ? "true" : "false");
 
-      setUser(meData);  
+      setUser(meData);
+
+      localStorage.setItem("viewRole", meData.role);
+      setViewRole(meData.role);
 
       return null;
-
     } catch (err) {
       return "Network error";
     }
   };
-
-
 
   // --------------------------
   // Logout
@@ -90,24 +111,29 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
+    localStorage.removeItem("viewRole");
     setUser(null);
+    setViewRole(null);
   };
 
+  // --------------------------
+  // Change Interface Role (Switch View)
+  // --------------------------
+const changeViewRole = (role) => {
+  localStorage.setItem("viewRole", role);
+  setViewRole(role);
+};
 
   // --------------------------
-  // Get User By ID
+  // Get User by ID
   // --------------------------
   const getUserById = async (userId) => {
     try {
       const token = localStorage.getItem("token");
-      if (!token) {
-        return { error: "Not authenticated" };
-      }
+      if (!token) return { error: "Not authenticated" };
 
       const res = await fetch(`${BACKEND_URL}/users/${userId}`, {
-        headers: { 
-          Authorization: `Bearer ${token}`
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!res.ok) {
@@ -117,49 +143,30 @@ export const AuthProvider = ({ children }) => {
 
       const data = await res.json();
       return { data };
-    } catch (err) {
+    } catch {
       return { error: "Network error" };
     }
   };
 
-  // --------------------------
-  // Update User Role
-  // --------------------------
-  const updateUserRole = async (userId, role) => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        return { error: "Not authenticated" };
-      }
-
-      const res = await fetch(`${BACKEND_URL}/users/${userId}`, {
-        method: "PATCH",
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ role }),
-      });
-
-      if (!res.ok) {
-        const err = await res.json();
-        return { error: err.error || "Failed to update user role" };
-      }
-
-      const data = await res.json();
-      return { data };
-    } catch (err) {
-      return { error: "Network error" };
-    }
-  };
-
+  // Check if user is organizer for specific event
   const isOrganizerOf = (event) => {
-    if (!user || !event || !Array.isArray(event.organizers)) return false;
+    if (!user || !event?.organizers) return false;
     return event.organizers.some((org) => org.id === user.id);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, getUserById, updateUserRole, isOrganizerOf }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        getUserById,
+        isOrganizerOf,
+        updateUserRole: () => {}, // optional
+        viewRole,
+        changeViewRole,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
