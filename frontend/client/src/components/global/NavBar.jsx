@@ -85,14 +85,30 @@ export default function NavBar() {
       /* SUPERUSER MENU */
       {role === "superuser" && (
         <>
-          <Dropdown title="Event">
+          {/* Manager-level links */}
+          <Link to="/manager/users">Users</Link>
+
+          <Dropdown title="Promotions">
+            <Dropdown.Item to="/manager/promotions/create">Create Promotion</Dropdown.Item>
+            <Dropdown.Item to="/manager/promotions">View Promotions</Dropdown.Item>
+          </Dropdown>
+
+          <Dropdown title="Events">
+            <Dropdown.Item to="/manager/events/create">Create Event</Dropdown.Item>
+            <Dropdown.Item to="/manager/events">View Events</Dropdown.Item>
+          </Dropdown>
+
+          <Link to="/manager/transactions">Transactions</Link>
+
+          {/* Superuser-only tools */}
+          <Dropdown title="Superuser Tools">
             <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
             <Dropdown.Item to="/superuser/user-promotion">User Promotion</Dropdown.Item>
           </Dropdown>
         </>
       )}
 
-      /* Avatar = Profile Page */
+      {/* Avatar = Profile Page */}
       <div
         onClick={() => navigate("/profile")}
         style={{
@@ -123,6 +139,7 @@ export default function NavBar() {
           displayLetter
         )}
       </div>
+
 
       <LogoutButton />
 

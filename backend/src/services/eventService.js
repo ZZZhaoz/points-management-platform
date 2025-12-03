@@ -144,12 +144,16 @@ class EventService {
         if (userRole === 'regular' || userRole === 'cashier') {
             // Regular and cashier users always see only published events
             where.published = true;
-        } else if (published !== undefined) {
-            // Manager and superuser can filter by published status
-            where.published = published === true || published === 'true';
-        } else {
-            // Manager and superuser see only published events by default
-            where.published = true;
+        } 
+        else {
+            if (published === "true" || published === true) {
+                // filter on published
+                where.published = true;
+            } 
+            else if (published === "false" || published === false) {
+                // filter on NOT published
+                where.published = false;
+            }
         }
 
         
@@ -180,10 +184,15 @@ class EventService {
 
         
 
-        if (!showFullBool) {
+
+        if (showFull === "true" || showFull === true) {
+            // Only full events
             events = events.filter(event => {
-                if (event.capacity === null) return true;
-                return event.numGuests < event.capacity;
+                return event.capacity !== null && event.numGuests >= event.capacity;
+            });
+        } else if (showFull === "false" || showFull === false) {
+            events = events.filter(event => {
+                return event.capacity === null || event.numGuests < event.capacity;
             });
         }
         

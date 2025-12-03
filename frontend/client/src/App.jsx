@@ -8,6 +8,17 @@ import { Dashboard, UserQRPage, TransferPage, RedemptionPage,
   PromotionsPage, EventsListPage, EventDetailPage, TransactionsListPage, RedemptionQRPage } from "./pages/regularuser";
 import ProtectedRoute from "./components/global/ProtectedRoute";
 import Layout from "./components/layout/Layout";
+import UsersList from "./pages/manager/UsersList";
+import UsersUpdate from "./pages/manager/UsersUpdate"
+import TransactionsList from "./pages/manager/TransactionsList"
+import TransactionsUpdate from "./pages/manager/TransactionsUpdate";
+import PromotionCreate from "./pages/manager/PromotionCreate";
+import PromotionList from "./pages/manager/PromotionList";
+import PromotionUpdate from "./pages/manager/PromotionUpdate";
+import EventCreate from "./pages/manager/EventCreate";
+import EventList from "./pages/manager/EventList";
+import EventUpdate  from "./pages/manager/EventUpdate";
+
 import AwardPoints from "./pages/organizer/AwardPoints";
 import UserPromotion from "./pages/superuser/UserPromotion";
 
@@ -37,6 +48,20 @@ function App() {
             <Route path="/events/:eventId" element={<EventDetailPage />} />
             <Route path="/transactions/my" element={<TransactionsListPage />} />
             <Route path="/redeem/qr/:transactionId" element={<RedemptionQRPage />} />
+
+
+
+             <Route path="/manager/users" element={<UsersList />} />
+             <Route path="/manager/users/:userId" element={<UsersUpdate />} />
+             <Route path="/manager/transactions" element={<TransactionsList />} />
+             <Route path="/manager/transactions/:transactionId" element={<TransactionsUpdate />} />
+             <Route path="/manager/promotions/create" element={<PromotionCreate />} />
+             <Route path="/manager/promotions" element={<PromotionList />} />
+             <Route path="/manager/promotions/:promotionId" element={<PromotionUpdate />} />
+             <Route path="/manager/events/create" element={<EventCreate />} />
+             <Route path="/manager/events" element={<EventList />} />
+             <Route path="/manager/events/:eventId" element={<EventUpdate />} />
+
 
 
 
