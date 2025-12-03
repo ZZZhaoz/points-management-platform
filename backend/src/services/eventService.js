@@ -736,8 +736,9 @@ class EventService {
     }
 
     async createEventTransaction(eventId, { type, utorid, amount, remark }, userRole, userId) {
+
         if (type !== 'event') {
-            throw new Error("Bad Request");
+            throw new Error("Type must be 'event'");
         }
 
         const event = await prisma.event.findUnique({
@@ -749,40 +750,36 @@ class EventService {
         });
 
         if (!event) {
-            throw new Error('Not Found');
+            throw new Error("Event not found");
         }
 
-        
         const isOrganizer = event.organizers.some(org => org.id === userId);
         if (!isOrganizer && userRole !== 'manager' && userRole !== 'superuser') {
-            throw new Error('Forbidden');
+            throw new Error("You do not have permission to award points for this event");
         }
 
         const points = parseInt(amount, 10);
-        if (points <= 0) {
-            throw new Error("Bad Request");
+        if (isNaN(points) || points <= 0) {
+            throw new Error("Awarded points must be a positive number");
         }
 
         if (event.pointsRemain < points) {
-            throw new Error("Bad Request");
+            throw new Error("Not enough remaining points in this event");
         }
 
         if (utorid) {
-            
             const user = await prisma.user.findUnique({
                 where: { utorid },
             });
 
             if (!user) {
-                throw new Error('Not Found');
+                throw new Error("User not found");
             }
 
-            
             if (!event.guests.some(guest => guest.id === user.id)) {
-                throw new Error("Bad Request");
+                throw new Error("This user is not a guest of the event");
             }
 
-            
             const transaction = await prisma.transaction.create({
                 data: {
                     type: 'event',
@@ -794,7 +791,6 @@ class EventService {
                 },
             });
 
-            
             await prisma.user.update({
                 where: { id: user.id },
                 data: {
@@ -802,7 +798,6 @@ class EventService {
                 },
             });
 
-            
             await prisma.event.update({
                 where: { id: eventId },
                 data: {
@@ -824,67 +819,64 @@ class EventService {
                 remark: remark || '',
                 createdBy: creator.utorid,
             };
-        } else {
-            
-            if (event.guests.length === 0) {
-                throw new Error("Bad Request");
-            }
+        }
 
-            const totalPoints = points * event.guests.length;
-            if (event.pointsRemain < totalPoints) {
-                throw new Error("Bad Request");
-            }
+        if (event.guests.length === 0) {
+            throw new Error("Cannot award points: no guests have RSVPed");
+        }
 
-            const creator = await prisma.user.findUnique({
-                where: { id: userId },
-            });
+        const totalPoints = points * event.guests.length;
+        if (event.pointsRemain < totalPoints) {
+            throw new Error("Not enough remaining points to award all guests");
+        }
 
-            const transactions = [];
+        const creator = await prisma.user.findUnique({
+            where: { id: userId },
+        });
 
-            
-            for (const guest of event.guests) {
-                const transaction = await prisma.transaction.create({
-                    data: {
-                        type: 'event',
-                        amount: points,
-                        remark: remark || '',
-                        userId: guest.id,
-                        createdById: userId,
-                        relatedId: eventId,
-                    },
-                });
+        const transactions = [];
 
-                
-                await prisma.user.update({
-                    where: { id: guest.id },
-                    data: {
-                        points: { increment: points },
-                    },
-                });
-
-                transactions.push({
-                    id: transaction.id,
-                    recipient: guest.utorid,
-                    awarded: points,
-                    type: 'event',
-                    relatedId: eventId,
-                    remark: remark || '',
-                    createdBy: creator.utorid,
-                });
-            }
-
-            
-            await prisma.event.update({
-                where: { id: eventId },
+        for (const guest of event.guests) {
+            const transaction = await prisma.transaction.create({
                 data: {
-                    pointsRemain: { decrement: totalPoints },
-                    pointsAwarded: { increment: totalPoints },
+                    type: 'event',
+                    amount: points,
+                    remark: remark || '',
+                    userId: guest.id,
+                    createdById: userId,
+                    relatedId: eventId,
                 },
             });
 
-            return transactions;
+            await prisma.user.update({
+                where: { id: guest.id },
+                data: {
+                    points: { increment: points },
+                },
+            });
+
+            transactions.push({
+                id: transaction.id,
+                recipient: guest.utorid,
+                awarded: points,
+                type: 'event',
+                relatedId: eventId,
+                remark: remark || '',
+                createdBy: creator.utorid,
+            });
         }
+
+        await prisma.event.update({
+            where: { id: eventId },
+            data: {
+                pointsRemain: { decrement: totalPoints },
+                pointsAwarded: { increment: totalPoints },
+            },
+        });
+
+        return transactions;
     }
+
 
     async listOrganizedEvent(userId, userRole) {
         const where = {

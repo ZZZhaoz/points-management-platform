@@ -313,25 +313,50 @@ async function createEventTransaction(req, res) {
     try {
         const eventId = parseInt(req.params.eventId, 10);
         if (!eventId) {
-            return res.status(404).json({ error: 'Not Found' });
+            return res.status(404).json({ error: "Invalid event ID" });
         }
 
-        const result = await eventService.createEventTransaction(eventId, req.body, req.user.role, req.user.id);
+        const result = await eventService.createEventTransaction(
+            eventId,
+            req.body,
+            req.user.role,
+            req.user.id
+        );
+
         return res.status(201).json(result);
+
     } catch (err) {
-        if (err.message === 'Not Found') {
-            return res.status(404).json({ error: 'Not Found' });
+        const msg = err.message;
+
+        if ([
+            "Event not found",
+            "User not found"
+        ].includes(msg)) {
+            return res.status(404).json({ error: msg });
         }
-        if (err.message === 'Forbidden') {
-            return res.status(403).json({ error: 'Forbidden' });
+
+        if ([
+            "You do not have permission to award points for this event",
+        ].includes(msg)) {
+            return res.status(403).json({ error: msg });
         }
-        if (err.message === "Bad Request") {
-            return res.status(400).json({ error: "Bad Request" });
+
+        if ([
+            "Type must be 'event'",
+            "Awarded points must be a positive number",
+            "Not enough remaining points in this event",
+            "This user is not a guest of the event",
+            "Cannot award points: no guests have RSVPed",
+            "Not enough remaining points to award all guests",
+        ].includes(msg)) {
+            return res.status(400).json({ error: msg });
         }
+
         console.error(err);
         return res.status(500).json({ error: "Internal server error" });
     }
 }
+
 
 async function listOrganizedEvents(req, res) {
     try {
