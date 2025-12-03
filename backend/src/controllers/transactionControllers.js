@@ -295,33 +295,41 @@ async function processRedemption(req, res) {
     const transactionId = parseInt(req.params.transactionId, 10);
     const { processed } = req.body;
 
+    // --- Validate input (400) ---
     if (isNaN(transactionId)) {
-      return res.status(400).json({ error: `Bad Request` });
+      return res.status(400).json({ error: "Invalid transaction ID" });
     }
 
     if (processed !== true) {
-      return res.status(400).json({ error: `Bad Request` });
+      return res.status(400).json({ error: "Processed flag must be true" });
     }
 
-    const updatedTransaction = await transactionService.processRedemption(
-      transactionId, 
+    const result = await transactionService.processRedemption(
+      transactionId,
       req.user.id
     );
 
-    return res.status(200).json(updatedTransaction);
+    return res.status(200).json(result);
+
   } catch (err) {
-    if (err.message === "Not Found") {
-      return res.status(404).json({ error: `Not Found` });
+    const msg = err.message;
+
+    if (msg === "Transaction not found") {
+      return res.status(404).json({ error: msg });
     }
 
-    if (err.message === "Bad Request") {
-      return res.status(400).json({ error: `Bad Request` });
+    if ([
+      "This transaction is not a redemption request",
+      "This redemption request has already been processed",
+      "User does not have enough points for redemption",
+      "Processor (cashier) does not exist",
+    ].includes(msg)) {
+      return res.status(400).json({ error: msg });
     }
 
     console.error(err);
-    return res.status(500).json({ error: `Internal server error` });
+    return res.status(500).json({ error: "Internal server error" });
   }
-
 }
 
 

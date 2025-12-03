@@ -95,67 +95,6 @@ export const AuthProvider = ({ children }) => {
 
 
   // --------------------------
-  // Create Transaction
-  // --------------------------
-  const createTransaction = async (utorid, type, spent, promotionIds, remark) => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        return "Not authenticated";
-      }
-
-      const res = await fetch(`${BACKEND_URL}/transactions`, {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ utorid, type, spent, promotionIds, remark }),
-      });
-
-      if (!res.ok) {
-        const err = await res.json();
-        return err.error || "Create transaction failed";
-      }
-
-      return null;
-    } catch (err) {
-      return "Network error";
-    }
-  };
-
-  // --------------------------
-  // Process Redemption
-  // --------------------------
-  const processRedemption = async(transactionId) => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        return "Not authenticated";
-      }
-
-      const res = await fetch(`${BACKEND_URL}/transactions/${transactionId}/processed`, {
-        method: "PATCH",
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ processed: true }),
-      });
-
-      if (!res.ok) {
-        const err = await res.json();
-        return err.error || "Failed to process transaction";
-      }
-
-      return null;
-    } catch (err) {
-      return "Network error";
-    }
-  }
-
-
-  // --------------------------
   // Get User By ID
   // --------------------------
   const getUserById = async (userId) => {
@@ -220,7 +159,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, createTransaction, processRedemption, getUserById, updateUserRole, isOrganizerOf }}>
+    <AuthContext.Provider value={{ user, login, logout, getUserById, updateUserRole, isOrganizerOf }}>
       {children}
     </AuthContext.Provider>
   );

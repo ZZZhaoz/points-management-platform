@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 /* -----------------------------  Context Providers  ----------------------------- */
 import { AuthProvider } from "./contexts/AuthContext";
 import { EventProvider } from "./contexts/EventContext";
+import { TransactionProvider } from "./contexts/TransactionContext";
 
 /* -----------------------------  Global Components  ----------------------------- */
 import Layout from "./components/layout/Layout";
@@ -55,6 +56,7 @@ function App() {
   return (
     <AuthProvider>
       <EventProvider>
+        <TransactionProvider>
         <BrowserRouter>
           <Routes>
             {/* Public */}
@@ -108,6 +110,7 @@ function App() {
             </Route>
           </Routes>
         </BrowserRouter>
+        </TransactionProvider>
       </EventProvider>
     </AuthProvider>
   );

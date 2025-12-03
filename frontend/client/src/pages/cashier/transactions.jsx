@@ -1,10 +1,10 @@
 import { useState } from "react";
 import Input from "../../components/global/Input";
 import Button from "../../components/global/Button";
-import { useAuth } from "../../contexts/AuthContext";  
+import { useTransactions } from "../../contexts/TransactionContext";  
 
 export default function Transactions() {
-  const { createTransaction } = useAuth();   
+  const { createTransaction } = useTransactions();   
   
   const [utorid, setUtorid] = useState("");
   const [spent, setSpent] = useState("");

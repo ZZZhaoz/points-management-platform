@@ -491,68 +491,69 @@ class TransactionService {
 
 
   async processRedemption(transactionId, processorId) {
-    const transaction = await prisma.transaction.findUnique({
-      where: { id: transactionId },
-      include: {
-        createdBy: { select: { utorid: true } },
-        user: { select: { utorid: true, id: true, points: true } },
-      },
-    });
-
-    if (!transaction) {
-      throw new Error("Not Found");
-    }
-
-    if (transaction.type !== "redemption") {
-      throw new Error("Bad Request");
-    }
-
-    if (transaction.processed) {
-      throw new Error("Bad Request");
-    }
-
-    const amount = transaction.amount;
-    const user = transaction.user;
-
-    if (user.points < amount) {
-      throw new Error("Bad Request");
-    }
-
-    const cashier = await prisma.user.findUnique({
-      where: { id: processorId },
-      select: { utorid: true },
-    });
-
-    if (!cashier) {
-      throw new Error("Bad Request");
-    }
-
-    await prisma.$transaction([
-    prisma.user.update({
-      where: { id: user.id },
-      data: { points: { decrement: amount } },
-    }),
-
-    prisma.transaction.update({
-        where: { id: transaction.id },
-        data: {
-          processedById: processorId,
-          processed: true,
+      const transaction = await prisma.transaction.findUnique({
+        where: { id: transactionId },
+        include: {
+          createdBy: { select: { utorid: true } },
+          user: { select: { utorid: true, id: true, points: true } },
         },
-      }),
-    ]);
+      });
 
-    return {
-      id: transaction.id,
-      utorid: user.utorid,
-      type: transaction.type,
-      processedBy: cashier.utorid,
-      redeemed: amount,
-      remark: transaction.remark,
-      createdBy: transaction.createdBy.utorid,
-      createdAt: transaction.createdAt
-    };
+      if (!transaction) {
+        throw new Error("Transaction not found");
+      }
+
+      if (transaction.type !== "redemption") {
+        throw new Error("This transaction is not a redemption request");
+      }
+
+      if (transaction.processed) {
+        throw new Error("This redemption request has already been processed");
+      }
+
+      const amount = transaction.amount;
+      const user = transaction.user;
+
+      if (user.points < amount) {
+        throw new Error("User does not have enough points for redemption");
+      }
+
+      const cashier = await prisma.user.findUnique({
+        where: { id: processorId },
+        select: { utorid: true },
+      });
+
+      if (!cashier) {
+        throw new Error("Processor (cashier) does not exist");
+      }
+
+      await prisma.$transaction([
+          prisma.user.update({
+            where: { id: user.id },
+            data: { points: { decrement: amount } },
+          }),
+
+          prisma.transaction.update({
+            where: { id: transaction.id },
+            data: {
+              processedById: processorId,
+              processed: true,
+            },
+          }),
+      ]);
+
+      return {
+        id: transaction.id,
+        utorid: user.utorid,
+        type: transaction.type,
+        processedBy: cashier.utorid,
+        redeemed: amount,
+        remark: transaction.remark,
+        createdBy: transaction.createdBy.utorid,
+        createdAt: transaction.createdAt
+      };
   }
+
 }
 
 module.exports = new TransactionService();
