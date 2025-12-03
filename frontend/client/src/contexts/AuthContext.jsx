@@ -70,6 +70,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("role", meData.role);
       localStorage.setItem("utorid", meData.utorid);
       localStorage.setItem("avatarUrl", meData.avatarUrl || "");
+      localStorage.setItem("isOrganizer", meData.isOrganizer ? "true" : "false");
 
       setUser(meData);  
 

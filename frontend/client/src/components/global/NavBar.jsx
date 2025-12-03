@@ -17,6 +17,8 @@ export default function NavBar() {
   const utorid = localStorage.getItem("utorid") || "U";
   const avatarUrl = localStorage.getItem("avatarUrl");
   const displayLetter = utorid[0].toUpperCase();
+  const isOrganizer = localStorage.getItem("isOrganizer") === "true";
+
 
   return (
     <nav
@@ -81,14 +83,8 @@ export default function NavBar() {
             <Dropdown.Item to="/manager/events/create">Create Event</Dropdown.Item>
             <Dropdown.Item to="/manager/events">View Events</Dropdown.Item>
           </Dropdown>
-
-          {/* Organizer tools (Managers are also organizers) */}
-          <Dropdown title="Organizer Tools">
-            <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
-          </Dropdown>
         </>
       )}
-
 
       {/* SUPERUSER MENU */}
       {role === "superuser" && (
@@ -115,6 +111,14 @@ export default function NavBar() {
           </Dropdown>
         </>
       )}
+
+     
+      {(isOrganizer || role === "manager" || role === "superuser") && (
+        <Dropdown title="Organizer Tools">
+          <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
+        </Dropdown>
+      )}
+
 
       {/* Avatar = Profile Page */}
       <div
