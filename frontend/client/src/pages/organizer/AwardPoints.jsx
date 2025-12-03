@@ -26,7 +26,6 @@ export default function AwardPoints() {
     setLoading(true);
     setError(null);
     setAwardError(null);
-    setAwardSuccess(null);
     
     const result = await getEventById(eventId);
     
@@ -61,9 +60,10 @@ export default function AwardPoints() {
       setAwardError(result.error);
     } else {
       setAwardSuccess(`Successfully awarded ${pointsAmount} points to ${utorid}`);
+      console.log(`Awarded ${pointsAmount} points to ${utorid}:`, result.data || result);
+
       setPointsAmount("");
       setRemark("");
-      // Reload event to get updated points
       await loadEvent();
     }
   };
