@@ -27,7 +27,7 @@ function sortPromotions(promos, sortBy, sortOrder) {
       y = new Date(y);
     }
 
-    if (x < y) return sortOrder === "asc" ? -1 : 1;
+    if (x < y) return sortOrder === "asc" ? -1 : 1; 
     if (x > y) return sortOrder === "asc" ? 1 : -1;
     return 0;
   });
@@ -107,7 +107,7 @@ export default function PromotionsList() {
       >
         <option value="">All</option>
         <option value="automatic">Automatic</option>
-        <option value="onetime">One-Time</option>
+        <option value="oneztime">One-Time</option>
       </select>
 
       <br />
@@ -127,7 +127,30 @@ export default function PromotionsList() {
         <option value="desc">Descending</option>
         </select>
 
+        <br></br>
+
+        <label>Items per page: </label>
+
+        <select
+          value={filters.limit}
+          onChange={(e) =>
+            setFilters({ ...filters, limit: parseInt(e.target.value), page: 1 })
+          }
+        >
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="25">25</option>
+        </select>
+
+
+
         {/* TABLE */}
+
+        {sortedPromotions.length === 0 ? (
+            <p>No promotions found.</p>
+          ) : (
+
         <table border="1" style={{ marginTop: "20px" }}>
         <thead>
             <tr>
@@ -162,6 +185,7 @@ export default function PromotionsList() {
             ))}
         </tbody>
         </table>
+          )}
 
       {/* PAGINATION */}
       <br />

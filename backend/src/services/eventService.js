@@ -184,10 +184,15 @@ class EventService {
 
         const count = events.length;
 
-        if (!showFullBool) {
+
+        if (showFull === "true" || showFull === true) {
+            // Only full events
             events = events.filter(event => {
-                if (event.capacity === null) return true;
-                return event.numGuests < event.capacity;
+                return event.capacity !== null && event.numGuests >= event.capacity;
+            });
+        } else if (showFull === "false" || showFull === false) {
+            events = events.filter(event => {
+                return event.capacity === null || event.numGuests < event.capacity;
             });
         }
 

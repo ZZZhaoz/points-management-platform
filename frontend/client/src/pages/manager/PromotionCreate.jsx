@@ -106,13 +106,13 @@ export default function PromotionsCreate() {
 
         {/* Promotion Name */}
         <div>
-          <label>Name: </label>
+          <label>Name (required): </label>
           <input value={name} onChange={(e) => setName(e.target.value)} />
         </div>
 
         {/* Promotion Description */}
         <div>
-          <label>Description: </label><br />
+          <label>Description (required): </label><br />
           <textarea
             rows={3}
             style={{ width: "300px" }}
@@ -123,7 +123,7 @@ export default function PromotionsCreate() {
 
         {/* Promotion Type */}
         <div>
-          <label>Type: </label>
+          <label>Type (required): </label>
           <select value={type} onChange={(e) => setType(e.target.value)}>
             <option value="automatic">Automatic</option>
             <option value="one-time">One-Time</option>
@@ -132,7 +132,7 @@ export default function PromotionsCreate() {
 
         {/* Promotion Start Time */}
         <div>
-          <label>Start Time: </label>
+          <label>Start Time (required): </label>
           <input
             type="datetime-local"
             value={startTime}
@@ -142,7 +142,7 @@ export default function PromotionsCreate() {
 
         {/* Promotion End Time */}
         <div>
-          <label>End Time: </label>
+          <label>End Time (required): </label>
           <input
             type="datetime-local"
             value={endTime}

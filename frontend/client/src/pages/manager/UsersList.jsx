@@ -149,41 +149,66 @@ export default function UsersList() {
         <option value="desc">Descending</option>
       </select>
 
+      <br />
+
+      <label>Items per page: </label>
+      <select
+        value={filters.limit}
+        onChange={(e) =>
+          setFilters({ ...filters, limit: parseInt(e.target.value), page: 1 })
+        }
+      >
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="25">25</option>
+      </select>
+
+      <br /><br />
+
+
+      {sortedUsers.length === 0 ? (
+          <p>No Users Found. Try a Different Filter!</p>
+        ) : (
 
       <table border="1" >
-        <thead>
-          <tr>
-            <th>UtorID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Birthday</th>
-            <th>Role</th>
-            <th>Verified</th>
-            <th>Actions</th>
+      <thead>
+        <tr>
+          <th>UtorID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Birthday</th>
+          <th>Role</th>
+          <th>Points</th>
+          <th>Created At</th>
+          <th>Last Login</th>
+          <th>Verified</th>
+          <th>Avatar</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {sortedUsers.map((u) => (
+          <tr key={u.id}>
+            <td>{u.utorid}</td>
+            <td>{u.name}</td>
+            <td>{u.email}</td>
+            <td>{u.birthday ? u.birthday : "Not Provided"}</td>
+            <td>{u.role}</td>
+            <td>{u.points}</td>
+            <td>{u.createdAt}</td>
+            <td>{u.lastLogin ? u.lastLogin : "Never"}</td>
+            <td>{u.verified ? "Yes" : "No"}</td>
+            <td>{u.avatarUrl ? u.avatarUrl : "None"}</td>
+            <td>
+              <Link to={`/manager/users/${u.id}`}>Edit</Link>
+            </td>
           </tr>
-        </thead>
-
-        <tbody>
-          {sortedUsers.map((u) => (
-            <tr key={u.id}>
-              <td>{u.utorid}</td>
-              <td>{u.name}</td>
-              <td>{u.email}</td>
-              <td>{u.birthday ? u.birthday: "Not Provided"}</td>
-              <td>{u.role}</td>
-              <td>{u.verified ? "Yes" : "No"}</td>
-              <td>
-                  {
- 
-                      <Link to={`/manager/users/${u.id}`}>Edit</Link>
-                    
-                  }
-
-              </td>
-            </tr>
-          ))}
-        </tbody>
+        ))}
+      </tbody>
       </table>
+        )}
 
       <br />
 

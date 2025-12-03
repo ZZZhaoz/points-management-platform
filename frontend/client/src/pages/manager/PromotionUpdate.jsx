@@ -1,45 +1,46 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-
-function renderField(label, key, type, form, setForm, editing, setEditing) {
+function renderField(label, key, type, form, setForm, editing, setEditing, tempValues, setTempValues) {
   const isEditing = editing[key];
   const value = form[key];
 
   const startEditing = () => {
+    setTempValues({ ...tempValues, [key]: value });  // store original
     setEditing({ ...editing, [key]: true });
   };
 
-  const stopEditing = () => {
+  const saveChanges = () => {
+    setEditing({ ...editing, [key]: false });
+  };
+
+  const cancelChanges = () => {
+    setForm({ ...form, [key]: tempValues[key] });    // restore original
     setEditing({ ...editing, [key]: false });
   };
 
   return (
-    <div className="field-row">
+    <div>
       <label>{label}: </label>
 
       {!isEditing && (
-        <span className="editable" onClick={startEditing}>
-          {value || "(empty)"}
-        </span>
+        <>
+          <span>{value || "(empty)"} </span>
+          <button type="button" onClick={startEditing}>Edit</button>
+        </>
       )}
 
-      {/* For description use text area*/}
       {isEditing && (
-        <>
+        <div>
           {key === "description" ? (
             <textarea
-              value={value}
-              onChange={(e) =>
-                setForm({ ...form, [key]: e.target.value })
-              }
+              value={form[key]}
+              onChange={(e) => setForm({ ...form, [key]: e.target.value })}
             />
           ) : type === "select" ? (
             <select
-              value={value}
-              onChange={(e) =>
-                setForm({ ...form, [key]: e.target.value })
-              }
+              value={form[key]}
+              onChange={(e) => setForm({ ...form, [key]: e.target.value })}
             >
               <option value="automatic">Automatic</option>
               <option value="one-time">One-Time</option>
@@ -47,22 +48,18 @@ function renderField(label, key, type, form, setForm, editing, setEditing) {
           ) : (
             <input
               type={type}
-              value={value}
-              onChange={(e) =>
-                setForm({ ...form, [key]: e.target.value })
-              }
+              value={form[key]}
+              onChange={(e) => setForm({ ...form, [key]: e.target.value })}
             />
           )}
 
-          <button type="button" onClick={stopEditing}>
-            Done
-          </button>
-        </>
+          <button type="button" onClick={saveChanges}>Save</button>
+          <button type="button" onClick={cancelChanges}>Cancel</button>
+        </div>
       )}
     </div>
   );
 }
-
 
 export default function PromotionUpdate() {
   const { promotionId } = useParams();
@@ -71,8 +68,12 @@ export default function PromotionUpdate() {
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
   const token = localStorage.getItem("token");
 
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
   const [loading, setLoading] = useState(true);
   const [promotion, setPromotion] = useState(null);
+  const [tempValues, setTempValues] = useState({});
 
   // Use these states to keep track of which fields are being edited.
   const [editing, setEditing] = useState({
@@ -114,7 +115,7 @@ export default function PromotionUpdate() {
         setForm({
           name: data.name || "",
           description: data.description || "",
-          type: data.type === "one-time" ? "one-time" : data.type,
+          type: data.type === "onetime" ? "one-time" : data.type,
           startTime: data.startTime ? data.startTime.slice(0, 16) : "",
           endTime: data.endTime ? data.endTime.slice(0, 16) : "",
           minSpending: data.minSpending ?? "",
@@ -132,8 +133,6 @@ export default function PromotionUpdate() {
   // Update the promotion
   const handleUpdate = async () => {
 
-    const optionalFields = ["description", "minSpending", "rate", "points"];
-    const requiredFields = ["name", "type", "startTime", "endTime"];
     const payload = {};
 
     // Only send the data from the newly updated field to the backend
@@ -141,7 +140,8 @@ export default function PromotionUpdate() {
 
         // If the user leaves a field empty, dont update
         if (form[key] === "") {
-            alert(`${key} cannot be empty.`);
+            setError(`${key} cannot be empty.`);
+            setSuccess("");
             return;   // stop the update entirely
         }
 
@@ -169,12 +169,13 @@ export default function PromotionUpdate() {
     });
 
     if (!res.ok) {
-      alert("Update failed!");
+      setError("Update failed!");
+      setSuccess("");
       return;
     }
 
-    alert("Promotion updated!");
-    navigate("/manager/promotions");
+    setSuccess("Promotion updated!");
+    setError("");
   };
 
   const handleDelete = async () => {
@@ -200,17 +201,22 @@ export default function PromotionUpdate() {
     <div>
       <h1>Update Promotion</h1>
 
-    {renderField("Name", "name", "text", form, setForm, editing, setEditing)}
-    {renderField("Description", "description", "text", form, setForm, editing, setEditing)}
-    {renderField("Type", "type", "select", form, setForm, editing, setEditing)}
-    {renderField("Start Time", "startTime", "datetime-local", form, setForm, editing, setEditing)}
-    {renderField("End Time", "endTime", "datetime-local", form, setForm, editing, setEditing)}
-    {renderField("Minimum Spending", "minSpending", "number", form, setForm, editing, setEditing)}
-    {renderField("Rate", "rate", "number", form, setForm, editing, setEditing)}
-    {renderField("Points", "points", "number", form, setForm, editing, setEditing)}
+    {error && <p >{error}</p>}
+    {success && <p >{success}</p>}
+
+
+    {renderField("Name", "name", "text", form, setForm, editing, setEditing, tempValues, setTempValues)}
+    {renderField("Description", "description", "text", form, setForm, editing, setEditing, tempValues, setTempValues)}
+    {renderField("Type", "type", "select", form, setForm, editing, setEditing, tempValues, setTempValues)}
+    {renderField("Start Time", "startTime", "datetime-local", form, setForm, editing, setEditing, tempValues, setTempValues)}
+    {renderField("End Time", "endTime", "datetime-local", form, setForm, editing, setEditing, tempValues, setTempValues)}
+    {renderField("Minimum Spending", "minSpending", "number", form, setForm, editing, setEditing, tempValues, setTempValues)}
+    {renderField("Rate", "rate", "number", form, setForm, editing, setEditing, tempValues, setTempValues)}
+    {renderField("Points", "points", "number", form, setForm, editing, setEditing, tempValues, setTempValues)}
 
       <br />
 
+      <button type="button" onClick={() => navigate(-1)}> Back </button>
       <button onClick={handleUpdate}>Save Changes</button>
       <button type="button" onClick={handleDelete}>
         Delete Promotion

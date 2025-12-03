@@ -48,6 +48,9 @@ export default function EventsList() {
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
   useEffect(() => {
     
     console.log(getQuery(filters));
@@ -56,11 +59,16 @@ export default function EventsList() {
     })
       .then(async (res) => {
         if (!res.ok) {
-          console.error("Failed to load events");
+          setError("Failed to load events");
+          setEvents([]);
+          setSuccess("");
           return;
         }
+
+        setError("");
+        setSuccess("Events loaded.");
+
         const data = await res.json();
-        console.log(data);
         setEvents(data.results || []);
         setTotalCount(data.count || 0);
       })
@@ -74,6 +82,9 @@ export default function EventsList() {
   return (
     <div>
       <h1>All Events</h1>
+
+      {error && <p >{error}</p>}
+      {success && <p >{success}</p>}
 
       {/* NAME FILTER */}
       <label>Name: </label>
@@ -160,7 +171,12 @@ export default function EventsList() {
 
       <br /><br />
 
+
+        
       {/* TABLE */}
+      {events.length === 0 ? (
+          <p>No events found.</p>
+        ) : (
       <table border="1">
         <thead>
             <tr>
@@ -197,6 +213,7 @@ export default function EventsList() {
             ))}
         </tbody>
       </table>
+        )}
 
   
 

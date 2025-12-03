@@ -61,6 +61,9 @@ export default function TransactionsList() {
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
   // Fetch from backend
   useEffect(() => {
     fetch(`${BACKEND_URL}/transactions?${getQuery(filters)}`, {
@@ -68,10 +71,13 @@ export default function TransactionsList() {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(async (res) => {
-        if (!res.ok) {
-          alert("Failed to load transaction");
-          return;
-        }
+      if (!res.ok) {
+        setTransactions([]);        
+        setTotalCount(0);
+        setError("Failed to load transactions");
+        setSuccess("");
+        return;
+      }
         const data = await res.json();
         setTransactions(data.results || []);
         setTotalCount(data.count || 0);
@@ -87,6 +93,9 @@ export default function TransactionsList() {
   return (
     <div>
       <h1>All Transactions</h1>
+
+      {error && <p>{error}</p>}
+      {success && <p >{success}</p>}
 
       <div>
         <label>Name: </label>
@@ -196,8 +205,30 @@ export default function TransactionsList() {
           <option value="desc">Descending</option>
         </select>
       </div>
+        
+      <br></br>
+
+      <label>Items per page: </label>
+      <select
+        value={filters.limit}
+        onChange={(e) =>
+          setFilters({ ...filters, limit: parseInt(e.target.value), page: 1 })
+        }
+      >
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="25">25</option>
+      </select>
+
 
       {/* TABLE */}
+
+      {sortedTransactions.length === 0 ? (
+        <p>No transactions found.</p>
+      ) : (
+
+      
       <table border="1" style={{ marginTop: "20px" }}>
         <thead>
           <tr>
@@ -229,6 +260,8 @@ export default function TransactionsList() {
           ))}
         </tbody>
       </table>
+
+        )}
 
       {/* PAGINATION */}
       <br />

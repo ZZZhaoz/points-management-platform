@@ -1,52 +1,56 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-
-function renderField(label, key, type, form, setForm, editing, setEditing) {
+function renderField(label, key, type, form, setForm, editing, setEditing, tempValues, setTempValues) {
   const isEditing = editing[key];
   const value = form[key];
-  
 
   let displayValue;
-  
   if (value !== "" && value !== null && value !== undefined) {
-    displayValue = value; 
+    displayValue = value;
+  } else if (["published"].includes(key)) {
+    displayValue = "No";
+  } else if (["capacity", "points"].includes(key)) {
+    displayValue = "Not provided";
   } else {
-    // Promotion rule
-    if (["published"].includes(key)) {
-      displayValue = "No";
-    }
-    // Event numeric fields
-    else if (["capacity", "points"].includes(key)) {
-      displayValue = "Not provided";
-    }
-    // Default
-    else {
-      displayValue = "(empty)";
-    }
+    displayValue = "(empty)";
   }
 
+  const startEditing = () => {
+    setTempValues({ ...tempValues, [key]: value }); // store original
+    setEditing({ ...editing, [key]: true });
+  };
+
+  const saveChanges = () => {
+    setEditing({ ...editing, [key]: false });
+  };
+
+  const cancelChanges = () => {
+    setForm({ ...form, [key]: tempValues[key] }); // restore original
+    setEditing({ ...editing, [key]: false });
+  };
 
   return (
-    <div className="field-row">
+    <div>
       <label>{label}: </label>
 
       {!isEditing && (
-        <span className="editable" onClick={() => setEditing({ ...editing, [key]: true })}>
-          {displayValue}
-        </span>
+        <>
+          <span>{displayValue}</span>
+          <button type="button" onClick={startEditing}>Edit</button>
+        </>
       )}
 
       {isEditing && (
-        <>
+        <div>
           {key === "description" ? (
             <textarea
-              value={value}
+              value={form[key]}
               onChange={(e) => setForm({ ...form, [key]: e.target.value })}
             />
           ) : type === "select" ? (
             <select
-              value={value}
+              value={form[key]}
               onChange={(e) => setForm({ ...form, [key]: e.target.value })}
             >
               <option value="">--</option>
@@ -55,15 +59,14 @@ function renderField(label, key, type, form, setForm, editing, setEditing) {
           ) : (
             <input
               type={type}
-              value={value}
+              value={form[key]}
               onChange={(e) => setForm({ ...form, [key]: e.target.value })}
             />
           )}
 
-          <button type="button" onClick={() => setEditing({ ...editing, [key]: false })}>
-            Done
-          </button>
-        </>
+          <button type="button" onClick={saveChanges}>Save</button>
+          <button type="button" onClick={cancelChanges}>Cancel</button>
+        </div>
       )}
     </div>
   );
@@ -78,6 +81,7 @@ export default function EventUpdate() {
 
   const [loading, setLoading] = useState(true);
   const [event, setEvent] = useState(null);
+  const [tempValues, setTempValues] = useState({});
 
   const [newGuest, setNewGuest] = useState("");
   const [message, setMessage] = useState("");
@@ -212,7 +216,7 @@ export default function EventUpdate() {
     });
 
     if (res.status === 400) {
-        setMessage("This user is an organizer. Remove them from organizers first.");
+        setMessage("This user is already added as guest or is an organizer.");
         return;
     }
 
@@ -272,14 +276,14 @@ export default function EventUpdate() {
         </p>
         )}
 
-      {renderField("Name", "name", "text", form, setForm, editing, setEditing)}
-      {renderField("Description", "description", "text", form, setForm, editing, setEditing)}
-      {renderField("Location", "location", "text", form, setForm, editing, setEditing)}
-      {renderField("Start Time", "startTime", "datetime-local", form, setForm, editing, setEditing)}
-      {renderField("End Time", "endTime", "datetime-local", form, setForm, editing, setEditing)}
-      {renderField("Capacity", "capacity", "number", form, setForm, editing, setEditing)}
-      {renderField("Points", "points", "number", form, setForm, editing, setEditing)}
-      {renderField("Publish", "published", "select", form, setForm, editing, setEditing)}
+      {renderField("Name", "name", "text", form, setForm, editing, setEditing, tempValues, setTempValues)}
+      {renderField("Description", "description", "text", form, setForm, editing, setEditing, tempValues, setTempValues)}
+      {renderField("Location", "location", "text", form, setForm, editing, setEditing, tempValues, setTempValues)}
+      {renderField("Start Time", "startTime", "datetime-local", form, setForm, editing, setEditing, tempValues, setTempValues)}
+      {renderField("End Time", "endTime", "datetime-local", form, setForm, editing, setEditing, tempValues, setTempValues)}
+      {renderField("Capacity", "capacity", "number", form, setForm, editing, setEditing, tempValues, setTempValues)}
+      {renderField("Points", "points", "number", form, setForm, editing, setEditing, tempValues, setTempValues)}
+      {renderField("Publish", "published", "select", form, setForm, editing, setEditing, tempValues, setTempValues)}
 
       <br />
 

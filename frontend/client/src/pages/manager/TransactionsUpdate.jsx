@@ -16,6 +16,9 @@ export default function TransactionsUpdate() {
   const [status, setStatus] = useState("");
   const [suspicious, setSuspicious] = useState(false);
 
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
   useEffect(() => {
     fetch(`${BACKEND_URL}/transactions/${transactionId}`, {
       method: "GET",
@@ -61,18 +64,25 @@ export default function TransactionsUpdate() {
       })
     })
     .then(async (res) => {
+
       if (!res.ok) {
-        alert("Can't update transaction!");
+        setError("Can't update transaction!");
+        setSuccess("");
         return;
       }
-      alert("Transaction updated!");
-      navigate("/manager/transactions");
+
+      setSuccess("Transaction updated!");
+      setError("");
+
     });
   };
 
   return (
     <div>
       <h1>Update Transaction #{transactionId}</h1>
+
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {success && <p style={{ color: "green" }}>{success}</p>}
 
       <form onSubmit={handleUpdate}>
 
