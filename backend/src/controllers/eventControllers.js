@@ -70,32 +70,65 @@ async function updateEvent(req, res) {
     try {
         const eventId = parseInt(req.params.eventId, 10);
         if (!eventId) {
-            return res.status(404).json({ error: 'Not Found' });
+            return res.status(404).json({ error: "Event ID is invalid" });
         }
 
-        const result = await eventService.updateEvent(eventId, req.body, req.user.role, req.user.id);
-        if (!result) {
-            return res.status(404).json({ error: 'Not Found' });
-        }
+        const result = await eventService.updateEvent(
+            eventId,
+            req.body,
+            req.user.role,
+            req.user.id
+        );
 
         return res.status(200).json(result);
+
     } catch (err) {
-        if (err.message === 'Not Found') {
-            return res.status(404).json({ error: 'Not Found' });
+        const msg = err.message;
+
+        if ([
+            "Event not found",
+        ].includes(msg)) {
+            return res.status(404).json({ error: msg });
         }
-        if (err.message === 'Forbidden') {
-            return res.status(403).json({ error: 'Forbidden' });
+
+        if ([
+            "You do not have permission to edit this event",
+            "Only managers or superusers may update points or publication status",
+        ].includes(msg)) {
+            return res.status(403).json({ error: msg });
         }
-        if (err.message === 'Conflict') {
-            return res.status(409).json({ error: 'Conflict' });
+
+        if ([
+            "Another event with this name already exists",
+        ].includes(msg)) {
+            return res.status(409).json({ error: msg });
         }
-        if (err.message === "Bad Request") {
-            return res.status(400).json({ error: "Bad Request" });
+
+        if ([
+            "Cannot edit event name after event has started",
+            "Cannot edit event description after event has started",
+            "Cannot edit event location after event has started",
+            "Cannot update start time after event has started",
+            "Cannot update end time after event has ended",
+            "Start time cannot be in the past",
+            "End time cannot be in the past",
+            "Start time must be earlier than end time",
+            "End time must be later than start time",
+            "Cannot change event capacity after event has started",
+            "Capacity must be a positive number",
+            "New capacity cannot be smaller than current number of guests",
+            "Points must be a positive number",
+            "Total points cannot be less than points already awarded",
+            "Published must be a boolean",
+        ].includes(msg)) {
+            return res.status(400).json({ error: msg });
         }
+
         console.error(err);
         return res.status(500).json({ error: "Internal server error" });
     }
 }
+
 
 async function deleteEvent(req, res) {
     try {
@@ -165,25 +198,52 @@ async function addGuest(req, res) {
     try {
         const eventId = parseInt(req.params.eventId, 10);
         if (!eventId) {
-            return res.status(404).json({ error: 'Not Found' });
+            return res.status(404).json({ error: "Event ID not valid" });
         }
 
-        const result = await eventService.addGuest(eventId, req.body.utorid, req.user.role, req.user.id);
+        const { utorid } = req.body;
+        const role = req.user.role;
+        const currentUserId = req.user.id;
+
+        const result = await eventService.addGuest(
+            eventId,
+            utorid,
+            role,
+            currentUserId
+        );
+
         return res.status(201).json(result);
+
     } catch (err) {
-        if (err.message === 'Not Found') {
-            return res.status(404).json({ error: 'Not Found' });
+        const msg = err.message;
+
+        if ([
+            "Event not found",
+            "User not found",
+            "Event is not visible to organizers yet (not published)"
+        ].includes(msg)) {
+            return res.status(404).json({ error: msg });
         }
-        if (err.message === "Bad Request") {
-            return res.status(400).json({ error: "Bad Request" });
+
+        if ([
+            "Event has already ended",
+            "Event is full"
+        ].includes(msg)) {
+            return res.status(410).json({ error: msg });
         }
-        if (err.message === "Gone") {
-            return res.status(410).json({ error: "Gone" });
+
+        if ([
+            "User is already an organizer — cannot also be a guest",
+            "User is already a guest of this event"
+        ].includes(msg)) {
+            return res.status(400).json({ error: msg });
         }
+
         console.error(err);
         return res.status(500).json({ error: "Internal server error" });
     }
 }
+
 
 async function removeGuest(req, res) {
     try {
