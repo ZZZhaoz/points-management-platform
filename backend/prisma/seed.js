@@ -14,9 +14,9 @@ async function main() {
     { utorid: "alice1", name: "Alice Zhang", email: "alice@mail.utoronto.ca", role: "regular", verified: true, student: true, points: 200 },
     { utorid: "bob2", name: "Bob Li", email: "bob@mail.utoronto.ca", role: "regular", verified: false, student: true, points: 150 },
     { utorid: "charlie3", name: "Charlie Kim", email: "charlie@mail.utoronto.ca", role: "regular", verified: true, student: true, points: 50 },
-    { utorid: "cashier01", name: "Cashier One", email: "cashier1@mail.utoronto.ca", role: "cashier", verified: true, student: false, points: 0 },
-    { utorid: "manager01", name: "Manager One", email: "manager1@mail.utoronto.ca", role: "manager", verified: true, student: false, points: 0 },
-    { utorid: "super01", name: "Super User", email: "superuser@mail.utoronto.ca", role: "superuser", verified: true, student: false, points: 0 },
+    { utorid: "cashier01", name: "Cashier One", email: "cashier1@mail.utoronto.ca", role: "cashier", verified: true, student: false, points: 100 },
+    { utorid: "manager01", name: "Manager One", email: "manager1@mail.utoronto.ca", role: "manager", verified: true, student: false, points: 300 },
+    { utorid: "super01", name: "Super User", email: "superuser@mail.utoronto.ca", role: "superuser", verified: true, student: false, points: 300 },
     { utorid: "david4", name: "David Tan", email: "david@mail.utoronto.ca", role: "regular", verified: false, student: true, points: 80 },
     { utorid: "ella5", name: "Ella Smith", email: "ella@mail.utoronto.ca", role: "regular", verified: true, student: false, points: 300 },
     { utorid: "frank6", name: "Frank Lee", email: "frank@mail.utoronto.ca", role: "regular", verified: false, student: true, points: 0 },
@@ -333,6 +333,37 @@ async function main() {
       }
     });
   }
+
+  // ----------------------------------------
+  // 4. RANDOMLY ASSIGN GUESTS TO EVENTS
+  // ----------------------------------------
+  events = await prisma.event.findMany();
+
+  for (const event of events) {
+
+    const num = Math.floor(Math.random() * 8) + 3;  
+    
+    const shuffled = regularUsers.sort(() => 0.5 - Math.random());
+    const selectedGuests = shuffled.slice(0, num);
+
+    await prisma.event.update({
+      where: { id: event.id },
+      data: {
+        organizers: {
+          connect: [
+            { id: manager.id },
+            { id: superuser.id }
+          ]
+        },
+        guests: {
+          connect: selectedGuests.map(u => ({ id: u.id }))
+        },
+        numGuests: num
+      }
+    });
+  }
+
+  console.log("✓ Random guests assigned to events");
 
   // ----------------------------------------
   // 4. TRANSACTIONS (same logic)

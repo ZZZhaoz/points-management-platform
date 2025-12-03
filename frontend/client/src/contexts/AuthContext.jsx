@@ -369,8 +369,14 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const isOrganizerOf = (event) => {
+    if (!user || !event || !Array.isArray(event.organizers)) return false;
+    return event.organizers.some((org) => org.id === user.id);
+  };
+
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, createTransaction, processRedemption, getMyEvents, getEventById, updateEvent, addGuest, awardPoints, getUserById, updateUserRole }}>
+    <AuthContext.Provider value={{ user, login, logout, createTransaction, processRedemption, getMyEvents, getEventById, updateEvent, addGuest, awardPoints, getUserById, updateUserRole, isOrganizerOf }}>
       {children}
     </AuthContext.Provider>
   );

@@ -22,7 +22,7 @@ import EventUpdate  from "./pages/manager/EventUpdate";
 import AwardPoints from "./pages/organizer/AwardPoints";
 import UserPromotion from "./pages/superuser/UserPromotion";
 
-import Transactions from "./pages/cashier/Transactions";
+import Transactions from "./pages/cashier/transactions";
 import RedemptionTransaction from "./pages/cashier/RedemptionTransaction";
 
 import Events from "./pages/organizer/Events";
@@ -72,9 +72,6 @@ function App() {
             <Route path="/manager/events/create" element={<EventCreate />} />
             <Route path="/manager/events" element={<EventList />} />
             <Route path="/manager/events/:eventId" element={<EventUpdate />} />
-
-
-           
 
             {/* organizer pages */}
             <Route path="/organizer/events" element={<Events />} />
