@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Input from "../../components/global/Input";
-import PromotionAvatar from "../../components/promotions/PromotionAvatar";
+import Button from "../../components/global/Button";
 import PromotionDetailModal from "../../components/promotions/PromotionDetailModal";
 import "./PromotionsPage.css";
 
@@ -66,8 +66,11 @@ export default function PromotionsPage() {
         <p className="promotions-subtitle">Discover amazing offers and rewards!</p>
       </div>
 
-      {/* Search box */}
-      <div style={{ maxWidth: "300px", marginTop: "20px" }}>
+      {/* Filters */}
+      <div className="filters-card">
+        <div className="filters-title">
+          🔍 Search Promotions
+        </div>
         <Input
           label="Search by name"
           placeholder="e.g. Summer Sale"
@@ -105,13 +108,86 @@ export default function PromotionsPage() {
 
       {!loading && promotions.length > 0 && (
         <div className="promotions-grid">
-          {promotions.map((promo) => (
-            <PromotionAvatar
-              key={promo.id}
-              promotion={promo}
-              onClick={() => setSelectedPromo(promo)}
-            />
-          ))}
+          {promotions.map((promo) => {
+            const endDate = new Date(promo.endTime);
+            const startDate = new Date(promo.startTime);
+            const now = new Date();
+            const daysRemaining = Math.max(0, Math.ceil((endDate - now) / (1000 * 60 * 60 * 24)));
+            const isExpiringSoon = daysRemaining < 3;
+            const isUrgent = daysRemaining < 7;
+            
+            return (
+              <div
+                key={promo.id}
+                className={`promotion-card ${promo.type}`}
+              >
+                <div className="promotion-card-header">
+                  <div>
+                    <h3 className="promotion-name">🎁 {promo.name}</h3>
+                    <div className="promotion-type-badge">
+                      {promo.type === "automatic" ? (
+                        <span className="badge badge-primary">∞ Automatic</span>
+                      ) : (
+                        <span className="badge badge-success">One-time</span>
+                      )}
+                    </div>
+                  </div>
+                  {isExpiringSoon && (
+                    <div className="promotion-urgent-badge">
+                      ⏰ Expires Soon!
+                    </div>
+                  )}
+                </div>
+
+                {promo.description && (
+                  <p className="promotion-description">{promo.description}</p>
+                )}
+
+                <div className="promotion-details">
+                  {promo.points && (
+                    <div className="promotion-detail">
+                      <strong>⭐ Bonus Points:</strong>
+                      <span className="promotion-value">{promo.points} pts</span>
+                    </div>
+                  )}
+
+                  {promo.rate && (
+                    <div className="promotion-detail">
+                      <strong>📈 Rate Bonus:</strong>
+                      <span className="promotion-value">{Math.round(promo.rate * 100)}%</span>
+                    </div>
+                  )}
+
+                  {promo.minSpending && (
+                    <div className="promotion-detail">
+                      <strong>💰 Minimum Spending:</strong>
+                      <span className="promotion-value">${promo.minSpending}</span>
+                    </div>
+                  )}
+
+                  <div className="promotion-detail">
+                    <strong>📅 Valid Until:</strong>
+                    <span>{endDate.toLocaleDateString()}</span>
+                  </div>
+
+                  <div className="promotion-detail">
+                    <strong>⏰ Time Remaining:</strong>
+                    <span className={isExpiringSoon ? "promotion-expiring" : isUrgent ? "promotion-urgent" : ""}>
+                      {daysRemaining} {daysRemaining === 1 ? "day" : "days"}
+                    </span>
+                  </div>
+                </div>
+
+                <Button
+                  onClick={() => setSelectedPromo(promo)}
+                  variant="outline"
+                  style={{ width: "100%", marginTop: "1rem" }}
+                >
+                  View Details →
+                </Button>
+              </div>
+            );
+          })}
         </div>
       )}
 
@@ -124,18 +200,18 @@ export default function PromotionsPage() {
       )}
 
       {/* Pagination */}
-      {totalPages > 1 && (
+      {!loading && totalPages > 1 && (
         <div className="promotions-pagination">
           <button
             disabled={page === 1}
             onClick={() => setPage(page - 1)}
             className="pagination-button"
           >
-            Previous
+            ← Previous
           </button>
 
           <span className="pagination-info">
-            Page {page} / {totalPages}
+            Page {page} / {totalPages || 1}
           </span>
 
           <button
@@ -143,7 +219,7 @@ export default function PromotionsPage() {
             onClick={() => setPage(page + 1)}
             className="pagination-button"
           >
-            Next
+            Next →
           </button>
         </div>
       )}

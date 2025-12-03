@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { Card } from "../../components/global/Card";
 import Button from "../../components/global/Button";
+import "./OrganizerPage.css";
 
 export default function EventDetail() {
     const { eventId } = useParams();
@@ -71,64 +72,110 @@ export default function EventDetail() {
     };
 
     if (loading) {
-        return <div>Loading...</div>;
+        return (
+            <div className="page-container">
+                <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <p>Loading event details...</p>
+                </div>
+            </div>
+        );
     }
 
     if (error && !event) {
         return (
-            <div>
-                <div>Error: {error}</div>
-                <Button onClick={() => navigate("/organizer/events")}>Back to Events</Button>
+            <div className="page-container">
+                <div className="alert alert-error">{error}</div>
+                <Button onClick={() => navigate("/organizer/events")} variant="secondary" style={{ marginTop: "1rem" }}>
+                    ← Back to Events
+                </Button>
             </div>
         );
     }
 
     return (
-        <div>
-            <div style={{ marginBottom: "1rem" }}>
+        <div className="organizer-page">
+            <div className="back-button-container">
                 <Button onClick={() => navigate("/organizer/events")} variant="secondary">
                     ← Back to Events
                 </Button>
             </div>
 
-            <h1>Event Details</h1>
+            <div className="organizer-header">
+                <h1 className="organizer-title">{event.name} 🎪</h1>
+                <p className="organizer-subtitle">Event Details & Management</p>
+            </div>
 
             <Card>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-                    <h2>{event.name}</h2>
-                    <div style={{ display: "flex", gap: "0.5rem" }}>
-                        <Button onClick={() => navigate(`/organizer/events/${eventId}/award-points`)} variant="secondary">
-                            Award Points
-                        </Button>
-                        <Button onClick={() => navigate(`/organizer/events/${eventId}/edit`)}>Edit</Button>
-                    </div>
+                <div className="action-buttons">
+                    <Button onClick={() => navigate(`/organizer/events/${eventId}/award-points`)} variant="success">
+                        ⭐ Award Points
+                    </Button>
+                    <Button onClick={() => navigate(`/organizer/events/${eventId}/edit`)} variant="primary">
+                        ✏️ Edit Event
+                    </Button>
                 </div>
 
-                <p><strong>Description:</strong> {event.description}</p>
-                <p><strong>Location:</strong> {event.location}</p>
-                <p><strong>Start Time:</strong> {formatDate(event.startTime)}</p>
-                <p><strong>End Time:</strong> {formatDate(event.endTime)}</p>
+                <div className="event-info-grid">
+                    <div className="event-info-item">
+                        <strong>📝 Description:</strong>
+                        <span>{event.description || "No description"}</span>
+                    </div>
 
-                {event.capacity !== null && (
-                    <p><strong>Capacity:</strong> {event.numGuests || 0} / {event.capacity}</p>
-                )}
+                    <div className="event-info-item">
+                        <strong>📍 Location:</strong>
+                        <span>{event.location}</span>
+                    </div>
 
-                {event.pointsAwarded !== null && (
-                    <p><strong>Points:</strong> {event.pointsAwarded}</p>
-                )}
+                    <div className="event-info-item">
+                        <strong>🕐 Start Time:</strong>
+                        <span>{formatDate(event.startTime)}</span>
+                    </div>
 
-                {event.pointsRemain !== undefined && (
-                    <p><strong>Points Remaining:</strong> {event.pointsRemain}</p>
-                )}
+                    <div className="event-info-item">
+                        <strong>🕐 End Time:</strong>
+                        <span>{formatDate(event.endTime)}</span>
+                    </div>
 
-                <p><strong>Published:</strong> {event.published ? "Yes" : "No"}</p>
+                    {event.capacity !== null && (
+                        <div className="event-info-item">
+                            <strong>👥 Capacity:</strong>
+                            <span>{event.numGuests || 0} / {event.capacity}</span>
+                        </div>
+                    )}
 
-                {event.organizers && event.organizers.length > 0 && (
-                    <p>
-                        <strong>Organizers:</strong>{" "}
-                        {event.organizers.map((org) => org.name).join(", ")}
-                    </p>
-                )}
+                    {event.pointsAwarded !== null && (
+                        <div className="event-info-item">
+                            <strong>⭐ Points Awarded:</strong>
+                            <span>{event.pointsAwarded}</span>
+                        </div>
+                    )}
+
+                    {event.pointsRemain !== undefined && (
+                        <div className="event-info-item">
+                            <strong>💎 Points Remaining:</strong>
+                            <span>{event.pointsRemain}</span>
+                        </div>
+                    )}
+
+                    <div className="event-info-item">
+                        <strong>📢 Published:</strong>
+                        <span>
+                            {event.published ? (
+                                <span className="badge badge-success">Yes</span>
+                            ) : (
+                                <span className="badge badge-gray">No</span>
+                            )}
+                        </span>
+                    </div>
+
+                    {event.organizers && event.organizers.length > 0 && (
+                        <div className="event-info-item">
+                            <strong>👔 Organizers:</strong>
+                            <span>{event.organizers.map((org) => org.name).join(", ")}</span>
+                        </div>
+                    )}
+                </div>
             </Card>
         </div>
     );

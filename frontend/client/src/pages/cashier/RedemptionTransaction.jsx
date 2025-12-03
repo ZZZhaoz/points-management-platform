@@ -2,19 +2,22 @@ import { useState } from "react";
 import Input from "../../components/global/Input";
 import Button from "../../components/global/Button";
 import { useAuth } from "../../contexts/AuthContext";
+import "./RedemptionTransaction.css";
 
 export default function RedemptionTransaction() {
   const { processRedemption } = useAuth();
 
   const [transactionId, setTransactionId] = useState("");
+  const [message, setMessage] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
   const submit = async (e) => {
     e.preventDefault();
+    setMessage(null);
 
     const id = parseInt(transactionId, 10);
     if (isNaN(id) || id <= 0) {
-      alert("Please enter a valid transaction ID greater than 0");
+      setMessage("Please enter a valid transaction ID greater than 0");
       return;
     }
 
@@ -23,29 +26,52 @@ export default function RedemptionTransaction() {
     setSubmitting(false);
 
     if (err) {
-      alert(err);
+      setMessage(err);
       return;
     }
 
     setTransactionId("");
-    alert("Redemption processed successfully!");
+    setMessage("Redemption processed successfully! ✨");
   };
 
+  const isSuccess = message && message.includes("successfully");
+
   return (
-    <form onSubmit={submit}>
-      <h1>Process Redemption</h1>
+    <div className="process-redemption-page">
+      <div className="process-redemption-header">
+        <h1 className="process-redemption-title">Process Redemption 🎫</h1>
+        <p className="process-redemption-subtitle">Enter a transaction ID to process a redemption request</p>
+      </div>
 
-      <Input
-        label="Transaction ID"
-        placeholder="Enter the transaction ID"
-        value={transactionId}
-        onChange={(value) => setTransactionId(value)}
-        required
-      />
+      <div className="process-redemption-card">
+        <div className="process-redemption-icon">✅</div>
 
-      <Button type="submit" disabled={submitting}>
-        {submitting ? "Processing..." : "Process Redemption"}
-      </Button>
-    </form>
+        <form onSubmit={submit}>
+          <Input
+            label="Transaction ID"
+            placeholder="Enter the redemption transaction ID"
+            type="number"
+            value={transactionId}
+            onChange={setTransactionId}
+            required
+          />
+
+          {message && (
+            <div className={`alert ${isSuccess ? "alert-success" : "alert-error"}`} style={{ marginTop: "1rem" }}>
+              {message}
+            </div>
+          )}
+
+          <Button 
+            type="submit" 
+            variant="success"
+            disabled={submitting}
+            style={{ width: "100%", marginTop: "1.5rem" }}
+          >
+            {submitting ? "Processing..." : "✨ Process Redemption"}
+          </Button>
+        </form>
+      </div>
+    </div>
   );
 }

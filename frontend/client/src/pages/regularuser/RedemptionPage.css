@@ -1,0 +1,56 @@
+.redemption-page {
+  padding: var(--space-xl);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.redemption-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+}
+
+.redemption-title {
+  font-size: 2.5rem;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--space-sm);
+}
+
+.redemption-subtitle {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+}
+
+.redemption-card {
+  background: var(--bg-primary);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-3xl);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.redemption-icon {
+  text-align: center;
+  font-size: 4rem;
+  margin-bottom: var(--space-lg);
+}
+
+.success-actions {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 2px solid var(--border-light);
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .redemption-page {
+    padding: var(--space-md);
+  }
+  
+  .redemption-card {
+    padding: var(--space-xl);
+  }
+}
+

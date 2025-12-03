@@ -1,27 +1,37 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import Button from "../../components/global/Button";
+import "./EventDetailPage.css";
 
 export default function EventDetailPage() {
   const { eventId } = useParams();
+  const navigate = useNavigate();
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
   const token = localStorage.getItem("token");
 
   const [event, setEvent] = useState(null);
   const [attending, setAttending] = useState(false);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
   // Load event details
   useEffect(() => {
+    setLoading(true);
     fetch(`${BACKEND_URL}/events/${eventId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(async (res) => {
         const data = await res.json();
-        if (res.ok) setEvent(data);
-        else setMessage("Failed to load event.");
+        if (res.ok) {
+          setEvent(data);
+          setMessage("");
+        } else {
+          setMessage("Failed to load event.");
+        }
       })
-      .catch(() => setMessage("Network error."));
-  }, [eventId]);
+      .catch(() => setMessage("Network error."))
+      .finally(() => setLoading(false));
+  }, [eventId, BACKEND_URL, token]);
 
   // Check if user already RSVPed
   useEffect(() => {
@@ -35,7 +45,7 @@ export default function EventDetailPage() {
         }
       })
       .catch(() => {});
-  }, [eventId]);
+  }, [eventId, BACKEND_URL, token]);
 
   // RSVP 
   const handleJoin = async () => {
@@ -80,77 +90,102 @@ export default function EventDetailPage() {
     }
   };
 
-  if (!event) return <p>Loading event...</p>;
+  if (loading) {
+    return (
+      <div className="page-container">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading event...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!event) {
+    return (
+      <div className="page-container">
+        <div className="empty-state">
+          <div className="empty-state-icon">😕</div>
+          <div className="empty-state-title">Event not found</div>
+          <div className="empty-state-text">{message || "Unable to load event details"}</div>
+        </div>
+      </div>
+    );
+  }
 
   const hasEnded = new Date(event.endTime) < new Date();
+  const isFull = event.numGuests >= event.capacity;
+  const isSuccess = message && (message.includes("Successfully") || message.includes("left"));
 
   return (
-    <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-      <h2>{event.name}</h2>
-      <p>{event.description}</p>
+    <div className="event-detail-page">
+      <div className="event-detail-header">
+        <h1 className="event-detail-title">{event.name} 🎪</h1>
+      </div>
 
-      <p><strong>Location:</strong> {event.location}</p>
-      <p>
-        <strong>Time:</strong>{" "}
-        {event.startTime?.slice(0, 10)} → {event.endTime?.slice(0, 10)}
-      </p>
+      <div className="event-detail-card">
+        <p className="event-description-large">{event.description}</p>
 
-      <p>
-        <strong>Capacity:</strong> {event.numGuests}/{event.capacity}{" "}
-        {event.numGuests >= event.capacity ? "(FULL)" : ""}
-      </p>
+        <div className="event-detail-info">
+          <div className="event-detail-item">
+            <strong>📍 Location:</strong>
+            <span>{event.location}</span>
+          </div>
 
-      {hasEnded ? (
-        <button
-          disabled
-          style={{
-            padding: "10px 20px",
-            background: "#777",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            marginTop: "20px",
-            cursor: "not-allowed"
-          }}
-        >
-          Event Ended
-        </button>
-      ) : attending ? (
-        <button
-          onClick={handleCancel}
-          style={{
-            padding: "10px 20px",
-            background: "#ff5252",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            marginTop: "20px"
-          }}
-        >
-          Cancel RSVP
-        </button>
-      ) : (
-        <button
-          onClick={handleJoin}
-          disabled={event.numGuests >= event.capacity}
-          style={{
-            padding: "10px 20px",
-            background: event.numGuests >= event.capacity ? "#999" : "#4caf50",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            marginTop: "20px"
-          }}
-        >
-          Join Event (RSVP)
-        </button>
-      )}
+          <div className="event-detail-item">
+            <strong>🕐 Time:</strong>
+            <span>
+              {new Date(event.startTime).toLocaleString()} → {new Date(event.endTime).toLocaleString()}
+            </span>
+          </div>
 
-      {message && (
-        <p style={{ marginTop: "15px", color: "green", fontWeight: "bold" }}>
-          {message}
-        </p>
-      )}
+          <div className="event-detail-item">
+            <strong>👥 Capacity:</strong>
+            <span className={isFull ? "capacity-full" : ""}>
+              {event.numGuests}/{event.capacity}
+              {isFull && " (FULL)"}
+            </span>
+          </div>
+
+          {attending && (
+            <div className="event-detail-item">
+              <strong>✅ Status:</strong>
+              <span className="badge badge-success">You are attending this event</span>
+            </div>
+          )}
+        </div>
+
+        {message && (
+          <div className={`alert ${isSuccess ? "alert-success" : "alert-error"}`}>
+            {message}
+          </div>
+        )}
+
+        <div className="event-actions">
+          {hasEnded ? (
+            <Button disabled variant="secondary" style={{ width: "100%" }}>
+              Event Ended
+            </Button>
+          ) : attending ? (
+            <Button
+              onClick={handleCancel}
+              variant="error"
+              style={{ width: "100%" }}
+            >
+              ❌ Cancel RSVP
+            </Button>
+          ) : (
+            <Button
+              onClick={handleJoin}
+              disabled={isFull}
+              variant={isFull ? "secondary" : "success"}
+              style={{ width: "100%" }}
+            >
+              {isFull ? "Event Full" : "✨ Join Event (RSVP)"}
+            </Button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

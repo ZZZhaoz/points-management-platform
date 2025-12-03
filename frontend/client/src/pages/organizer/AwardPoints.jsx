@@ -4,6 +4,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { Card } from "../../components/global/Card";
 import Button from "../../components/global/Button";
 import Input from "../../components/global/Input";
+import "./OrganizerPage.css";
 
 export default function AwardPoints() {
   const { eventId } = useParams();
@@ -103,13 +104,20 @@ export default function AwardPoints() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="page-container">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading event...</p>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div style={{ padding: "2rem" }}>
-        <div>Error: {error}</div>
+      <div className="page-container">
+        <div className="alert alert-error">{error}</div>
         <Button onClick={() => navigate(`/organizer/events/${eventId}`)} variant="secondary" style={{ marginTop: "1rem" }}>
           ← Back to Event Detail
         </Button>
@@ -118,103 +126,131 @@ export default function AwardPoints() {
   }
 
   if (!event) {
-    return <div>Event not found</div>;
+    return (
+      <div className="page-container">
+        <div className="empty-state">
+          <div className="empty-state-icon">😕</div>
+          <div className="empty-state-title">Event not found</div>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <Button 
-        onClick={() => navigate(`/organizer/events/${eventId}`)} 
-        variant="secondary" 
-        style={{ marginBottom: "1rem" }}
-      >
-        ← Back to Event Detail
-      </Button>
+    <div className="organizer-page">
+      <div className="back-button-container">
+        <Button 
+          onClick={() => navigate(`/organizer/events/${eventId}`)} 
+          variant="secondary"
+        >
+          ← Back to Event Detail
+        </Button>
+      </div>
+
+      <div className="organizer-header">
+        <h1 className="organizer-title">Award Points ⭐</h1>
+        <p className="organizer-subtitle">{event.name}</p>
+      </div>
       
       <Card style={{ marginBottom: "2rem" }}>
-        <h1>{event.name}</h1>
-        <p><strong>Description:</strong> {event.description}</p>
-        <p><strong>Location:</strong> {event.location}</p>
-        <p><strong>Points Remaining:</strong> {event.pointsRemain}</p>
-        <p><strong>Points Awarded:</strong> {event.pointsAwarded}</p>
-        <p><strong>Guests (RSVPed):</strong> {event.guests?.length || 0}</p>
+        <div className="event-info-grid">
+          <div className="event-info-item">
+            <strong>💎 Points Remaining:</strong>
+            <span style={{ fontSize: "1.25rem", fontWeight: "700", color: "var(--primary)" }}>
+              {event.pointsRemain}
+            </span>
+          </div>
+          <div className="event-info-item">
+            <strong>⭐ Points Awarded:</strong>
+            <span>{event.pointsAwarded || 0}</span>
+          </div>
+          <div className="event-info-item">
+            <strong>👥 Guests (RSVPed):</strong>
+            <span>{event.guests?.length || 0}</span>
+          </div>
+        </div>
       </Card>
 
       <Card>
-        <h2>Award Points</h2>
+        <h2 style={{ marginBottom: "1.5rem" }}>⭐ Award Points</h2>
         
-        <div style={{ marginBottom: "1rem" }}>
-          <Input
-            label="Points Amount"
-            type="number"
-            value={pointsAmount}
-            onChange={setPointsAmount}
-            placeholder="Enter points to award"
-            required
-          />
-        </div>
+        <Input
+          label="Points Amount"
+          type="number"
+          value={pointsAmount}
+          onChange={setPointsAmount}
+          placeholder="Enter points to award"
+          required
+        />
 
-        <div style={{ marginBottom: "1rem" }}>
-          <Input
-            label="Remark (Optional)"
-            type="text"
-            value={remark}
-            onChange={setRemark}
-            placeholder="Enter remark"
-          />
-        </div>
+        <Input
+          label="Remark (Optional)"
+          type="text"
+          value={remark}
+          onChange={setRemark}
+          placeholder="Enter remark"
+        />
 
         {awardError && (
-          <div style={{ color: "red", marginBottom: "1rem" }}>
+          <div className="alert alert-error" style={{ marginTop: "1rem" }}>
             {awardError}
           </div>
         )}
 
         {awardSuccess && (
-          <div style={{ color: "green", marginBottom: "1rem" }}>
+          <div className="alert alert-success" style={{ marginTop: "1rem" }}>
             {awardSuccess}
           </div>
         )}
 
-        <div style={{ marginBottom: "2rem" }}>
+        <div style={{ marginTop: "1.5rem", marginBottom: "2rem" }}>
           <Button
             onClick={handleAwardToAll}
             disabled={awarding || !event.guests || event.guests.length === 0}
-            style={{ marginRight: "1rem" }}
+            variant="success"
+            style={{ width: "100%" }}
           >
-            {awarding ? "Awarding..." : `Award to All Guests (${event.guests?.length || 0})`}
+            {awarding ? "Awarding..." : `✨ Award to All Guests (${event.guests?.length || 0})`}
           </Button>
         </div>
 
-        <h3>Guests List</h3>
+        <h3 style={{ marginBottom: "1rem", paddingBottom: "1rem", borderBottom: "2px solid var(--border-light)" }}>
+          👥 Guests List
+        </h3>
         {event.guests && event.guests.length > 0 ? (
-          <div>
+          <div style={{ display: "grid", gap: "1rem" }}>
             {event.guests.map((guest) => (
               <Card
                 key={guest.id}
                 style={{
-                  marginBottom: "1rem",
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
+                  padding: "1rem",
                 }}
               >
                 <div>
-                  <p><strong>Name:</strong> {guest.name}</p>
-                  <p><strong>UTORid:</strong> {guest.utorid}</p>
+                  <p style={{ margin: "0.25rem 0", fontWeight: "600" }}>{guest.name}</p>
+                  <p style={{ margin: "0.25rem 0", color: "var(--text-tertiary)", fontSize: "0.875rem" }}>
+                    UTORid: {guest.utorid}
+                  </p>
                 </div>
                 <Button
                   onClick={() => handleAwardToGuest(guest.utorid)}
                   disabled={awarding || !pointsAmount || parseInt(pointsAmount) <= 0}
-                  variant="secondary"
+                  variant="primary"
+                  size="sm"
                 >
-                  Award Points
+                  ⭐ Award
                 </Button>
               </Card>
             ))}
           </div>
         ) : (
-          <p>No guests have RSVPed to this event yet.</p>
+          <div className="empty-state" style={{ padding: "2rem" }}>
+            <div className="empty-state-icon">👥</div>
+            <div className="empty-state-text">No guests have RSVPed to this event yet.</div>
+          </div>
         )}
       </Card>
     </div>

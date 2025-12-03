@@ -1,86 +1,123 @@
 import { useState } from "react";
 import Input from "../../components/global/Input";
 import Button from "../../components/global/Button";
-import { useAuth } from "../../contexts/AuthContext";  
+import { useAuth } from "../../contexts/AuthContext";
+import "./transactions.css";
 
 export default function Transactions() {
   const { createTransaction } = useAuth();   
   
   const [utorid, setUtorid] = useState("");
   const [spent, setSpent] = useState("");
-  const [promotionIds, setPromotionIds] = useState([]);
+  const [promotionIds, setPromotionIds] = useState("");
   const [remark, setRemark] = useState("");
+  const [message, setMessage] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const submit = async (e) => {
     e.preventDefault();
+    setMessage(null);
+    setLoading(true);
+    
     const type = "purchase";
     
     // Convert spent to number
     const spentNum = parseFloat(spent);
     if (isNaN(spentNum) || spentNum <= 0) {
-      alert("Please enter a valid amount greater than 0");
+      setMessage("Please enter a valid amount greater than 0");
+      setLoading(false);
       return;
     }
     
-    // Convert promotionIds to number array
+    // Convert promotionIds string to number array
     const promotionIdsNum = promotionIds
-      .map(id => id.trim())
-      .filter(id => id !== "")
-      .map(id => parseInt(id, 10))
-      .filter(id => !isNaN(id));
+      ? promotionIds
+          .split(",")
+          .map(id => id.trim())
+          .filter(id => id !== "")
+          .map(id => parseInt(id, 10))
+          .filter(id => !isNaN(id))
+      : [];
     
     const err = await createTransaction(utorid, type, spentNum, promotionIdsNum, remark); 
 
     if (err){
-        alert(err);
+        setMessage(err);
+        setLoading(false);
         return;
     }
 
     // Success - reset form
     setUtorid("");
     setSpent("");
-    setPromotionIds([]);
+    setPromotionIds("");
     setRemark("");
-    alert("Transaction created successfully!");
+    setMessage("Transaction created successfully! ✨");
+    setLoading(false);
   };
 
+  const isSuccess = message && message.includes("successfully");
+
   return (
-    <form onSubmit={submit}>
-      <h1>Create Transaction</h1>
+    <div className="create-transaction-page">
+      <div className="create-transaction-header">
+        <h1 className="create-transaction-title">Create Transaction 🛒</h1>
+        <p className="create-transaction-subtitle">Record a purchase transaction for a user</p>
+      </div>
 
-      <Input
-        label="UTORid"
-        placeholder="Enter your UTORid"
-        value={utorid}
-        onChange={(value) => setUtorid(value)}
-        required
-      />
+      <div className="create-transaction-card">
+        <div className="create-transaction-icon">💳</div>
 
-      <Input
-        label="Amount Spent"
-        placeholder="Enter the amount spent"
-        type="number"
-        step="0.01"
-        value={spent}
-        onChange={(value) => setSpent(value)}
-        required
-      />
+        <form onSubmit={submit}>
+          <Input
+            label="Customer UTORid"
+            placeholder="Enter customer's UTORid"
+            value={utorid}
+            onChange={setUtorid}
+            required
+          />
 
-    <Input
-        label="promotionIds"
-        placeholder="Enter the promotion IDs"
-        value={promotionIds.join(",")}
-        onChange={(value) => setPromotionIds(value ? value.split(",") : [])}
-      />
+          <Input
+            label="Amount Spent"
+            placeholder="Enter the amount spent"
+            type="number"
+            step="0.01"
+            min="0.01"
+            value={spent}
+            onChange={setSpent}
+            required
+          />
 
-    <Input
-        label="Remark"
-        placeholder="Enter the remark"
-        value={remark}
-        onChange={(value) => setRemark(value)}
-      />
+          <Input
+            label="Promotion IDs (Optional)"
+            placeholder="Enter promotion IDs separated by commas (e.g., 1, 2, 3)"
+            value={promotionIds}
+            onChange={setPromotionIds}
+          />
 
-      <Button type="submit">Create Transaction</Button>
-    </form>
+          <Input
+            label="Remark (Optional)"
+            placeholder="Enter a remark"
+            value={remark}
+            onChange={setRemark}
+          />
+
+          {message && (
+            <div className={`alert ${isSuccess ? "alert-success" : "alert-error"}`} style={{ marginTop: "1rem" }}>
+              {message}
+            </div>
+          )}
+
+          <Button 
+            type="submit" 
+            variant="primary"
+            disabled={loading}
+            style={{ width: "100%", marginTop: "1.5rem" }}
+          >
+            {loading ? "Creating..." : "✨ Create Transaction"}
+          </Button>
+        </form>
+      </div>
+    </div>
   );
 }
