@@ -4,6 +4,7 @@ const eventControllers = require("../controllers/eventControllers");
 const { authenticateToken } = require("../middleware/auth");
 const { requireRole } = require("../middleware/role");
 const { validateFields, validateQuery } = require("../middleware/validate");
+const { validate } = require("uuid");
 
 // POST /events - Create a new event
 router.post(
@@ -162,5 +163,14 @@ router.post(
     ),
     eventControllers.createEventTransaction
 );
+
+router.get(
+    "/organizer/events",
+    authenticateToken,
+    requireRole(["regular", "cashier", "manager", "superuser"]),
+    validateQuery(["userId"], ["userId"], { userId: "number" }),
+    eventControllers.getMyOrganizedEvents
+);
+
 
 module.exports = router;

@@ -283,6 +283,23 @@ async function listOrganizedEvents(req, res) {
     }
 }
 
+async function getMyOrganizedEvents(req, res) {
+    try {
+        const userId = parseInt(req.query.userId, 10);
+
+        if (!userId || isNaN(userId)) {
+            return res.status(400).json({ error: "Bad Request: userId is required" });
+        }
+
+        const events = await eventService.getEventsOrganizedBy(userId);
+        return res.status(200).json(events);
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}
+
 module.exports = {
     createEvent,
     getAllEvents,
@@ -297,5 +314,6 @@ module.exports = {
     removeGuestMe,
     createEventTransaction,
     listOrganizedEvents,
-    getMyEvents
+    getMyEvents,
+    getMyOrganizedEvents
 };

@@ -68,6 +68,7 @@ export const AuthProvider = ({ children }) => {
       const meData = await me.json();
 
       localStorage.setItem("role", meData.role);
+      localStorage.setItem("userId", meData.id);
       localStorage.setItem("utorid", meData.utorid);
       localStorage.setItem("avatarUrl", meData.avatarUrl || "");
       localStorage.setItem("isOrganizer", meData.isOrganizer ? "true" : "false");
@@ -157,29 +158,26 @@ export const AuthProvider = ({ children }) => {
   // Get My Events (as organizer)
   // --------------------------
   const getMyEvents = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        return { error: "Not authenticated" };
-      }
+  try {
+    const userId = localStorage.getItem("userId"); 
+    const res = await fetch(`${BACKEND_URL}/events/organizer/events?userId=${userId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
 
-      const res = await fetch(`${BACKEND_URL}/events/organized/me`, {
-        headers: { 
-          Authorization: `Bearer ${token}`
-        },
-      });
+    const data = await res.json();
 
-      if (!res.ok) {
-        const err = await res.json();
-        return { error: err.error || "Failed to get events" };
-      }
-
-      const data = await res.json();
-      return { data: data || [] };
-    } catch (err) {
-      return { error: "Network error" };
+    if (!res.ok) {
+      return { error: data.error || "Failed to load organizer events" };
     }
-  };
+
+    return { data };
+  } catch (err) {
+    return { error: "Network error" };
+  }
+};
+
 
   // --------------------------
   // Get Event By ID
@@ -374,7 +372,6 @@ export const AuthProvider = ({ children }) => {
     if (!user || !event || !Array.isArray(event.organizers)) return false;
     return event.organizers.some((org) => org.id === user.id);
   };
-
 
   return (
     <AuthContext.Provider value={{ user, login, logout, createTransaction, processRedemption, getMyEvents, getEventById, updateEvent, addGuest, awardPoints, getUserById, updateUserRole, isOrganizerOf }}>

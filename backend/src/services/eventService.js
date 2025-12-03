@@ -957,6 +957,28 @@ class EventService {
             }
         });
     }
+
+    async getEventsOrganizedBy(userId) {
+        const events = await prisma.event.findMany({
+            where: {
+                organizers: {
+                    some: { id: userId }
+                }
+            },
+            select: {
+                id: true,
+                name: true,
+                location: true,
+                startTime: true,
+                endTime: true,
+                published: true,
+                numGuests: true
+            }
+        });
+
+        return events;
+    }
+
 }
 
 module.exports = new EventService();
