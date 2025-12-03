@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import LogoutButton from "./LogoutButton";
+import Dropdown from "./Dropdown";
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -13,7 +14,6 @@ export default function NavBar() {
 
   if (isAuthPage) return null;
 
-  // Avatar info
   const utorid = localStorage.getItem("utorid") || "U";
   const avatarUrl = localStorage.getItem("avatarUrl");
   const displayLetter = utorid[0].toUpperCase();
@@ -27,21 +27,17 @@ export default function NavBar() {
         gap: "20px",
         padding: "10px 20px",
         background: "#f7f7f7",
-        borderBottom: "none",
       }}
     >
       {/* Home */}
       <Link to="/dashboard">Home</Link>
 
-      {/* Regular User Menu */}
+      {/* REGULAR USER MENU */}
       {role === "regular" && (
         <>
           <Link to="/promotions">Promotions</Link>
           <Link to="/user/qr">My QR</Link>
-        
-      {/* REGULAR USER MENU */}
-      {role === "regular" && (
-        <>
+
           <Dropdown title="Transactions">
             <Dropdown.Item to="/transactions/my">My Transactions</Dropdown.Item>
             <Dropdown.Item to="/transfer">Transfer Points</Dropdown.Item>
@@ -50,12 +46,11 @@ export default function NavBar() {
 
           <Dropdown title="Events">
             <Dropdown.Item to="/events">Event List</Dropdown.Item>
-            <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
           </Dropdown>
         </>
       )}
 
-      /* CASHIER MENU */
+      {/* CASHIER MENU */}
       {role === "cashier" && (
         <>
           <Dropdown title="Transactions">
@@ -65,24 +60,37 @@ export default function NavBar() {
           <Dropdown title="Redemption">
             <Dropdown.Item to="/cashier/redemption">Request redemption points</Dropdown.Item>
           </Dropdown>
-
-          <Dropdown title="Event">
-            <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
-          </Dropdown>
         </>
       )}
 
-      /* MANAGER MENU */
+      {/* MANAGER MENU */}
       {role === "manager" && (
         <>
-          <Dropdown title="Event">
+          <Link to="/manager/users">Users</Link>
+
+          <Dropdown title="Transactions">
+            <Dropdown.Item to="/manager/transactions">All Transactions</Dropdown.Item>
+          </Dropdown>
+
+          <Dropdown title="Promotions">
+            <Dropdown.Item to="/manager/promotions/create">Create Promotion</Dropdown.Item>
+            <Dropdown.Item to="/manager/promotions">View Promotions</Dropdown.Item>
+          </Dropdown>
+
+          <Dropdown title="Events">
+            <Dropdown.Item to="/manager/events/create">Create Event</Dropdown.Item>
+            <Dropdown.Item to="/manager/events">View Events</Dropdown.Item>
+          </Dropdown>
+
+          {/* Organizer tools (Managers are also organizers) */}
+          <Dropdown title="Organizer Tools">
             <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
-            <Dropdown.Item to="/organizer/events/:eventId/award-points">Award Points</Dropdown.Item>
           </Dropdown>
         </>
       )}
 
-      /* SUPERUSER MENU */
+
+      {/* SUPERUSER MENU */}
       {role === "superuser" && (
         <>
           {/* Manager-level links */}
@@ -121,7 +129,6 @@ export default function NavBar() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          userSelect: "none",
           fontWeight: 700,
         }}
       >
@@ -129,20 +136,14 @@ export default function NavBar() {
           <img
             src={`${process.env.REACT_APP_BACKEND_URL}${avatarUrl}`}
             alt="avatar"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-            }}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
         ) : (
           displayLetter
         )}
       </div>
 
-
       <LogoutButton />
-
     </nav>
   );
 }

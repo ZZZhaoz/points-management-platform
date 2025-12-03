@@ -22,6 +22,13 @@ import EventUpdate  from "./pages/manager/EventUpdate";
 import AwardPoints from "./pages/organizer/AwardPoints";
 import UserPromotion from "./pages/superuser/UserPromotion";
 
+import Transactions from "./pages/cashier/Transactions";
+import RedemptionTransaction from "./pages/cashier/RedemptionTransaction";
+
+import Events from "./pages/organizer/Events";
+import EventDetail from "./pages/organizer/EventDetail";
+import EventEdit from "./pages/organizer/EventEdit";
+
 function App() {
   return (
     <BrowserRouter>
@@ -40,6 +47,7 @@ function App() {
           {/* Layout wrapper for logged-in pages */}
           
             <Route path="/dashboard" element={<Dashboard />} />
+            
             <Route path="user/qr" element={<UserQRPage />} />
             <Route path="/transfer" element={<TransferPage />} />
             <Route path="/redeem" element={<RedemptionPage />} />
@@ -49,30 +57,24 @@ function App() {
             <Route path="/transactions/my" element={<TransactionsListPage />} />
             <Route path="/redeem/qr/:transactionId" element={<RedemptionQRPage />} />
 
-
-
-             <Route path="/manager/users" element={<UsersList />} />
-             <Route path="/manager/users/:userId" element={<UsersUpdate />} />
-             <Route path="/manager/transactions" element={<TransactionsList />} />
-             <Route path="/manager/transactions/:transactionId" element={<TransactionsUpdate />} />
-             <Route path="/manager/promotions/create" element={<PromotionCreate />} />
-             <Route path="/manager/promotions" element={<PromotionList />} />
-             <Route path="/manager/promotions/:promotionId" element={<PromotionUpdate />} />
-             <Route path="/manager/events/create" element={<EventCreate />} />
-             <Route path="/manager/events" element={<EventList />} />
-             <Route path="/manager/events/:eventId" element={<EventUpdate />} />
-
-
-
-
-            {/* future pages */}
-            {/* <Route path="/promotions" element={<PromotionList />} /> */}
-            {/* <Route path="/events" element={<EventList />} /> */}
-            {/* <Route path="/transactions/my" element={<UserTransactions />} /> */}
-
-            {/* cashier pages */}
+             {/* cashier pages */}
             <Route path="/cashier/transactions" element={<Transactions />} />
             <Route path="/cashier/redemption" element={<RedemptionTransaction />} />
+            
+            {/* manager pages */}
+            <Route path="/manager/users" element={<UsersList />} />
+            <Route path="/manager/users/:userId" element={<UsersUpdate />} />
+            <Route path="/manager/transactions" element={<TransactionsList />} />
+            <Route path="/manager/transactions/:transactionId" element={<TransactionsUpdate />} />
+            <Route path="/manager/promotions/create" element={<PromotionCreate />} />
+            <Route path="/manager/promotions" element={<PromotionList />} />
+            <Route path="/manager/promotions/:promotionId" element={<PromotionUpdate />} />
+            <Route path="/manager/events/create" element={<EventCreate />} />
+            <Route path="/manager/events" element={<EventList />} />
+            <Route path="/manager/events/:eventId" element={<EventUpdate />} />
+
+
+           
 
             {/* organizer pages */}
             <Route path="/organizer/events" element={<Events />} />
