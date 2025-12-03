@@ -175,14 +175,20 @@ export default function TransactionsList() {
         />
         <br />
 
-        {/* FIXED: JSX-safe label */}
-        <label>Operator (&gt;, &lt;, =): </label>
-        <input
+        
+        <label>Operator: </label>
+        <label>Operator: </label>
+        <select
           value={filters.operator}
           onChange={(e) =>
             setFilters({ ...filters, operator: e.target.value, page: 1 })
           }
-        />
+        >
+          <option value="">All</option>
+          <option value="gte">Greater Than or Equal</option>
+          <option value="lte">Less Than or Equal</option>
+        </select>
+
       </div>
 
       <br />
@@ -216,13 +222,13 @@ export default function TransactionsList() {
         }
       >
         <option value="5">5</option>
+        <option value="5">5</option>
         <option value="10">10</option>
         <option value="20">20</option>
         <option value="25">25</option>
       </select>
 
 
-      {/* TABLE */}
 
       {sortedTransactions.length === 0 ? (
         <p>No transactions found.</p>
@@ -233,13 +239,16 @@ export default function TransactionsList() {
         <thead>
           <tr>
             <th>ID</th>
-            <th>Type</th>
+            <th>UtorID</th>
             <th>Amount</th>
+            <th>Type</th>
+            <th>Spent</th>
             <th>Created By</th>
-            <th>To User</th>
             <th>Suspicious</th>
-            <th>Created</th>
+            <th>Promotion IDs</th>
+            <th>Remark</th>
             <th>Edit</th>
+      
           </tr>
         </thead>
 
@@ -247,12 +256,18 @@ export default function TransactionsList() {
           {sortedTransactions.map((t) => (
             <tr key={t.id}>
               <td>{t.id}</td>
-              <td>{t.type}</td>
+              <th>{t.utorid}</th>
               <td>{t.amount}</td>
+              <td>{t.type}</td>
+              <td>{t.spent}</td>
               <td>{t.createdBy}</td>
-              <td>{t.toUser}</td>
               <td>{t.suspicious ? "Yes" : "No"}</td>
-              <td>{t.createdAt}</td>
+              <td>
+                {t.promotionIds && t.promotionIds.length > 0
+                  ? t.promotionIds.join(", ")
+                  : "None"}
+              </td>
+              <td>{t.remark ? t.remark : "No remarks"}</td>
               <td>
                 <Link to={`/manager/transactions/${t.id}`}>Edit</Link>
             </td>

@@ -170,7 +170,7 @@ class TransactionService {
     }
 
     if (createdBy) {
-      filters.createdBy = { utorid: createdBy };
+      filters.createdBy = { utorid: {contains: createdBy}};
     }
 
     if (suspicious !== undefined) {
@@ -178,15 +178,16 @@ class TransactionService {
     }
 
     if (promotionId) {
-      filters.promotionIds = { some: { id: promotionId } };
+      filters.promotionIds = { some: { id: Number(promotionId)} };
     }
 
     if (type) {
       filters.type = type;
     }
 
+
     if (relatedId) {
-      filters.relatedId = relatedId;
+      filters.relatedId = Number(relatedId);
     }
 
     if (amount && operator) {
@@ -221,8 +222,7 @@ class TransactionService {
       promotionIds: t.promotionIds.map(p => p.id),
       suspicious: t.suspicious,
       remark: t.remark,
-      createdBy: t.createdBy.utorid,
-      createdAt: t.createdAt,
+      createdBy: t.createdBy.utorid 
     }));
 
     return { count, results: formatted };
@@ -251,7 +251,6 @@ class TransactionService {
       suspicious: transaction.suspicious,
       remark: transaction.remark,
       createdBy: transaction.createdBy.utorid,
-      createdAt: transaction.createdAt
     };
   }
 
@@ -301,7 +300,6 @@ class TransactionService {
       suspicious: updatedTransaction.suspicious,
       remark: updatedTransaction.remark,
       createdBy: updatedTransaction.createdBy.utorid,
-      createdAt: updatedTransaction.createdAt
     };
   }
 
@@ -373,8 +371,7 @@ class TransactionService {
         type: "transfer",
         sent: amount,
         remark,
-        createdBy: senderUser.utorid,
-        createdAt: sendTransaction.createdAt
+        createdBy: senderUser.utorid
       };
     return formatted;
   }
@@ -412,111 +409,60 @@ class TransactionService {
       processedBy: null,
       amount: transaction.amount,
       remark: transaction.remark,
-      createdBy: dbUser.utorid,
-      createdAt: transaction.createdAt
+      createdBy: dbUser.utorid
     };
   }
 
   async getUserTransactions(userId, params) {
-    const { 
-      type,
-      relatedId,
-      promotionId,
-      promotionName,
-      remark,
-      amount,
-      operator,
-      page,
-      limit
-    } = params;
+    const { type, relatedId, promotionId, amount, operator, page, limit } = params;
 
     const filters = { userId };
-
-    if (type) filters.type = type;
-
+    
     if (relatedId && type) {
-      filters.relatedId = Number(relatedId);
+      filters.relatedId = relatedId;
+      filters.type = type;
+    } else if (type) {
+      filters.type = type;
     }
 
     if (promotionId) {
-      filters.promotionIds = {
-        some: { id: Number(promotionId) }
-      };
+      filters.promotionIds = { some: { id: promotionId } };
     }
 
-    if (promotionName && promotionName.trim() !== "") {
-      filters.promotionIds = {
-        some: {
-          name: { contains: promotionName.trim() }
-        }
-      };
-    }
-
-    if (remark && remark.trim() !== "") {
-      filters.remark = {
-        contains: remark.trim()
-      };
-    }
-
-    if (operator && amount !== undefined && amount !== null && amount !== "") {
+    if (amount && operator) {
       const op = operator === "gte" ? "gte" : "lte";
-      filters.amount = { [op]: Number(amount) };
+      filters.amount = { [op]: amount };
     }
 
     const skip = (page - 1) * limit;
 
     const [count, results] = await prisma.$transaction([
       prisma.transaction.count({ where: filters }),
-
       prisma.transaction.findMany({
         where: filters,
         skip,
         take: limit,
         include: {
           createdBy: { select: { utorid: true } },
-          processedBy: { select: { utorid: true } },
-          promotionIds: { select: { id: true, name: true } }
+          promotionIds: { select: { id: true } }
         },
-        orderBy: [
-        { createdAt: "desc" },
-        { id: "desc" }
-      ]
+        orderBy: { id: "asc" }
       })
     ]);
 
-    const formatted = await Promise.all(
-      results.map(async (t) => {
-        let relatedUtorid = null;
-
-        if (t.type === "transfer" && t.relatedId) {
-          const otherUser = await prisma.user.findUnique({
-            where: { id: t.relatedId },
-            select: { utorid: true }
-          });
-          relatedUtorid = otherUser ? otherUser.utorid : null;
-        }
-
-        return {
-          id: t.id,
-          amount: t.amount,
-          type: t.type,
-          processed: t.processed,
-          processedBy: t.processedBy ?? null,
-          spent: t.spent ?? undefined,
-          relatedId: t.relatedId ?? undefined,
-          relatedUtorid,
-          promotionIds: t.promotionIds.map((p) => p.id),
-          promotionNames: t.promotionIds.map((p) => p.name),
-          remark: t.remark,
-          createdBy: t.createdBy.utorid,
-          createdAt: t.createdAt,
-        };
-      })
-    );
+    const formatted = results.map(t => ({
+      id: t.id,
+      amount: t.amount,
+      type: t.type,
+      spent: t.spent ?? undefined,
+      relatedId: t.relatedId ?? undefined,
+      promotionIds: t.promotionIds.map(p => p.id),
+      remark: t.remark,
+      createdBy: t.createdBy.utorid 
+    }));
 
     return { count, results: formatted };
   }
-
 
   async processRedemption(transactionId, processorId) {
       const transaction = await prisma.transaction.findUnique({
