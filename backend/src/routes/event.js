@@ -47,6 +47,14 @@ router.get(
     eventControllers.getAllEvents
 );
 
+// GET /events/organized/me - Get events organized by current user
+router.get(
+    "/organized/me",
+    authenticateToken,
+    requireRole(["regular", "cashier", "manager", "superuser"]),
+    eventControllers.listOrganizedEvents
+);
+
 // GET /events/:eventId - Get a single event
 router.get(
     "/:eventId",

@@ -67,7 +67,8 @@ class TransactionService {
       earned: earnedAmount,
       remark,
       promotionIds,
-      createdBy: req.user.utorid
+      createdBy: req.user.utorid,
+      createdAt: transaction.createdAt,
     };
   }
 
@@ -122,7 +123,9 @@ class TransactionService {
       relatedId,
       remark,
       promotionIds,
-      createdBy: req.user.utorid
+      createdBy: req.user.utorid,
+      createdAt: transaction.createdAt
+
     };
   }
 
@@ -190,7 +193,8 @@ class TransactionService {
       promotionIds: t.promotionIds.map(p => p.id),
       suspicious: t.suspicious,
       remark: t.remark,
-      createdBy: t.createdBy.utorid 
+      createdBy: t.createdBy.utorid,
+      createdAt: t.createdAt,
     }));
 
     return { count, results: formatted };
@@ -219,6 +223,7 @@ class TransactionService {
       suspicious: transaction.suspicious,
       remark: transaction.remark,
       createdBy: transaction.createdBy.utorid,
+      createdAt: transaction.createdAt
     };
   }
 
@@ -268,6 +273,7 @@ class TransactionService {
       suspicious: updatedTransaction.suspicious,
       remark: updatedTransaction.remark,
       createdBy: updatedTransaction.createdBy.utorid,
+      createdAt: updatedTransaction.createdAt
     };
   }
 
@@ -339,7 +345,8 @@ class TransactionService {
         type: "transfer",
         sent: amount,
         remark,
-        createdBy: senderUser.utorid
+        createdBy: senderUser.utorid,
+        createdAt: sendTransaction.createdAt
       };
     return formatted;
   }
@@ -377,60 +384,111 @@ class TransactionService {
       processedBy: null,
       amount: transaction.amount,
       remark: transaction.remark,
-      createdBy: dbUser.utorid
+      createdBy: dbUser.utorid,
+      createdAt: transaction.createdAt
     };
   }
 
   async getUserTransactions(userId, params) {
-    const { type, relatedId, promotionId, amount, operator, page, limit } = params;
+    const { 
+      type,
+      relatedId,
+      promotionId,
+      promotionName,
+      remark,
+      amount,
+      operator,
+      page,
+      limit
+    } = params;
 
     const filters = { userId };
-    
+
+    if (type) filters.type = type;
+
     if (relatedId && type) {
-      filters.relatedId = relatedId;
-      filters.type = type;
-    } else if (type) {
-      filters.type = type;
+      filters.relatedId = Number(relatedId);
     }
 
     if (promotionId) {
-      filters.promotionIds = { some: { id: promotionId } };
+      filters.promotionIds = {
+        some: { id: Number(promotionId) }
+      };
     }
 
-    if (amount && operator) {
+    if (promotionName && promotionName.trim() !== "") {
+      filters.promotionIds = {
+        some: {
+          name: { contains: promotionName.trim() }
+        }
+      };
+    }
+
+    if (remark && remark.trim() !== "") {
+      filters.remark = {
+        contains: remark.trim()
+      };
+    }
+
+    if (operator && amount !== undefined && amount !== null && amount !== "") {
       const op = operator === "gte" ? "gte" : "lte";
-      filters.amount = { [op]: amount };
+      filters.amount = { [op]: Number(amount) };
     }
 
     const skip = (page - 1) * limit;
 
     const [count, results] = await prisma.$transaction([
       prisma.transaction.count({ where: filters }),
+
       prisma.transaction.findMany({
         where: filters,
         skip,
         take: limit,
         include: {
           createdBy: { select: { utorid: true } },
-          promotionIds: { select: { id: true } }
+          processedBy: { select: { utorid: true } },
+          promotionIds: { select: { id: true, name: true } }
         },
-        orderBy: { id: "asc" }
+        orderBy: [
+        { createdAt: "desc" },
+        { id: "desc" }
+      ]
       })
     ]);
 
-    const formatted = results.map(t => ({
-      id: t.id,
-      amount: t.amount,
-      type: t.type,
-      spent: t.spent ?? undefined,
-      relatedId: t.relatedId ?? undefined,
-      promotionIds: t.promotionIds.map(p => p.id),
-      remark: t.remark,
-      createdBy: t.createdBy.utorid 
-    }));
+    const formatted = await Promise.all(
+      results.map(async (t) => {
+        let relatedUtorid = null;
+
+        if (t.type === "transfer" && t.relatedId) {
+          const otherUser = await prisma.user.findUnique({
+            where: { id: t.relatedId },
+            select: { utorid: true }
+          });
+          relatedUtorid = otherUser ? otherUser.utorid : null;
+        }
+
+        return {
+          id: t.id,
+          amount: t.amount,
+          type: t.type,
+          processed: t.processed,
+          processedBy: t.processedBy ?? null,
+          spent: t.spent ?? undefined,
+          relatedId: t.relatedId ?? undefined,
+          relatedUtorid,
+          promotionIds: t.promotionIds.map((p) => p.id),
+          promotionNames: t.promotionIds.map((p) => p.name),
+          remark: t.remark,
+          createdBy: t.createdBy.utorid,
+          createdAt: t.createdAt,
+        };
+      })
+    );
 
     return { count, results: formatted };
   }
+
 
   async processRedemption(transactionId, processorId) {
     const transaction = await prisma.transaction.findUnique({
@@ -491,7 +549,8 @@ class TransactionService {
       processedBy: cashier.utorid,
       redeemed: amount,
       remark: transaction.remark,
-      createdBy: transaction.createdBy.utorid
+      createdBy: transaction.createdBy.utorid,
+      createdAt: transaction.createdAt
     };
   }
 }

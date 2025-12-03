@@ -88,6 +88,8 @@ async function getPromotions(req, res) {
         });
         return res.status(200).json(promotions);
     } catch (error) {
+        console.error("ERROR IN GET /promotions:", error);
+        if (error.message === 'Bad Request') return res.status(400).json({ error: 'Bad Request' });
         return res.status(500).json({ error: "Internal Server Error" });
     }
 }

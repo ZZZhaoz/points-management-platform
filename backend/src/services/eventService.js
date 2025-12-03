@@ -182,7 +182,7 @@ class EventService {
             },
         });
 
-        const count = events.length;
+        
 
 
         if (showFull === "true" || showFull === true) {
@@ -195,7 +195,8 @@ class EventService {
                 return event.capacity === null || event.numGuests < event.capacity;
             });
         }
-
+        
+        const count = events.length;
         events = events.slice((pageNum - 1) * limitNum, pageNum * limitNum);
 
         return {
@@ -266,6 +267,19 @@ class EventService {
             organizers: event.organizers,
             guests: event.guests || [],
         };
+    }
+
+    async getMyEvents(userId) {
+    const events = await prisma.event.findMany({
+        where: {
+        guests: {
+            some: { id: userId }
+        }
+        },
+        select: { id: true }     
+    });
+
+    return events.map(e => e.id);
     }
 
     async updateEvent(eventId, updates, userRole, userId) {
@@ -875,6 +889,73 @@ class EventService {
 
             return transactions;
         }
+    }
+
+    async listOrganizedEvent(userId, userRole) {
+        const where = {
+            organizers: {
+                some: {
+                    id: userId
+                }
+            }
+        };
+
+        // Regular/Cashier can only see the published events
+        if (userRole === 'regular' || userRole === 'cashier') {
+            where.published = true;
+        }
+
+        const events = await prisma.event.findMany({
+            where,
+            include: {
+                organizers: {
+                    select: {
+                        id: true,
+                        utorid: true,
+                        name: true,
+                    },
+                },
+                guests: (userRole !== 'regular' && userRole !== 'cashier') ? {
+                    select: {
+                        id: true,
+                        utorid: true,
+                        name: true,
+                    },
+                } : false,
+            },
+        });
+
+        return events.map(event => {
+            if (userRole === 'regular' || userRole === 'cashier') {
+                return {
+                    id: event.id,
+                    name: event.name,
+                    description: event.description,
+                    location: event.location,
+                    startTime: event.startTime,
+                    endTime: event.endTime,
+                    capacity: event.capacity,
+                    numGuests: event.numGuests,
+                    organizers: event.organizers,
+                };
+            } else {
+                return {
+                    id: event.id,
+                    name: event.name,
+                    description: event.description,
+                    location: event.location,
+                    startTime: event.startTime,
+                    endTime: event.endTime,
+                    capacity: event.capacity,
+                    numGuests: event.numGuests,
+                    pointsRemain: event.pointsRemain,
+                    pointsAwarded: event.pointsAwarded,
+                    published: event.published,
+                    organizers: event.organizers,
+                    guests: event.guests || [],
+                };
+            }
+        });
     }
 }
 

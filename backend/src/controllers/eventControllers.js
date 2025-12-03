@@ -18,7 +18,7 @@ async function createEvent(req, res) {
 
 async function getAllEvents(req, res) {
     try {
-        const result = await eventService.getAllEvents(req.query, req.user.role);
+        const result = await eventService.getAllEvents(req.query, req.user.role, req.user.id);
         return res.status(200).json(result);
     } catch (err) {
         if (err.message === "Bad Request") {
@@ -50,6 +50,21 @@ async function getEvent(req, res) {
         return res.status(500).json({ error: "Internal server error" });
     }
 }
+
+async function getMyEvents(req, res) {
+  try {
+    const userId = req.user.id;
+
+    const eventIds = await eventService.getMyEvents(userId);
+
+    return res.json(eventIds);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+
 
 async function updateEvent(req, res) {
     try {
@@ -258,6 +273,16 @@ async function createEventTransaction(req, res) {
     }
 }
 
+async function listOrganizedEvents(req, res) {
+    try {
+        const result = await eventService.listOrganizedEvent(req.user.id, req.user.role);
+        return res.status(200).json(result);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+}
+
 module.exports = {
     createEvent,
     getAllEvents,
@@ -271,4 +296,6 @@ module.exports = {
     addGuestMe,
     removeGuestMe,
     createEventTransaction,
+    listOrganizedEvents,
+    getMyEvents
 };
