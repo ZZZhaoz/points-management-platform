@@ -275,6 +275,8 @@ async function getUserTransactions(req, res) {
       promotionId,
       promotionName,
       remark,
+      from,
+      to, 
       page = 1,
       limit = 10
     } = req.query;
@@ -309,6 +311,8 @@ async function getUserTransactions(req, res) {
         promotionId,
         promotionName,
         remark,
+        from,
+        to,
         page,
         limit
       }

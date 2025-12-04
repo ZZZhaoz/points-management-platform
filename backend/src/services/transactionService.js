@@ -414,10 +414,16 @@ class TransactionService {
   }
 
   async getUserTransactions(userId, params) {
-    const { type, relatedId, promotionId, amount, operator, page, limit } = params;
+    const { type, relatedId, promotionId, amount, operator, page, limit, from, to } = params;
 
     const filters = { userId };
-    
+
+    if (from || to) {
+      filters.createdAt = {};
+      if (from) filters.createdAt.gte = new Date(from);
+      if (to) filters.createdAt.lte = new Date(to);
+    }
+      
     if (relatedId && type) {
       filters.relatedId = relatedId;
       filters.type = type;
@@ -458,7 +464,8 @@ class TransactionService {
       relatedId: t.relatedId ?? undefined,
       promotionIds: t.promotionIds.map(p => p.id),
       remark: t.remark,
-      createdBy: t.createdBy.utorid 
+      createdBy: t.createdBy.utorid,
+      createdAt: t.createdAt
     }));
 
     return { count, results: formatted };

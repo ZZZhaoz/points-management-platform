@@ -26,6 +26,7 @@ import EventsListPage from "./pages/regularuser/EventsListPage";
 import EventDetailPage from "./pages/regularuser/EventDetailPage";
 import TransactionsListPage from "./pages/regularuser/TransactionsListPage";
 import RedemptionQRPage from "./pages/regularuser/RedemptionQRPage";
+import StatisticsPage from "./pages/regularuser/StatisticsPage";
 
 /* -----------------------------  Cashier Pages  ----------------------------- */
 import Transactions from "./pages/cashier/transactions";
@@ -87,6 +88,7 @@ export default function App() {
                   <Route path="/events/:eventId" element={<EventDetailPage />} />
                   <Route path="/transactions/my" element={<TransactionsListPage />} />
                   <Route path="/redeem/qr/:transactionId" element={<RedemptionQRPage />} />
+                  <Route path="/statistics" element={<StatisticsPage />} />
 
                   {/* Cashier */}
                   <Route path="/cashier/transactions" element={<Transactions />} />
