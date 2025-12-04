@@ -123,6 +123,9 @@ export default function StatisticsPage() {
   const [lineData, setLineData] = useState([]);
   const [pieData, setPieData] = useState([]);
   const [barData, setBarData] = useState([]);
+  const [totalTransactions, setTotalTransactions] = useState(0);
+  const [totalPoints, setTotalPoints] = useState(0);
+
 
   useEffect(() => {
     loadData();
@@ -151,16 +154,34 @@ export default function StatisticsPage() {
 
     console.log("mode:", mode);
     console.log("transactions received:", tx.length);
+
+    setTotalTransactions(tx.length);
+    setTotalPoints(tx.reduce((sum, t) => sum + Number(t.amount), 0));
   }
 
   return (
     <div style={{ width: "100%" }}>
-      
+
       {/* Mode Switch */}
-      <div style={{ marginBottom: 20 }}>
-        <button onClick={() => setMode("week")}>Week</button>
-        <button onClick={() => setMode("month")}>Month</button>
-        <button onClick={() => setMode("year")}>Year</button>
+      <div style={{ marginBottom: 20, display: "flex", gap: "10px" }}>
+        {["week", "month", "year"].map((m) => (
+          <button
+            key={m}
+            onClick={() => setMode(m)}
+            style={{
+              padding: "8px 16px",
+              borderRadius: "8px",
+              border: "1px solid #d0d0d0",
+              cursor: "pointer",
+              background: mode === m ? "#4f8ef7" : "#f0f0f0",
+              color: mode === m ? "white" : "#333",
+              fontWeight: mode === m ? "bold" : "normal",
+              transition: "0.2s",
+            }}
+          >
+            {m.charAt(0).toUpperCase() + m.slice(1)}
+          </button>
+        ))}
       </div>
 
       {/* ------------------ LINE CHART ------------------ */}
@@ -206,6 +227,52 @@ export default function StatisticsPage() {
           </BarChart>
         </ResponsiveContainer>
       </div>
+
+     {/* ------------------ SUMMARY CARDS ------------------ */}
+    <h3 style={{ marginBottom: "1rem" }}>Summary ({mode})</h3>
+
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+        gap: "1.5rem",
+        marginBottom: "2rem",
+      }}
+    >
+    {/* Total Transactions */}
+      <div
+        style={{
+          textAlign: "center",
+          padding: "1.5rem",
+          borderRadius: "12px",
+          background: "#f5f7ff",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+        }}
+      >
+        <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#8884d8" }}>
+          {totalTransactions}
+        </div>
+        <div style={{ color: "#666" }}>Total Transactions</div>
+      </div>
+
+        {/* Total Points */}
+        <div
+          style={{
+            textAlign: "center",
+            padding: "1.5rem",
+            borderRadius: "12px",
+            background: "#fff7f0",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+          }}
+        >
+          <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#FF8042" }}>
+            {totalPoints}
+          </div>
+          <div style={{ color: "#666" }}>Total Points Change</div>
+        </div>
+      </div>
+
+
 
     </div>
   );

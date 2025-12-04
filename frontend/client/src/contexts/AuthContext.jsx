@@ -119,10 +119,10 @@ export const AuthProvider = ({ children }) => {
   // --------------------------
   // Change Interface Role (Switch View)
   // --------------------------
-const changeViewRole = (role) => {
-  localStorage.setItem("viewRole", role);
-  setViewRole(role);
-};
+  const changeViewRole = (role) => {
+    localStorage.setItem("viewRole", role);
+    setViewRole(role);
+  };
 
   // --------------------------
   // Get User by ID
