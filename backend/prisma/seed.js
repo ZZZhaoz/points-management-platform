@@ -3,6 +3,29 @@
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcrypt');
 const prisma = new PrismaClient();
+function randomCreatedAt() {
+  const dice = Math.random();
+
+  if (dice < 0.3) {
+    const daysAgo = Math.floor(Math.random() * 7); 
+    const d = new Date();
+    d.setDate(d.getDate() - daysAgo);
+
+    d.setHours(Math.floor(Math.random() * 24));
+    d.setMinutes(Math.floor(Math.random() * 60));
+    d.setSeconds(Math.floor(Math.random() * 60));
+    return d;
+  }
+
+  const daysAgo = Math.floor(Math.random() * 90);
+  const d = new Date();
+  d.setDate(d.getDate() - daysAgo);
+
+  d.setHours(Math.floor(Math.random() * 24));
+  d.setMinutes(Math.floor(Math.random() * 60));
+  d.setSeconds(Math.floor(Math.random() * 60));
+  return d;
+}
 
 async function main() {
   console.log("Seeding database...");
@@ -373,11 +396,14 @@ async function main() {
 
   const updatedEvents = await prisma.event.findMany();
 
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 150; i++) {
     const type = txTypes[i % txTypes.length];
     const user = regularUsers[Math.floor(Math.random() * regularUsers.length)];
     const receiver = regularUsers[(i + 1) % regularUsers.length];
     const event = updatedEvents[i % updatedEvents.length];
+
+    const createdAt = randomCreatedAt();
+
 
     let amount = 10 + i;
     let spent = null;
@@ -408,7 +434,8 @@ async function main() {
       relatedId,
       awarded,
       processed: true,
-      suspicious: false
+      suspicious: false,
+      createdAt
     });
   }
 

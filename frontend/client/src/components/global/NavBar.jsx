@@ -52,6 +52,7 @@ export default function NavBar() {
         <>
           <Link to="/promotions">Promotions</Link>
           <Link to="/user/qr">My QR</Link>
+          <Link to="/statistics">Statistics</Link>
 
           <Dropdown title="Transactions">
             <Dropdown.Item to="/transactions/my">My Transactions</Dropdown.Item>

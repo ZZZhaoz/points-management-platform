@@ -122,6 +122,8 @@ router.get(
       "amount",
       "operator",
       "remark",
+      "from",
+      "to",
       "page",
       "limit"
     ],
@@ -135,6 +137,9 @@ router.get(
       promotionName: "string",
       amount: "number",
       operator: "string",
+      from: "string",
+      to: "string",
+      remark: "string",
       page: "number",
       limit: "number"
     }
