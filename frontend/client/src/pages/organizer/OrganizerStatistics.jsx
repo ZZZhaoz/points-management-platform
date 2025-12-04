@@ -220,13 +220,37 @@ export default function OrganizerStatistics() {
               />
               <YAxis />
               <Tooltip
-                formatter={(value, name) => [
-                  value,
-                  name === "pointsAwarded" ? "Points Awarded" : "Points Remaining",
-                ]}
-                labelFormatter={(label) => {
-                  const event = pointsData.find((e) => e.name === label);
-                  return event?.fullName || label;
+                content={({ active, payload, label }) => {
+                  if (active && payload && payload.length) {
+                    const event = pointsData.find((e) => e.name === label);
+                    return (
+                      <div
+                        style={{
+                          backgroundColor: "white",
+                          border: "1px solid #ccc",
+                          borderRadius: "4px",
+                          padding: "10px",
+                          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                        }}
+                      >
+                        <p style={{ fontWeight: "bold", marginBottom: "5px" }}>
+                          {event?.fullName || label}
+                        </p>
+                        {payload.map((entry, index) => (
+                          <p
+                            key={index}
+                            style={{
+                              color: entry.color,
+                              margin: "3px 0",
+                            }}
+                          >
+                            {entry.name}: {entry.value}
+                          </p>
+                        ))}
+                      </div>
+                    );
+                  }
+                  return null;
                 }}
               />
               <Legend />
@@ -265,12 +289,6 @@ export default function OrganizerStatistics() {
                 {events.reduce((sum, e) => sum + (e.numGuests || 0), 0)}
               </div>
               <div style={{ color: "#666" }}>Total Participants</div>
-            </div>
-            <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#FF8042" }}>
-                {events.reduce((sum, e) => sum + (e.pointsAwarded || 0), 0)}
-              </div>
-              <div style={{ color: "#666" }}>Total Points Awarded</div>
             </div>
             <div style={{ textAlign: "center" }}>
               <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#0088FE" }}>
