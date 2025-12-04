@@ -959,7 +959,9 @@ class EventService {
                 startTime: true,
                 endTime: true,
                 published: true,
-                numGuests: true
+                numGuests: true,
+                pointsRemain: true,
+                pointsAwarded: true
             }
         });
 

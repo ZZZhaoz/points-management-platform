@@ -152,31 +152,54 @@ export default function NavBar() {
           <Dropdown.Item to="/organizer/events">
             My Organized Events
           </Dropdown.Item>
+          <Dropdown.Item to="/organizer/statistics">
+            Statistics
+          </Dropdown.Item>
         </Dropdown>
       )}
 
       {/* ------------------------ Interface Switcher ------------------------ */}
       <Dropdown title={`View as: ${viewRole}`}>
         {canSwitchTo("regular") && (
-          <Dropdown.Item onClick={() => changeViewRole("regular")}>
+          <Dropdown.Item
+            onClick={() => {
+              changeViewRole("regular");
+              navigate("/dashboard");
+            }}
+          >
             Regular User
           </Dropdown.Item>
         )}
 
         {canSwitchTo("cashier") && (
-          <Dropdown.Item onClick={() => changeViewRole("cashier")}>
+          <Dropdown.Item
+            onClick={() => {
+              changeViewRole("cashier");
+              navigate("/dashboard");
+            }}
+          >
             Cashier
           </Dropdown.Item>
         )}
 
         {canSwitchTo("manager") && (
-          <Dropdown.Item onClick={() => changeViewRole("manager")}>
+          <Dropdown.Item
+            onClick={() => {
+              changeViewRole("manager");
+              navigate("/dashboard");
+            }}
+          >
             Manager
           </Dropdown.Item>
         )}
 
         {canSwitchTo("superuser") && (
-          <Dropdown.Item onClick={() => changeViewRole("superuser")}>
+          <Dropdown.Item
+            onClick={() => {
+              changeViewRole("superuser");
+              navigate("/dashboard");
+            }}
+          >
             Superuser
           </Dropdown.Item>
         )}
