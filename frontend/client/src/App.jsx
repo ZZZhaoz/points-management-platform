@@ -8,6 +8,8 @@ import { TransactionProvider } from "./contexts/TransactionContext";
 /* -----------------------------  Global Components  ----------------------------- */
 import Layout from "./components/layout/Layout";
 import ProtectedRoute from "./components/global/ProtectedRoute";
+import OrganizerProtectedRoute from "./components/global/OrganizerProtectedRoute";
+import DashboardWrapper from "./components/global/DashboardWrapper";
 
 /* -----------------------------  Auth & Profile Pages  ----------------------------- */
 import Login from "./pages/Login";
@@ -49,6 +51,7 @@ import Events from "./pages/organizer/Events";
 import EventDetail from "./pages/organizer/EventDetail";
 import EventEdit from "./pages/organizer/EventEdit";
 import AwardPoints from "./pages/organizer/AwardPoints";
+import OrganizerStatistics from "./pages/organizer/OrganizerStatistics";
 
 /* -----------------------------  Superuser Pages  ----------------------------- */
 import UserPromotion from "./pages/superuser/UserPromotion";
@@ -77,9 +80,10 @@ export default function App() {
                     <ProtectedRoute roles={["regular", "cashier", "manager", "superuser"]} />
                   }
                 >
-
+                  <Route path="/dashboard" element={<DashboardWrapper />} />
                   {/* Regular */}
-                  <Route path="/dashboard" element={<Dashboard />} />
+                  {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+                  {/* <Route path="/dashboard" element={<DashboardWrapper />} /> */}
                   <Route path="/user/qr" element={<UserQRPage />} />
                   <Route path="/transfer" element={<TransferPage />} />
                   <Route path="/redeem" element={<RedemptionPage />} />
@@ -91,6 +95,7 @@ export default function App() {
                   <Route path="/statistics" element={<StatisticsPage />} />
 
                   {/* Cashier */}
+                  {/* <Route path="/dashboard" element={<DashboardWrapper />} /> */}
                   <Route path="/cashier/transactions" element={<Transactions />} />
                   <Route path="/cashier/redemption" element={<RedemptionTransaction />} />
 
@@ -107,10 +112,13 @@ export default function App() {
                   <Route path="/manager/events/:eventId" element={<EventUpdate />} />
 
                   {/* Organizer */}
-                  <Route path="/organizer/events" element={<Events />} />
-                  <Route path="/organizer/events/:eventId" element={<EventDetail />} />
-                  <Route path="/organizer/events/:eventId/edit" element={<EventEdit />} />
-                  <Route path="/organizer/events/:eventId/award-points" element={<AwardPoints />} />
+                  <Route element={<OrganizerProtectedRoute />}>
+                    <Route path="/organizer/events" element={<Events />} />
+                    <Route path="/organizer/events/:eventId" element={<EventDetail />} />
+                    <Route path="/organizer/events/:eventId/edit" element={<EventEdit />} />
+                    <Route path="/organizer/events/:eventId/award-points" element={<AwardPoints />} />
+                    <Route path="/organizer/statistics" element={<OrganizerStatistics />} />
+                  </Route>
 
                   {/* Superuser */}
                   <Route path="/superuser/user-promotion" element={<UserPromotion />} />
