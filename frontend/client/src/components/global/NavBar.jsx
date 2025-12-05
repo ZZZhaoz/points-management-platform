@@ -89,8 +89,18 @@ export default function NavBar() {
           <Link to="/manager/users">Users</Link>
 
           <Dropdown title="Transactions">
+            <Dropdown.Item to="/cashier/transactions">
+              Create Transaction
+            </Dropdown.Item>
             <Dropdown.Item to="/manager/transactions">
               All Transactions
+            </Dropdown.Item>
+          </Dropdown>
+
+
+          <Dropdown title="Redemption">
+            <Dropdown.Item to="/cashier/redemption">
+              Process Redemption
             </Dropdown.Item>
           </Dropdown>
 
@@ -109,6 +119,11 @@ export default function NavBar() {
             </Dropdown.Item>
             <Dropdown.Item to="/manager/events">View Events</Dropdown.Item>
           </Dropdown>
+
+
+         <Link to="/manager/statistics">Statistics</Link>  
+
+
         </>
       )}
 
@@ -117,6 +132,21 @@ export default function NavBar() {
         <>
           <Link to="/manager/users">Users</Link>
 
+          <Dropdown title="Transactions">
+            <Dropdown.Item to="/cashier/transactions">
+              Create Transaction
+            </Dropdown.Item>
+            <Dropdown.Item to="/manager/transactions">
+              All Transactions
+            </Dropdown.Item>
+          </Dropdown>
+
+          <Dropdown title="Redemption">
+            <Dropdown.Item to="/cashier/redemption">
+              Process Redemption
+            </Dropdown.Item>
+          </Dropdown>
+
           <Dropdown title="Promotions">
             <Dropdown.Item to="/manager/promotions/create">
               Create Promotion
@@ -126,6 +156,7 @@ export default function NavBar() {
             </Dropdown.Item>
           </Dropdown>
 
+
           <Dropdown title="Events">
             <Dropdown.Item to="/manager/events/create">
               Create Event
@@ -133,7 +164,6 @@ export default function NavBar() {
             <Dropdown.Item to="/manager/events">View Events</Dropdown.Item>
           </Dropdown>
 
-          <Link to="/manager/transactions">Transactions</Link>
 
           <Dropdown title="Superuser Tools">
         
@@ -141,7 +171,11 @@ export default function NavBar() {
               User Promotion
             </Dropdown.Item>
           </Dropdown>
+
+          <Link to="/manager/statistics">Statistics</Link>  
+
         </>
+        
       )}
 
       {/* ------------------------ Organizer Tools (real organizer) ------------------------ */}

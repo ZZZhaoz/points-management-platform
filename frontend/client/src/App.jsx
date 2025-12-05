@@ -45,6 +45,7 @@ import PromotionUpdate from "./pages/manager/PromotionUpdate";
 import EventCreate from "./pages/manager/EventCreate";
 import EventList from "./pages/manager/EventList";
 import EventUpdate from "./pages/manager/EventUpdate";
+import ManagerStatistics from "./pages/manager/ManagerStatistics";
 
 /* -----------------------------  Organizer Pages  ----------------------------- */
 import Events from "./pages/organizer/Events";
@@ -110,6 +111,7 @@ export default function App() {
                   <Route path="/manager/events/create" element={<EventCreate />} />
                   <Route path="/manager/events" element={<EventList />} />
                   <Route path="/manager/events/:eventId" element={<EventUpdate />} />
+                  <Route path="/manager/statistics" element={<ManagerStatistics/>} />
 
                   {/* Organizer */}
                   <Route element={<OrganizerProtectedRoute />}>
