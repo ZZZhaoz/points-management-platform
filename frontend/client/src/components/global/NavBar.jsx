@@ -70,14 +70,14 @@ export default function NavBar() {
       {/* ------------------------ Cashier Nav ------------------------ */}
       {viewRole === "cashier" && (
         <>
-          <Dropdown title="Transactions">
-            <Dropdown.Item to="/cashier/transactions">
+        
+            <Link to="/cashier/transactions">
               Create Transaction
-            </Dropdown.Item>
-             <Dropdown.Item to="/cashier/redemption">
+            </Link>
+             <Link to="/cashier/redemption">
               Process Redemption
-            </Dropdown.Item>
-          </Dropdown>
+            </Link>
+         
 
         </>
       )}
@@ -128,8 +128,12 @@ export default function NavBar() {
       {viewRole === "superuser" && (
         <>
           <Link to="/manager/statistics">Statistics</Link> 
-          <Link to="/manager/users">Users</Link>
-
+          
+          <Dropdown title="Users">
+            <Dropdown.Item to="/manager/users">View Users</Dropdown.Item>
+            <Dropdown.Item to="/superuser/user-promotion"> User Promotion</Dropdown.Item>
+            
+          </Dropdown>
           <Dropdown title="Transactions">
             <Dropdown.Item to="/cashier/transactions">
               Create Transaction
@@ -153,19 +157,15 @@ export default function NavBar() {
 
 
           <Dropdown title="Events">
+            
+            <Dropdown.Item to="/manager/events">View Events</Dropdown.Item>
             <Dropdown.Item to="/manager/events/create">
               Create Event
             </Dropdown.Item>
-            <Dropdown.Item to="/manager/events">View Events</Dropdown.Item>
           </Dropdown>
 
 
-          <Dropdown title="Superuser Tools">
-        
-            <Dropdown.Item to="/superuser/user-promotion">
-              User Promotion
-            </Dropdown.Item>
-          </Dropdown>
+          
 
            
 
@@ -188,51 +188,53 @@ export default function NavBar() {
       )}
 
       {/* ------------------------ Interface Switcher ------------------------ */}
-      <Dropdown title={`View as: ${viewRole}`}>
-        {canSwitchTo("regular") && (
-          <Dropdown.Item
-            onClick={() => {
-              changeViewRole("regular");
-              navigate("/dashboard");
-            }}
-          >
-            Regular User
-          </Dropdown.Item>
-        )}
+      {roleRank[realRole] > roleRank["regular"] && (
+        <Dropdown title={`View as: ${viewRole}`}>
+          {canSwitchTo("regular") && (
+            <Dropdown.Item
+              onClick={() => {
+                changeViewRole("regular");
+                navigate("/dashboard");
+              }}
+            >
+              Regular User
+            </Dropdown.Item>
+          )}
 
-        {canSwitchTo("cashier") && (
-          <Dropdown.Item
-            onClick={() => {
-              changeViewRole("cashier");
-              navigate("/dashboard");
-            }}
-          >
-            Cashier
-          </Dropdown.Item>
-        )}
+          {canSwitchTo("cashier") && (
+            <Dropdown.Item
+              onClick={() => {
+                changeViewRole("cashier");
+                navigate("/dashboard");
+              }}
+            >
+              Cashier
+            </Dropdown.Item>
+          )}
 
-        {canSwitchTo("manager") && (
-          <Dropdown.Item
-            onClick={() => {
-              changeViewRole("manager");
-              navigate("/dashboard");
-            }}
-          >
-            Manager
-          </Dropdown.Item>
-        )}
+          {canSwitchTo("manager") && (
+            <Dropdown.Item
+              onClick={() => {
+                changeViewRole("manager");
+                navigate("/dashboard");
+              }}
+            >
+              Manager
+            </Dropdown.Item>
+          )}
 
-        {canSwitchTo("superuser") && (
-          <Dropdown.Item
-            onClick={() => {
-              changeViewRole("superuser");
-              navigate("/dashboard");
-            }}
-          >
-            Superuser
-          </Dropdown.Item>
-        )}
-      </Dropdown>
+          {canSwitchTo("superuser") && (
+            <Dropdown.Item
+              onClick={() => {
+                changeViewRole("superuser");
+                navigate("/dashboard");
+              }}
+            >
+              Superuser
+            </Dropdown.Item>
+          )}
+        </Dropdown>
+      )}
 
       {/* ------------------------ Avatar + Logout ------------------------ */}
       <div
@@ -261,7 +263,7 @@ export default function NavBar() {
         )}
       </div>
 
-      <LogoutButton />
+ 
     </nav>
   );
 }

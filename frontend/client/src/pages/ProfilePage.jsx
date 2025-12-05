@@ -149,6 +149,8 @@ export default function ProfilePage() {
         )}
       </div>
 
+      <LogoutButton />
+
       {/* Info Section */}
       {!editing ? (
         <div style={{ fontSize: 18, lineHeight: "1.8" }}>
