@@ -50,9 +50,13 @@ export default function NavBar() {
       {/* ------------------------ Regular Nav ------------------------ */}
       {viewRole === "regular" && (
         <>
-          <Link to="/promotions">Promotions</Link>
-          <Link to="/user/qr">My QR</Link>
           <Link to="/statistics">Statistics</Link>
+          
+          <Link to="/user/qr">My QR</Link> 
+          <Link to="/promotions">Promotions</Link>
+          <Link to="/events">Events</Link>
+       
+        
 
           <Dropdown title="Transactions">
             <Dropdown.Item to="/transactions/my">My Transactions</Dropdown.Item>
@@ -60,9 +64,6 @@ export default function NavBar() {
             <Dropdown.Item to="/redeem">Redeem Points</Dropdown.Item>
           </Dropdown>
 
-          <Dropdown title="Events">
-            <Dropdown.Item to="/events">Event List</Dropdown.Item>
-          </Dropdown>
         </>
       )}
 
@@ -73,19 +74,19 @@ export default function NavBar() {
             <Dropdown.Item to="/cashier/transactions">
               Create Transaction
             </Dropdown.Item>
-          </Dropdown>
-
-          <Dropdown title="Redemption">
-            <Dropdown.Item to="/cashier/redemption">
+             <Dropdown.Item to="/cashier/redemption">
               Process Redemption
             </Dropdown.Item>
           </Dropdown>
+
         </>
       )}
 
       {/* ------------------------ Manager Nav ------------------------ */}
       {viewRole === "manager" && (
+        
         <>
+          <Link to="/manager/statistics">Statistics</Link>  
           <Link to="/manager/users">Users</Link>
 
           <Dropdown title="Transactions">
@@ -95,10 +96,6 @@ export default function NavBar() {
             <Dropdown.Item to="/manager/transactions">
               All Transactions
             </Dropdown.Item>
-          </Dropdown>
-
-
-          <Dropdown title="Redemption">
             <Dropdown.Item to="/cashier/redemption">
               Process Redemption
             </Dropdown.Item>
@@ -121,7 +118,7 @@ export default function NavBar() {
           </Dropdown>
 
 
-         <Link to="/manager/statistics">Statistics</Link>  
+     
 
 
         </>
@@ -130,6 +127,7 @@ export default function NavBar() {
       {/* ------------------------ Superuser Nav ------------------------ */}
       {viewRole === "superuser" && (
         <>
+          <Link to="/manager/statistics">Statistics</Link> 
           <Link to="/manager/users">Users</Link>
 
           <Dropdown title="Transactions">
@@ -139,10 +137,7 @@ export default function NavBar() {
             <Dropdown.Item to="/manager/transactions">
               All Transactions
             </Dropdown.Item>
-          </Dropdown>
-
-          <Dropdown title="Redemption">
-            <Dropdown.Item to="/cashier/redemption">
+             <Dropdown.Item to="/cashier/redemption">
               Process Redemption
             </Dropdown.Item>
           </Dropdown>
@@ -172,7 +167,7 @@ export default function NavBar() {
             </Dropdown.Item>
           </Dropdown>
 
-          <Link to="/manager/statistics">Statistics</Link>  
+           
 
         </>
         
@@ -187,7 +182,7 @@ export default function NavBar() {
             My Organized Events
           </Dropdown.Item>
           <Dropdown.Item to="/organizer/statistics">
-            Statistics
+            Events Statistics
           </Dropdown.Item>
         </Dropdown>
       )}
