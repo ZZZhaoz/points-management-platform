@@ -70,7 +70,8 @@ export default function NavBar() {
       {/* ------------------------ Cashier Nav ------------------------ */}
       {viewRole === "cashier" && (
         <>
-        
+            <Link to="/register">Register User</Link>
+
             <Link to="/cashier/transactions">
               Create Transaction
             </Link>
@@ -87,8 +88,11 @@ export default function NavBar() {
         
         <>
           <Link to="/manager/statistics">Statistics</Link>  
-          <Link to="/manager/users">Users</Link>
-
+          <Dropdown title="Users">
+            <Dropdown.Item to="/manager/users">View Users</Dropdown.Item>
+            <Dropdown.Item to="/register">Register User</Dropdown.Item>
+          </Dropdown>
+          
           <Dropdown title="Transactions">
             <Dropdown.Item to="/cashier/transactions">
               Create Transaction
@@ -131,8 +135,8 @@ export default function NavBar() {
           
           <Dropdown title="Users">
             <Dropdown.Item to="/manager/users">View Users</Dropdown.Item>
+            <Dropdown.Item to="/register">Register User</Dropdown.Item>
             <Dropdown.Item to="/superuser/user-promotion"> User Promotion</Dropdown.Item>
-            
           </Dropdown>
           <Dropdown title="Transactions">
             <Dropdown.Item to="/cashier/transactions">

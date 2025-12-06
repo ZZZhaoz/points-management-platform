@@ -17,9 +17,9 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
 import ChangePasswordPage from "./pages/ChangePassword";
+import RegisterUser from "./pages/RegisterUser";
 
 /* -----------------------------  Regular User Pages  ----------------------------- */
-import Dashboard from "./pages/Dashboard";
 import UserQRPage from "./pages/regularuser/UserQRPage";
 import TransferPage from "./pages/regularuser/TransferPage";
 import RedemptionPage from "./pages/regularuser/RedemptionPage";
@@ -99,6 +99,7 @@ export default function App() {
                   {/* <Route path="/dashboard" element={<DashboardWrapper />} /> */}
                   <Route path="/cashier/transactions" element={<Transactions />} />
                   <Route path="/cashier/redemption" element={<RedemptionTransaction />} />
+                  <Route path="/register" element={<RegisterUser />} />
 
                   {/* Manager */}
                   <Route path="/manager/users" element={<UsersList />} />

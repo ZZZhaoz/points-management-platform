@@ -5,39 +5,49 @@ const bcrypt = require("bcrypt");
 
 
 class AuthService{
-    async authenticate({utorid, password}){
+    async authenticate({ utorid, password }) {
 
-        // If the user does not have a username or password field
-        if (!utorid || !password){
-            throw new Error("Bad Request");
+        if (!utorid || !password) {
+            const err = new Error("Missing UTORid or password");
+            err.type = "MISSING_FIELDS";
+            throw err;
         }
 
         const existingUser = await prisma.user.findUnique({
             where: { utorid },
         });
 
-        // If the provided password is incorrect
-        if (!existingUser || !existingUser.password){
-            throw new Error("Invalid credentials");
+        if (!existingUser) {
+            const err = new Error("User does not exist");
+            err.type = "USER_NOT_FOUND";
+            throw err;
         }
 
-        console.log("Print before");
+        if (!existingUser.password) {
+            const err = new Error("Account not activated or no password set");
+            err.type = "NO_PASSWORD_SET";
+            throw err;
+        }
+
+        console.log("Checking password...");
+
         const validPassword = await bcrypt.compare(password, existingUser.password);
-        console.log("Print after");
 
         if (!validPassword) {
-            throw new Error("Invalid credentials");
+            const err = new Error("Incorrect password");
+            err.type = "INVALID_PASSWORD";
+            throw err;
         }
 
         const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-
         await prisma.user.update({
-        where: { id: existingUser.id },
-        data: {lastLogin: new Date(), 
-            expiresAt: expiresAt,
-            activated: true,
-            },
+            where: { id: existingUser.id },
+            data: {
+                lastLogin: new Date(),
+                expiresAt: expiresAt,
+                activated: true
+            }
         });
 
         const token = jwt.sign(
@@ -45,11 +55,12 @@ class AuthService{
             process.env.JWT_SECRET,
             { expiresIn: "24h" }
         );
-        return { token, expiresAt: expiresAt.toISOString() };
+
+        return {
+            token,
+            expiresAt: expiresAt.toISOString()
+        };
     }
-
-
-
 
     async resetToken({utorid}, rateLimiter){
 
