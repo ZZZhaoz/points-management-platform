@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
     process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
 
   const [user, setUser] = useState(null);
-  
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
 
   const [viewRole, setViewRole] = useState(
     localStorage.getItem("viewRole") || null
@@ -93,7 +93,8 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("utorid", meData.utorid);
       localStorage.setItem("avatarUrl", meData.avatarUrl || "");
       localStorage.setItem("isOrganizer", meData.isOrganizer ? "true" : "false");
-
+      localStorage.setItem("token", data.token);
+      setToken(data.token);
       setUser(meData);
 
       localStorage.setItem("viewRole", meData.role);
@@ -114,6 +115,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("viewRole");
     setUser(null);
     setViewRole(null);
+    setToken(null);
   };
 
   // --------------------------
@@ -165,6 +167,7 @@ export const AuthProvider = ({ children }) => {
         updateUserRole: () => {}, // optional
         viewRole,
         changeViewRole,
+        token,
       }}
     >
       {children}

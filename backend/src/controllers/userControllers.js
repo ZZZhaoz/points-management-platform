@@ -5,15 +5,27 @@ async function createUser(req, res) {
     try {
         const result = await userService.createUser(req.body);
         return res.status(201).json(result);
-    } catch (err) {
-        if (err.message === "Bad Request") 
-            return res.status(400).json({ error: "Bad Request" });
 
-        if (err.message === 'Conflict'|| err.code === "P2002") return res.status(409).json({ error: 'Conflict' });
-        console.error(err);
-        return res.status(500).json({ error: 'Internal server error' });
+    } catch (err) {
+        console.error("User creation error:", err.message);
+
+        if (err.type === "CONFLICT" || err.code === "P2002") {
+            return res.status(409).json({ error: "User with this UTORid already exists" });
+        }
+
+        if (
+            err.type === "MISSING_FIELDS" ||
+            err.type === "INVALID_UTORID" ||
+            err.type === "INVALID_NAME" ||
+            err.type === "INVALID_EMAIL"
+        ) {
+            return res.status(400).json({ error: err.message });
+        }
+
+        return res.status(500).json({ error: "Internal server error" });
     }
 }
+
 
 async function getAllUsers(req, res) {
     try {

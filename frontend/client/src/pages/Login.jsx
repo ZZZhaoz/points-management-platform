@@ -10,12 +10,13 @@ export default function Login() {
   
   const [utorid, setUtorid] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
 
   const submit = async () => {
     const err = await login(utorid, password); 
 
     if (err) {
-      alert(err);
+      setError(err || "Invalid UTORid or password");
       return;
     }
 
@@ -42,6 +43,12 @@ export default function Login() {
           onChange={setPassword}
           required
         />
+
+        {error && (
+          <p style={{ color: "red", marginTop: "8px" }}>
+            {error}
+          </p>
+        )}
 
       <Button onClick={submit}>Login</Button>
       

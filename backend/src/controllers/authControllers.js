@@ -6,16 +6,28 @@ async function generateToken(req, res) {
   try {
     const result = await authService.authenticate(req.body);
     return res.status(200).json(result);
+
   } catch (err) {
-    if (err.message === "Bad Request") {
-      return res.status(400).json({ error: "Bad Request" });
+    console.error("Login error:", err.message);
+
+    if (err.type === "MISSING_FIELDS") {
+      return res.status(400).json({ error: err.message });
     }
 
-    if (err.message === "Invalid credentials") {
-      return res.status(401).json({ error: "Unauthorized" });
+    if (err.type === "USER_NOT_FOUND") {
+      return res.status(401).json({ error: "User not found" });
     }
 
-    console.error(err);
+    if (err.type === "NO_PASSWORD_SET") {
+      return res.status(401).json({ 
+        error: "Account not activated or no password set" 
+      });
+    }
+
+    if (err.type === "INVALID_PASSWORD") {
+      return res.status(401).json({ error: "Invalid password" });
+    }
+
     return res.status(500).json({ error: "Internal server error" });
   }
 }
