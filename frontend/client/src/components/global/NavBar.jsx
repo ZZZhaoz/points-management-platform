@@ -1,6 +1,5 @@
 
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import LogoutButton from "./LogoutButton";
 import Dropdown from "./Dropdown";
 import "./NavBar.css";
 import { useAuth } from "../../contexts/AuthContext"; 
@@ -233,7 +232,7 @@ export default function NavBar() {
         </Dropdown>
       )}
 
-      {/* ------------------------ Avatar + Logout ------------------------ */}
+      {/* ------------------------ Avatar ------------------------ */}
      <div className="nav-right">
       <div
         className="nav-avatar"
@@ -246,10 +245,7 @@ export default function NavBar() {
           displayLetter
         )}
       </div>
-
-    
     </div>
-        <LogoutButton />
     </nav>
   );
 }

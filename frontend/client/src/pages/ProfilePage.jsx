@@ -269,6 +269,7 @@ export default function ProfilePage() {
               <Button onClick={() => navigate("/change-password")} variant="warning">
                 🔑 Change Password
               </Button>
+              <LogoutButton />
             </>
           ) : (
             <>
