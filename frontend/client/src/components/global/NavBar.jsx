@@ -35,10 +35,82 @@ export default function NavBar() {
     return roleRank[realRole] >= roleRank[targetRole];
   };
 
+  // Get available interfaces user can switch to
+  const getAvailableInterfaces = () => {
+    const interfaces = [];
+    
+    // Regular interface - always available if user has any role
+    interfaces.push({ role: "regular", label: "👤 Regular User", route: "/dashboard" });
+    
+    // Cashier interface - available if user is cashier or higher
+    if (canSwitchTo("cashier")) {
+      interfaces.push({ role: "cashier", label: "💰 Cashier", route: "/dashboard" });
+    }
+    
+    // Manager interface - available if user is manager or superuser
+    if (canSwitchTo("manager")) {
+      interfaces.push({ role: "manager", label: "👔 Manager", route: "/dashboard" });
+    }
+    
+    // Superuser interface - available if user is superuser
+    if (canSwitchTo("superuser")) {
+      interfaces.push({ role: "superuser", label: "⚡ Superuser", route: "/dashboard" });
+    }
+    
+    // Organizer interface - available if user is an organizer
+    if (isOrganizer) {
+      interfaces.push({ role: "organizer", label: "🎪 Event Organizer", route: "/organizer/events" });
+    }
+    
+    return interfaces;
+  };
+
+  const availableInterfaces = getAvailableInterfaces();
+  const canSwitch = availableInterfaces.length > 1; // Show dropdown only if more than one interface available
+
+  const handleInterfaceSwitch = (targetRole, targetRoute) => {
+    if (targetRole === "organizer") {
+      // For organizer, navigate directly to organizer events
+      changeViewRole("regular"); // Keep viewRole as regular since organizer isn't a viewRole
+      navigate(targetRoute);
+    } else {
+      changeViewRole(targetRole);
+      navigate(targetRoute);
+    }
+  };
+
+  const getCurrentInterfaceLabel = () => {
+    if (viewRole === "regular" && isOrganizer && location.pathname.startsWith("/organizer")) {
+      return "🎪 Event Organizer";
+    }
+    const current = availableInterfaces.find(int => int.role === viewRole);
+    return current ? current.label : "👤 Regular User";
+  };
+
   return (
     <nav className="nav-bar">
       {/* Home */}
       <Link to="/dashboard" className="nav-link">🏠 Home</Link>
+
+      {/* Interface Switching Dropdown */}
+      {canSwitch && (
+        <Dropdown title={getCurrentInterfaceLabel()}>
+          {availableInterfaces.map((interfaceOption) => {
+            const isActive = 
+              (interfaceOption.role === "organizer" && location.pathname.startsWith("/organizer")) ||
+              (interfaceOption.role !== "organizer" && viewRole === interfaceOption.role);
+            
+            return (
+              <Dropdown.Item
+                key={interfaceOption.role}
+                onClick={() => handleInterfaceSwitch(interfaceOption.role, interfaceOption.route)}
+              >
+                {isActive ? "✓ " : ""}{interfaceOption.label}
+              </Dropdown.Item>
+            );
+          })}
+        </Dropdown>
+      )}
 
       {/* ------------------------ Regular Nav ------------------------ */}
       {viewRole === "regular" && (
@@ -53,10 +125,7 @@ export default function NavBar() {
             <Dropdown.Item to="/redeem">Redeem Points</Dropdown.Item>
           </Dropdown>
 
-          <Dropdown title="🎪 Events">
-            <Dropdown.Item to="/events">Event List</Dropdown.Item>
-            <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
-          </Dropdown>
+          <Link to="/events" className="nav-link">🎪 Events</Link>
         </>
       )}
 
@@ -64,6 +133,10 @@ export default function NavBar() {
       {viewRole === "cashier" && (
         <>
           <Link to="/statistics" className="nav-link">📊 Statistics</Link>
+          
+          <Dropdown title="👥 Users">
+            <Dropdown.Item to="/register">➕ Register User</Dropdown.Item>
+          </Dropdown>
           
           <Dropdown title="💸 Transactions">
             <Dropdown.Item to="/cashier/transactions">Create Transaction</Dropdown.Item>
@@ -73,16 +146,17 @@ export default function NavBar() {
             <Dropdown.Item to="/cashier/redemption">Process Redemption</Dropdown.Item>
           </Dropdown>
 
-          <Dropdown title="🎪 Events">
-            <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
-          </Dropdown>
+          <Link to="/events" className="nav-link">🎪 Events</Link>
         </>
       )}
 
       {/* MANAGER MENU */}
       {viewRole === "manager" && (
         <>
-          <Link to="/manager/users" className="nav-link">👥 Users</Link>
+          <Dropdown title="👥 Users">
+            <Dropdown.Item to="/manager/users">All Users</Dropdown.Item>
+            <Dropdown.Item to="/register">➕ Register User</Dropdown.Item>
+          </Dropdown>
           <Link to="/manager/transactions" className="nav-link">📊 Transactions</Link>
           <Link to="/manager/promotions" className="nav-link">🎁 Promotions</Link>
           <Link to="/manager/statistics" className="nav-link">📊 Statistics</Link>
@@ -97,13 +171,13 @@ export default function NavBar() {
       {/* SUPERUSER MENU */}
       {viewRole === "superuser" && (
         <>
-          <Link to="/manager/users" className="nav-link">👥 Users</Link>
+          <Dropdown title="👥 Users">
+            <Dropdown.Item to="/manager/users">All Users</Dropdown.Item>
+            <Dropdown.Item to="/superuser/user-promotion">User Promotion</Dropdown.Item>
+            <Dropdown.Item to="/register">➕ Register User</Dropdown.Item>
+          </Dropdown>
           <Link to="/manager/transactions" className="nav-link">📊 Transactions</Link>
           <Link to="/superuser/statistics" className="nav-link">📊 Statistics</Link>
-          
-          <Dropdown title="⚡ Admin">
-            <Dropdown.Item to="/superuser/user-promotion">User Promotion</Dropdown.Item>
-          </Dropdown>
           
           <Dropdown title="🎪 Events">
             <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
