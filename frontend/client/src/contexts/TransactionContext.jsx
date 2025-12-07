@@ -3,7 +3,7 @@ import { createContext, useContext } from "react";
 const TransactionContext = createContext();
 
 export function TransactionProvider({ children }) {
-  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
 
   // --------------------------
   // Create Transaction
