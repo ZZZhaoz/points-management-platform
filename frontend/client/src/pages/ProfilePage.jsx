@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "../components/global/Button";
 import Input from "../components/global/Input";
 import "./ProfilePage.css";
+import LogoutButton from "../components/global/LogoutButton";
 
 export default function ProfilePage() {
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -173,6 +174,8 @@ export default function ProfilePage() {
           <p className="avatar-hint">Click on your avatar to upload a new one</p>
         </div>
 
+
+
         {/* Info Section */}
         <div className="profile-info">
           {!editing ? (
@@ -279,6 +282,8 @@ export default function ProfilePage() {
           )}
         </div>
       </div>
+
+      
     </div>
   );
 }
