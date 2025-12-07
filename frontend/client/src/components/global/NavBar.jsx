@@ -8,8 +8,8 @@ export default function NavBar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { viewRole, changeViewRole } = useAuth();
-
+  const { user, viewRole, changeViewRole } = useAuth();
+  if (!user) return null;
   const realRole = localStorage.getItem("role");    
   const isOrganizer = localStorage.getItem("isOrganizer") === "true";
 
