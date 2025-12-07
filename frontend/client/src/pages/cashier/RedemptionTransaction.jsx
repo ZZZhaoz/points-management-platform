@@ -3,17 +3,24 @@ import Input from "../../components/global/Input";
 import Button from "../../components/global/Button";
 import { useAuth } from "../../contexts/AuthContext";
 import "./RedemptionTransaction.css";
+import { useTransactions } from "../../contexts/TransactionContext";
 
 export default function RedemptionTransaction() {
-  const { processRedemption } = useAuth();
+  const { processRedemption } = useTransactions();
 
   const [transactionId, setTransactionId] = useState("");
   const [message, setMessage] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+
   const submit = async (e) => {
     e.preventDefault();
     setMessage(null);
+
+    setError(null);
+    setSuccess(null);
 
     const id = parseInt(transactionId, 10);
     if (isNaN(id) || id <= 0) {
@@ -22,7 +29,7 @@ export default function RedemptionTransaction() {
     }
 
     setSubmitting(true);
-    const err = await processRedemption(id);
+    const result = await processRedemption(id);
     setSubmitting(false);
 
     if (err) {
@@ -30,6 +37,7 @@ export default function RedemptionTransaction() {
       return;
     }
 
+    // Success
     setTransactionId("");
     setMessage("Redemption processed successfully! ✨");
   };

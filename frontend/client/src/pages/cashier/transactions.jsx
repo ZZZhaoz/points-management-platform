@@ -5,7 +5,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import "./transactions.css";
 
 export default function Transactions() {
-  const { createTransaction } = useAuth();   
+  const { createTransaction } = useTransactions();   
   
   const [utorid, setUtorid] = useState("");
   const [spent, setSpent] = useState("");
@@ -14,6 +14,10 @@ export default function Transactions() {
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+
   const submit = async (e) => {
     e.preventDefault();
     setMessage(null);
@@ -21,7 +25,6 @@ export default function Transactions() {
     
     const type = "purchase";
     
-    // Convert spent to number
     const spentNum = parseFloat(spent);
     if (isNaN(spentNum) || spentNum <= 0) {
       setMessage("Please enter a valid amount greater than 0");
@@ -39,7 +42,15 @@ export default function Transactions() {
           .filter(id => !isNaN(id))
       : [];
     
-    const err = await createTransaction(utorid, type, spentNum, promotionIdsNum, remark); 
+    setSubmitting(true);
+
+    const result = await createTransaction(
+      utorid,
+      type,
+      spentNum,
+      promotionIdsNum,
+      remark
+    );
 
     if (err){
         setMessage(err);
@@ -47,7 +58,6 @@ export default function Transactions() {
         return;
     }
 
-    // Success - reset form
     setUtorid("");
     setSpent("");
     setPromotionIds("");

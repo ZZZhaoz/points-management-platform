@@ -2,31 +2,46 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import LogoutButton from "./LogoutButton";
 import Dropdown from "./Dropdown";
 import "./NavBar.css";
+import { useAuth } from "../../contexts/AuthContext"; 
 
 export default function NavBar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const role = localStorage.getItem("role");
+
+  const { viewRole, changeViewRole } = useAuth();
+
+  const realRole = localStorage.getItem("role");    
+  const isOrganizer = localStorage.getItem("isOrganizer") === "true";
 
   const isAuthPage =
     location.pathname === "/" ||
     location.pathname === "/forgot-password" ||
     location.pathname.startsWith("/reset/");
-
   if (isAuthPage) return null;
 
-  // Avatar info
   const utorid = localStorage.getItem("utorid") || "U";
   const avatarUrl = localStorage.getItem("avatarUrl");
   const displayLetter = utorid[0].toUpperCase();
+
+  const roleRank = {
+    regular: 1,
+    cashier: 2,
+    organizer: 3,
+    manager: 4,
+    superuser: 5,
+  };
+
+  const canSwitchTo = (targetRole) => {
+    return roleRank[realRole] >= roleRank[targetRole];
+  };
 
   return (
     <nav className="nav-bar">
       {/* Home */}
       <Link to="/dashboard" className="nav-link">🏠 Home</Link>
 
-      {/* Regular User Menu */}
-      {role === "regular" && (
+      {/* ------------------------ Regular Nav ------------------------ */}
+      {viewRole === "regular" && (
         <>
           <Link to="/promotions" className="nav-link">🎁 Promotions</Link>
           <Link to="/user/qr" className="nav-link">📱 My QR</Link>
@@ -58,6 +73,11 @@ export default function NavBar() {
           <Dropdown title="🎪 Events">
             <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
           </Dropdown>
+
+
+     
+
+
         </>
       )}
 
@@ -72,8 +92,6 @@ export default function NavBar() {
             <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
             <Dropdown.Item to="/events">All Events</Dropdown.Item>
           </Dropdown>
-        </>
-      )}
 
       {/* SUPERUSER MENU */}
       {role === "superuser" && (
@@ -90,6 +108,7 @@ export default function NavBar() {
             <Dropdown.Item to="/events">All Events</Dropdown.Item>
           </Dropdown>
         </>
+        
       )}
 
       {/* Avatar = Profile Page */}

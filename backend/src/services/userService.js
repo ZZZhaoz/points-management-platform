@@ -7,35 +7,52 @@ const passwordRegex =
 class UserService {
 
     async createUser({ utorid, name, email }) {
-        // const { utorid, name, email } = req.body
         const emailRegex = /^[A-Za-z0-9._%+-]+@mail\.utoronto\.ca$/;
         const utoridRegex = /^[A-Za-z0-9]{7,8}$/;
 
         if (!utorid || !name || !email) {
-            throw new Error("Bad Request");
+            const msg = "Missing required fields: utorid, name, email";
+            const err = new Error(msg);
+            err.type = "MISSING_FIELDS";
+            throw err;
         }
 
-        if (!emailRegex.test(email) || !utoridRegex.test(utorid) || name.length < 1 || name.length > 50) {
-            throw new Error("Bad Request");
+        if (!utoridRegex.test(utorid)) {
+            const err = new Error("Invalid UTORid: must be alphanumeric, 7-8 chars");
+            err.type = "INVALID_UTORID";
+            throw err;
+        }
+
+        if (name.length < 1 || name.length > 50) {
+            const err = new Error("Invalid name: must be 1-50 characters");
+            err.type = "INVALID_NAME";
+            throw err;
+        }
+
+        if (!emailRegex.test(email)) {
+            const err = new Error("Invalid email: must be a @mail.utoronto.ca address");
+            err.type = "INVALID_EMAIL";
+            throw err;
         }
 
         const existingUser = await prisma.user.findUnique({
-            where: {
-                utorid: utorid,
-            }
+            where: { utorid }
         });
+
         if (existingUser) {
-            throw new Error('Conflict');
+            const err = new Error("UTORid already exists");
+            err.type = "CONFLICT";
+            throw err;
         }
-        
+
         const resetToken = require("uuid").v4();
         const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
         const newUser = await prisma.user.create({
             data: {
-                utorid: utorid,
-                name: name,
-                email: email,
+                utorid,
+                name,
+                email,
                 role: RoleType.regular,
                 verified: false,
                 student: false,
@@ -46,7 +63,7 @@ class UserService {
             }
         });
 
-        const result = {
+        return {
             id: newUser.id,
             utorid: newUser.utorid,
             name: newUser.name,
@@ -54,9 +71,7 @@ class UserService {
             verified: newUser.verified,
             expiresAt: newUser.expiresAt,
             resetToken: newUser.resetToken,
-        }
-
-        return result;
+        };
     }
 
     async getAllUsers({ name, role, verified, activated, page, limit }) {
@@ -279,7 +294,20 @@ class UserService {
             throw new Error('Not Found');
         }
 
-        return user;
+        const organizerOfEvents = await prisma.event.findFirst({
+            where: {
+                organizers: {
+                    some: { id: userId }
+                }
+            }
+        });
+
+        const isOrganizer = organizerOfEvents !== null;
+
+        return {
+            ...user,
+            isOrganizer   
+        };
     }
 
 

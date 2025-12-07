@@ -1,11 +1,12 @@
 import { useLocation, Link } from "react-router-dom";
 import NavBar from "../global/NavBar";
 import "./Header.css";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function Header() {
   const location = useLocation();
+  const { viewRole } = useAuth();  
 
-  // auth pages: hide navbar entirely
   const isAuthPage =
     location.pathname === "/" ||
     location.pathname === "/forgot-password" ||

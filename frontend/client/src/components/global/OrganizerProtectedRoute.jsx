@@ -1,15 +1,15 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
 
-export default function ProtectedRoute({ roles }) {
-  const { viewRole } = useAuth();   
+export default function OrganizerProtectedRoute() {
   const token = localStorage.getItem("token");
+  const isOrganizer = localStorage.getItem("isOrganizer") === "true";
 
   if (!token) return <Navigate to="/" replace />;
 
-  if (roles && !roles.includes(viewRole)) {
+  if (!isOrganizer) {
     return <Navigate to="/dashboard" replace />;
   }
 
   return <Outlet />;
 }
+

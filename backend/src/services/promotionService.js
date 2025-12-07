@@ -38,6 +38,8 @@ class PromotionService {
         let formatted = [];
         let count = 0;
 
+        console.log(name);
+
         if (role === "regular" || role === "cashier") {
             const nameFilter = name ? {
                 name: {
@@ -185,6 +187,10 @@ class PromotionService {
             },
         });
 
+        if (type == "one-time"){
+            type = "onetime"
+        }
+
         if (!promo) {
             throw new Error('Not Found');
         }
@@ -232,7 +238,7 @@ class PromotionService {
         }
         
         if (type !== undefined) {
-            if (type !== "one-time" && type !== "automatic") {
+            if (type !== "onetime" && type !== "automatic") {
                  throw new Error('Bad Request');
             }
         }

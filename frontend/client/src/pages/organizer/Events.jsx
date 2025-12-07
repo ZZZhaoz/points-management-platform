@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import "./Events.css";
+import { useEvents } from "../../contexts/EventContext";
+import { Card } from "../../components/global/Card";
 
 export default function Events() {
-  const { getMyEvents } = useAuth();
+  const { getMyEvents } = useEvents();
   const navigate = useNavigate();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);

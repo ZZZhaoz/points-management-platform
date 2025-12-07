@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
+import { useEvents } from "../../contexts/EventContext";
 import { Card } from "../../components/global/Card";
 import Button from "../../components/global/Button";
 import "./OrganizerPage.css";
@@ -8,10 +8,12 @@ import "./OrganizerPage.css";
 export default function EventDetail() {
     const { eventId } = useParams();
     const navigate = useNavigate();
-    const { getEventById } = useAuth();
+    const { getEventById } = useEvents();
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    
+
     // const [isEditing, setIsEditing] = useState(false);
     // const [saving, setSaving] = useState(false);
 
@@ -92,6 +94,10 @@ export default function EventDetail() {
             </div>
         );
     }
+
+    if (!event) return null;
+
+    const hasStarted = new Date(event.startTime) < new Date();
 
     return (
         <div className="organizer-page">

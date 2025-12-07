@@ -24,7 +24,19 @@ export default function Dropdown({ title, children }) {
   );
 }
 
-Dropdown.Item = function DropdownItem({ children, to }) {
+Dropdown.Item = function DropdownItem({ children, to, onClick }) {
+  if (onClick) {
+    return (
+      <div 
+        className="dropdown-item"
+        onClick={onClick}
+        style={{ cursor: "pointer" }}
+      >
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div className="dropdown-item">
       <Link to={to}>{children}</Link>
