@@ -1,61 +1,38 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import "./EditPage.css";
 
-function renderField(label, key, type, form, setForm, editing, setEditing, tempValues, setTempValues) {
-  const isEditing = editing[key];
-  const value = form[key];
-
-  const startEditing = () => {
-    setTempValues({ ...tempValues, [key]: value });  // store original
-    setEditing({ ...editing, [key]: true });
-  };
-
-  const saveChanges = () => {
-    setEditing({ ...editing, [key]: false });
-  };
-
-  const cancelChanges = () => {
-    setForm({ ...form, [key]: tempValues[key] });    // restore original
-    setEditing({ ...editing, [key]: false });
-  };
-
+function renderField(label, key, type, form, setForm) {
   return (
-    <div>
-      <label>{label}: </label>
-
-      {!isEditing && (
-        <>
-          <span>{value || "(empty)"} </span>
-          <button type="button" onClick={startEditing}>Edit</button>
-        </>
-      )}
-
-      {isEditing && (
-        <div>
-          {key === "description" ? (
-            <textarea
-              value={form[key]}
-              onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-            />
-          ) : type === "select" ? (
-            <select
-              value={form[key]}
-              onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-            >
-              <option value="automatic">Automatic</option>
-              <option value="one-time">One-Time</option>
-            </select>
-          ) : (
-            <input
-              type={type}
-              value={form[key]}
-              onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-            />
-          )}
-
-          <button type="button" onClick={saveChanges}>Save</button>
-          <button type="button" onClick={cancelChanges}>Cancel</button>
-        </div>
+    <div className="field-group">
+      <label className="field-label" htmlFor={key}>{label}</label>
+      {key === "description" ? (
+        <textarea
+          id={key}
+          className="field-textarea"
+          value={form[key] || ""}
+          onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+          placeholder={`Enter ${label.toLowerCase()}...`}
+        />
+      ) : type === "select" ? (
+        <select
+          id={key}
+          className="field-select"
+          value={form[key] || ""}
+          onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+        >
+          <option value="automatic">Automatic</option>
+          <option value="onetime">One-Time</option>
+        </select>
+      ) : (
+        <input
+          id={key}
+          className="field-input"
+          type={type}
+          value={form[key] || ""}
+          onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+          placeholder={`Enter ${label.toLowerCase()}...`}
+        />
       )}
     </div>
   );
@@ -73,19 +50,7 @@ export default function PromotionUpdate() {
 
   const [loading, setLoading] = useState(true);
   const [promotion, setPromotion] = useState(null);
-  const [tempValues, setTempValues] = useState({});
-
-  // Use these states to keep track of which fields are being edited.
-  const [editing, setEditing] = useState({
-    name: false,
-    description: false,
-    type: false,
-    startTime: false,
-    endTime: false,
-    minSpending: false,
-    rate: false,
-    points: false,
-  });
+  const [originalForm, setOriginalForm] = useState({});
 
   const [form, setForm] = useState({
     name: "",
@@ -112,22 +77,40 @@ export default function PromotionUpdate() {
         setPromotion(data);
 
         // Fill in the form fields.
-        setForm({
+        const formData = {
           name: data.name || "",
           description: data.description || "",
-          type: data.type === "onetime" ? "one-time" : data.type,
+          type: data.type || "",
           startTime: data.startTime ? data.startTime.slice(0, 16) : "",
           endTime: data.endTime ? data.endTime.slice(0, 16) : "",
           minSpending: data.minSpending ?? "",
           rate: data.rate ?? "",
           points: data.points ?? "",
-        });
+        };
+        setForm(formData);
+        setOriginalForm(formData);
       })
       .finally(() => setLoading(false));
   }, [promotionId, BACKEND_URL, token]);
 
-  if (loading) return <p>Loading promotion...</p>;
-  if (!promotion) return <p>Promotion not found.</p>;
+  if (loading) {
+    return (
+      <div className="edit-page">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading promotion...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!promotion) {
+    return (
+      <div className="edit-page">
+        <div className="alert alert-error">Promotion not found.</div>
+      </div>
+    );
+  }
 
 
   // Update the promotion
@@ -145,13 +128,26 @@ export default function PromotionUpdate() {
             return;   // stop the update entirely
         }
 
-        if (form[key] !== promotion[key]) {
+        // Normalize type for comparison
+        let formValue = form[key];
+        let promotionValue = promotion[key];
+        
+        if (key === "type") {
+          // Both should be "onetime" for comparison
+          formValue = formValue === "one-time" ? "onetime" : formValue;
+        }
+
+        if (formValue !== promotionValue) {
 
             if (key === "startTime" || key === "endTime") {
             payload[key] = new Date(form[key]).toISOString();
 
             } else if (["minSpending", "rate", "points"].includes(key)) {
             payload[key] = Number(form[key]);
+
+            } else if (key === "type") {
+            // Ensure we send "onetime" to backend
+            payload[key] = form[key] === "one-time" ? "onetime" : form[key];
 
             } else {
             payload[key] = form[key];
@@ -198,29 +194,42 @@ export default function PromotionUpdate() {
 
 
   return (
-    <div>
-      <h1>Update Promotion</h1>
+    <div className="edit-page">
+      <div className="edit-page-header">
+        <h1 className="edit-page-title">Update Promotion</h1>
+        <p className="edit-page-subtitle">Edit promotion details and settings</p>
+      </div>
 
-    {error && <p >{error}</p>}
-    {success && <p >{success}</p>}
+      {error && <div className="alert alert-error">{error}</div>}
+      {success && <div className="alert alert-success">{success}</div>}
 
+      <form onSubmit={(e) => { e.preventDefault(); handleUpdate(); }}>
+        <div className="edit-form-card">
+          {renderField("Name", "name", "text", form, setForm)}
+          {renderField("Description", "description", "text", form, setForm)}
+          {renderField("Type", "type", "select", form, setForm)}
+          {renderField("Start Time", "startTime", "datetime-local", form, setForm)}
+          {renderField("End Time", "endTime", "datetime-local", form, setForm)}
+          {renderField("Minimum Spending", "minSpending", "number", form, setForm)}
+          {renderField("Rate", "rate", "number", form, setForm)}
+          {renderField("Points", "points", "number", form, setForm)}
+        </div>
 
-    {renderField("Name", "name", "text", form, setForm, editing, setEditing, tempValues, setTempValues)}
-    {renderField("Description", "description", "text", form, setForm, editing, setEditing, tempValues, setTempValues)}
-    {renderField("Type", "type", "select", form, setForm, editing, setEditing, tempValues, setTempValues)}
-    {renderField("Start Time", "startTime", "datetime-local", form, setForm, editing, setEditing, tempValues, setTempValues)}
-    {renderField("End Time", "endTime", "datetime-local", form, setForm, editing, setEditing, tempValues, setTempValues)}
-    {renderField("Minimum Spending", "minSpending", "number", form, setForm, editing, setEditing, tempValues, setTempValues)}
-    {renderField("Rate", "rate", "number", form, setForm, editing, setEditing, tempValues, setTempValues)}
-    {renderField("Points", "points", "number", form, setForm, editing, setEditing, tempValues, setTempValues)}
-
-      <br />
-
-      <button type="button" onClick={() => navigate(-1)}> Back </button>
-      <button onClick={handleUpdate}>Save Changes</button>
-      <button type="button" onClick={handleDelete}>
-        Delete Promotion
-      </button>
+        <div className="action-buttons">
+          <button type="button" className="action-button secondary" onClick={() => navigate(-1)}>
+            Back
+          </button>
+          <button type="button" className="action-button secondary" onClick={() => setForm({ ...originalForm })}>
+            Reset
+          </button>
+          <button type="submit" className="action-button primary">
+            Save Changes
+          </button>
+          <button type="button" className="action-button danger" onClick={handleDelete}>
+            Delete Promotion
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

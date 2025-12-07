@@ -18,7 +18,7 @@
 
 3. Set up the database:
    npx prisma generate
-   npx prisma generate npx prisma migrate deploy
+   npx prisma migrate deploy
    Or if you want to reset and apply all migrations:
    npx prisma migrate dev
 

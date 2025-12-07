@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import "./EditPage.css";
 
 export default function UsersUpdate() {
   const { userId } = useParams();    
@@ -41,8 +42,24 @@ export default function UsersUpdate() {
       .finally(() => setLoading(false));
   }, [userId, BACKEND_URL, token]);
 
-  if (loading) return <p>Loading user...</p>;
-  if (!user) return <p>User not found.</p>;
+  if (loading) {
+    return (
+      <div className="edit-page">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading user...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="edit-page">
+        <div className="alert alert-error">User not found.</div>
+      </div>
+    );
+  }
 
   // Handle submit
   const handleUpdate = (e) => {
@@ -74,56 +91,103 @@ export default function UsersUpdate() {
   };
 
   return (
-    <div>
-      <h1>Update User Info</h1>
+    <div className="edit-page">
+      <div className="edit-page-header">
+        <h1 className="edit-page-title">Update User Info</h1>
+        <p className="edit-page-subtitle">Edit user details and permissions</p>
+      </div>
 
       <form onSubmit={handleUpdate}>
-
-        {/* Name */}
-        <div>
-          <label>Name: </label>
-          <input
-            value={name}
-            onChange={e => setName(e.target.value)}
-          />
+        <div className="read-only-section">
+          <div className="read-only-field">
+            <span className="read-only-label">UtorID:</span>
+            <span className="read-only-value">{user.utorid}</span>
+          </div>
+          <div className="read-only-field">
+            <span className="read-only-label">Email:</span>
+            <span className="read-only-value">{user.email || "Not provided"}</span>
+          </div>
+          <div className="read-only-field">
+            <span className="read-only-label">Points:</span>
+            <span className="read-only-value">{user.points || 0}</span>
+          </div>
         </div>
 
-        {/* Role Change the to being manager or supervisor*/}
-        <div>
-          <label>Role: </label>
-          <select value={role} onChange={e => setRole(e.target.value)}>
-            <option value="regular">Regular</option>
-            <option value="cashier">Cashier</option>
-          </select>
-        </div>
-
-        {/* Set whether the user is verifiend or not*/}
-        <div>
-          <label>Verified: </label>
-          <input
-            type="checkbox"
-            checked={verified}
-            onChange={(e) => setVerified(e.target.checked)}
-          />
-        </div>
-
-
-        {/*Set the user to suspicious*/}
-        <div>
-            <label>Suspicious: </label>
+        <div className="edit-form-card">
+          {/* Name */}
+          <div className="field-group">
+            <label className="field-label" htmlFor="name">Name</label>
             <input
+              id="name"
+              className="field-input"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              placeholder="Enter user name"
+              required
+            />
+          </div>
+
+          {/* Role */}
+          <div className="field-group">
+            <label className="field-label" htmlFor="role">Role</label>
+            <select
+              id="role"
+              className="field-select"
+              value={role}
+              onChange={e => setRole(e.target.value)}
+            >
+              <option value="regular">Regular</option>
+              <option value="cashier">Cashier</option>
+            </select>
+          </div>
+
+          {/* Verified */}
+          <div className="field-group">
+            <label className="field-label">Verified Status</label>
+            <div className="checkbox-group">
+              <input
                 type="checkbox"
+                className="field-checkbox"
+                checked={verified}
+                onChange={(e) => setVerified(e.target.checked)}
+                id="verified"
+              />
+              <label htmlFor="verified" className="checkbox-label">
+                User is verified
+              </label>
+            </div>
+          </div>
+
+          {/* Suspicious */}
+          <div className="field-group">
+            <label className="field-label">Suspicious Status</label>
+            <div className="checkbox-group">
+              <input
+                type="checkbox"
+                className="field-checkbox"
                 checked={suspicious}
                 onChange={(e) => setSuspicious(e.target.checked)}
-            />
+                id="suspicious"
+              />
+              <label htmlFor="suspicious" className="checkbox-label">
+                Mark user as suspicious
+              </label>
+            </div>
+          </div>
         </div>
 
-        <br />
-        <button type="submit">Update User</button>
-        <button type="button" onClick={() => navigate("/manager/users")}>
-          Cancel
-        </button>
-
+        <div className="action-buttons">
+          <button type="submit" className="action-button primary">
+            Update User
+          </button>
+          <button
+            type="button"
+            className="action-button secondary"
+            onClick={() => navigate("/manager/users")}
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );

@@ -1,72 +1,38 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import "./EditPage.css";
 
-function renderField(label, key, type, form, setForm, editing, setEditing, tempValues, setTempValues) {
-  const isEditing = editing[key];
-  const value = form[key];
-
-  let displayValue;
-  if (value !== "" && value !== null && value !== undefined) {
-    displayValue = value;
-  } else if (["published"].includes(key)) {
-    displayValue = "No";
-  } else if (["capacity", "points"].includes(key)) {
-    displayValue = "Not provided";
-  } else {
-    displayValue = "(empty)";
-  }
-
-  const startEditing = () => {
-    setTempValues({ ...tempValues, [key]: value }); // store original
-    setEditing({ ...editing, [key]: true });
-  };
-
-  const saveChanges = () => {
-    setEditing({ ...editing, [key]: false });
-  };
-
-  const cancelChanges = () => {
-    setForm({ ...form, [key]: tempValues[key] }); // restore original
-    setEditing({ ...editing, [key]: false });
-  };
-
+function renderField(label, key, type, form, setForm) {
   return (
-    <div>
-      <label>{label}: </label>
-
-      {!isEditing && (
-        <>
-          <span>{displayValue}</span>
-          <button type="button" onClick={startEditing}>Edit</button>
-        </>
-      )}
-
-      {isEditing && (
-        <div>
-          {key === "description" ? (
-            <textarea
-              value={form[key]}
-              onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-            />
-          ) : type === "select" ? (
-            <select
-              value={form[key]}
-              onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-            >
-              <option value="">--</option>
-              <option value="true">Yes</option>
-            </select>
-          ) : (
-            <input
-              type={type}
-              value={form[key]}
-              onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-            />
-          )}
-
-          <button type="button" onClick={saveChanges}>Save</button>
-          <button type="button" onClick={cancelChanges}>Cancel</button>
-        </div>
+    <div className="field-group">
+      <label className="field-label" htmlFor={key}>{label}</label>
+      {key === "description" ? (
+        <textarea
+          id={key}
+          className="field-textarea"
+          value={form[key] || ""}
+          onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+          placeholder={`Enter ${label.toLowerCase()}...`}
+        />
+      ) : type === "select" ? (
+        <select
+          id={key}
+          className="field-select"
+          value={form[key] || ""}
+          onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+        >
+          <option value="">No</option>
+          <option value="true">Yes</option>
+        </select>
+      ) : (
+        <input
+          id={key}
+          className="field-input"
+          type={type}
+          value={form[key] || ""}
+          onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+          placeholder={`Enter ${label.toLowerCase()}...`}
+        />
       )}
     </div>
   );
@@ -81,20 +47,10 @@ export default function EventUpdate() {
 
   const [loading, setLoading] = useState(true);
   const [event, setEvent] = useState(null);
-  const [tempValues, setTempValues] = useState({});
+  const [originalForm, setOriginalForm] = useState({});
 
   const [newGuest, setNewGuest] = useState("");
   const [message, setMessage] = useState("");
-  const [editing, setEditing] = useState({
-    name: false,
-    description: false,
-    location: false,
-    startTime: false,
-    endTime: false,
-    capacity: false,
-    points: false,     // manager-only
-    published: false,  // manager-only (can only set true)
-  });
 
 
   const [form, setForm] = useState({
@@ -118,7 +74,7 @@ export default function EventUpdate() {
         const data = await res.json();
         setEvent(data);
 
-        setForm({
+        const formData = {
           name: data.name || "",
           description: data.description || "",
           location: data.location || "",
@@ -127,13 +83,31 @@ export default function EventUpdate() {
           capacity: data.capacity ?? "",
           points: data.points ?? "",
           published: data.published ? "true" : "",
-        });
+        };
+        setForm(formData);
+        setOriginalForm(formData);
       })
       .finally(() => setLoading(false));
   }, [eventId, BACKEND_URL, token]);
 
-  if (loading) return <p>Loading event...</p>;
-  if (!event) return <p>Event not found.</p>;
+  if (loading) {
+    return (
+      <div className="edit-page">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading event...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!event) {
+    return (
+      <div className="edit-page">
+        <div className="alert alert-error">Event not found.</div>
+      </div>
+    );
+  }
 
   // -----------------------
   // PATCH (UPDATE)
@@ -267,104 +241,160 @@ export default function EventUpdate() {
     
 
   return (
-    <div>
-      <h1>Update Event</h1>
+    <div className="edit-page">
+      <div className="edit-page-header">
+        <h1 className="edit-page-title">Update Event</h1>
+        <p className="edit-page-subtitle">Edit event details and manage guests</p>
+      </div>
 
       {message && (
-        <p>
-            {message}
-        </p>
-        )}
+        <div className={message.includes("successfully") ? "alert alert-success" : "alert alert-error"}>
+          {message}
+        </div>
+      )}
 
-      {renderField("Name", "name", "text", form, setForm, editing, setEditing, tempValues, setTempValues)}
-      {renderField("Description", "description", "text", form, setForm, editing, setEditing, tempValues, setTempValues)}
-      {renderField("Location", "location", "text", form, setForm, editing, setEditing, tempValues, setTempValues)}
-      {renderField("Start Time", "startTime", "datetime-local", form, setForm, editing, setEditing, tempValues, setTempValues)}
-      {renderField("End Time", "endTime", "datetime-local", form, setForm, editing, setEditing, tempValues, setTempValues)}
-      {renderField("Capacity", "capacity", "number", form, setForm, editing, setEditing, tempValues, setTempValues)}
-      {renderField("Points", "points", "number", form, setForm, editing, setEditing, tempValues, setTempValues)}
-      {renderField("Publish", "published", "select", form, setForm, editing, setEditing, tempValues, setTempValues)}
+      <form onSubmit={(e) => { e.preventDefault(); handleUpdate(); }}>
+        <div className="edit-form-card">
+          {renderField("Name", "name", "text", form, setForm)}
+          {renderField("Description", "description", "text", form, setForm)}
+          {renderField("Location", "location", "text", form, setForm)}
+          {renderField("Start Time", "startTime", "datetime-local", form, setForm)}
+          {renderField("End Time", "endTime", "datetime-local", form, setForm)}
+          {renderField("Capacity", "capacity", "number", form, setForm)}
+          {renderField("Points", "points", "number", form, setForm)}
+          {renderField("Publish", "published", "select", form, setForm)}
+        </div>
 
-      <br />
-
-
-      <h3>Points Info</h3>
-      <p>Points Remaining: {event.pointsRemain}</p>
-      <p>Points Awarded: {event.pointsAwarded}</p>
-
-      <h3>Organizers</h3>
-
-      <table border="1">
-      <thead>
-          <tr>
-          <th>Name</th>
-          <th>UTORid</th>
-          </tr>
-      </thead>
-
-      <tbody>
-          {event.organizers.map((org) => (
-          <tr key={org.utorid}>
-              <td>{org.name}</td>
-              <td>{org.utorid}</td>
-          </tr>
-          ))}
-      </tbody>
-    </table>
-    
-
-    <h4>Add Guest</h4>
-    <input
-        value={newGuest}
-        onChange={(e) => setNewGuest(e.target.value)}
-        placeholder="Enter UTORid"
-    />
-    <button type="button" onClick={addGuest}>
-    Add Guest
-    </button>
-
-
-    <h3>Guests</h3>
-    {event.guests.length === 0 && (
-        <p>No guests have joined this event yet.</p>
-    )}
-
-    {event.guests.length > 0 && (
-    <table border="1">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>UTORid</th>
-            <th>Action</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        {event.guests.map((g) => (
-            <tr key={g.id}>
-            <td>{g.name}</td>
-            <td>{g.utorid}</td>
-            <td>
-                <button type="button" onClick={() => {
-                    if (window.confirm("Are you sure you want to remove this user from the event?")){
-                    removeGuest(g.id)}}}>
-                Remove
-                </button>
-            </td>
-            </tr>
-        ))}
-        </tbody>
-    </table>
-    )}
-
-    <br></br>
-
-        <button type="button" onClick={() => navigate(-1)}>
-        Back
-        </button>
-
-      <button onClick={handleUpdate}>Save Changes</button>
-      <button type="button" onClick={handleDelete}>Delete Event</button>
+      <div className="info-section">
+        <h3 className="info-section-title">Points Information</h3>
+        <div className="info-item">
+          <span className="info-label">Points Remaining:</span>
+          <span className="info-value">{event.pointsRemain || 0}</span>
+        </div>
+        <div className="info-item">
+          <span className="info-label">Points Awarded:</span>
+          <span className="info-value">{event.pointsAwarded || 0}</span>
+        </div>
       </div>
-);
+
+      <div className="info-section">
+        <h3 className="info-section-title">Organizers</h3>
+        <div className="data-table-container">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>UTORid</th>
+              </tr>
+            </thead>
+            <tbody>
+              {event.organizers.map((org) => (
+                <tr key={org.utorid}>
+                  <td>{org.name}</td>
+                  <td>{org.utorid}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="edit-form-card">
+        <h3 className="info-section-title">Add Guest</h3>
+        <div className="field-group">
+          <label className="field-label" htmlFor="newGuest">UTORid</label>
+          <div style={{ display: "flex", gap: "var(--space-sm)" }}>
+            <input
+              id="newGuest"
+              className="field-input"
+              value={newGuest}
+              onChange={(e) => setNewGuest(e.target.value)}
+              placeholder="Enter UTORid"
+            />
+            <button
+              type="button"
+              className="action-button primary"
+              onClick={addGuest}
+            >
+              Add Guest
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="info-section">
+        <h3 className="info-section-title">Guests ({event.guests.length})</h3>
+        {event.guests.length === 0 ? (
+          <p style={{ color: "var(--text-secondary)", textAlign: "center", padding: "var(--space-lg)" }}>
+            No guests have joined this event yet.
+          </p>
+        ) : (
+          <div className="data-table-container">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>UTORid</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {event.guests.map((g) => (
+                  <tr key={g.id}>
+                    <td>{g.name}</td>
+                    <td>{g.utorid}</td>
+                    <td>
+                      <button
+                        type="button"
+                        className="action-button danger"
+                        style={{ padding: "0.5rem 1rem", fontSize: "0.875rem" }}
+                        onClick={() => {
+                          if (window.confirm("Are you sure you want to remove this user from the event?")) {
+                            removeGuest(g.id);
+                          }
+                        }}
+                      >
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+        <div className="action-buttons">
+          <button
+            type="button"
+            className="action-button secondary"
+            onClick={() => navigate(-1)}
+          >
+            Back
+          </button>
+          <button
+            type="button"
+            className="action-button secondary"
+            onClick={() => setForm({ ...originalForm })}
+          >
+            Reset
+          </button>
+          <button
+            type="submit"
+            className="action-button primary"
+          >
+            Save Changes
+          </button>
+          <button
+            type="button"
+            className="action-button danger"
+            onClick={handleDelete}
+          >
+            Delete Event
+          </button>
+        </div>
+      </form>
+    </div>
+  );
 }

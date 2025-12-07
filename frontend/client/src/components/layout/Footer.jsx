@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="footer">
       <div className="footer-content">
         <p className="footer-text">
-          © 2025 <span className="footer-emoji">✨</span> LoyaltyHub <span className="footer-emoji">🎉</span> CSC309 Project
+          © 2025 LoyaltyHub CSC309 Project
         </p>
       </div>
     </footer>

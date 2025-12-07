@@ -236,7 +236,6 @@ export default function EventEdit() {
                     />
                     <span>Published</span>
                     </label>
-                </div>
 
                 {error && (
                     <div className="alert alert-error" style={{ marginTop: "1rem" }}>

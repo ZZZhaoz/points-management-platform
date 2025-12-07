@@ -3,6 +3,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { Card } from "../../components/global/Card";
 import Button from "../../components/global/Button";
 import Input from "../../components/global/Input";
+import "./UserPromotion.css";
 
 export default function UserPromotion() {
   const { getUserById, updateUserRole } = useAuth();
@@ -68,13 +69,15 @@ export default function UserPromotion() {
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>User Promotion</h1>
-      <p>Promote any user to manager or superuser</p>
+    <div className="user-promotion-page">
+      <div className="user-promotion-header">
+        <h1 className="user-promotion-title">👑 User Promotion</h1>
+        <p className="user-promotion-subtitle">Promote any user to manager or superuser</p>
+      </div>
 
-      <Card style={{ marginBottom: "2rem" }}>
-        <h2>Find User</h2>
-        <div style={{ marginBottom: "1rem" }}>
+      <Card className="promotion-card">
+        <h2 className="promotion-card-title">Find User</h2>
+        <div className="promotion-form-group">
           <Input
             label="User ID"
             type="number"
@@ -90,51 +93,59 @@ export default function UserPromotion() {
       </Card>
 
       {error && (
-        <Card style={{ marginBottom: "2rem", backgroundColor: "#fee", borderColor: "#fcc" }}>
-          <div style={{ color: "red" }}>Error: {error}</div>
+        <Card className="alert-card alert-error">
+          <div>Error: {error}</div>
         </Card>
       )}
 
       {success && (
-        <Card style={{ marginBottom: "2rem", backgroundColor: "#efe", borderColor: "#cfc" }}>
-          <div style={{ color: "green" }}>{success}</div>
+        <Card className="alert-card alert-success">
+          <div>{success}</div>
         </Card>
       )}
 
       {user && (
-        <Card style={{ marginBottom: "2rem" }}>
-          <h2>User Information</h2>
-          <p><strong>ID:</strong> {user.id}</p>
-          <p><strong>UTORid:</strong> {user.utorid}</p>
-          <p><strong>Name:</strong> {user.name}</p>
-          <p><strong>Email:</strong> {user.email}</p>
-          <p><strong>Current Role:</strong> {user.role}</p>
+        <Card className="user-info-card">
+          <h2 className="promotion-card-title">User Information</h2>
+          <div className="user-info-grid">
+            <div className="user-info-item">
+              <span className="user-info-label">ID</span>
+              <span className="user-info-value">{user.id}</span>
+            </div>
+            <div className="user-info-item">
+              <span className="user-info-label">UTORid</span>
+              <span className="user-info-value">{user.utorid}</span>
+            </div>
+            <div className="user-info-item">
+              <span className="user-info-label">Name</span>
+              <span className="user-info-value">{user.name}</span>
+            </div>
+            <div className="user-info-item">
+              <span className="user-info-label">Email</span>
+              <span className="user-info-value">{user.email}</span>
+            </div>
+            <div className="user-info-item">
+              <span className="user-info-label">Current Role</span>
+              <span className="user-info-value">{user.role}</span>
+            </div>
+          </div>
         </Card>
       )}
 
       {user && (
-        <Card>
-          <h2>Promote User</h2>
-          <div style={{ marginBottom: "1rem" }}>
-            <label style={{ display: "block", marginBottom: "0.5rem" }}>
-              <strong>Select Role:</strong>
-            </label>
+        <Card className="promotion-card">
+          <h2 className="promotion-card-title">Promote User</h2>
+          <div className="promotion-form-group">
+            <label className="promotion-label">Select Role</label>
             <select
               value={selectedRole}
               onChange={(e) => setSelectedRole(e.target.value)}
-              style={{
-                padding: "0.5rem",
-                fontSize: "1rem",
-                borderRadius: "4px",
-                border: "1px solid #ccc",
-                width: "100%",
-                maxWidth: "300px",
-              }}
+              className="promotion-select"
             >
-                <option value="regular">Regular</option>
-                <option value="cashier">Cashier</option>
-                <option value="manager">Manager</option>
-                <option value="superuser">Superuser</option>
+              <option value="regular">Regular</option>
+              <option value="cashier">Cashier</option>
+              <option value="manager">Manager</option>
+              <option value="superuser">Superuser</option>
             </select>
           </div>
           <Button onClick={handlePromote} disabled={promoting}>

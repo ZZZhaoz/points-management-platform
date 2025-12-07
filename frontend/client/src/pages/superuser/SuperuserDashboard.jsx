@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import "./SuperuserDashboard.css";
 
 /* Functions used to get user info*/
 
@@ -77,19 +78,42 @@ function computeUserStats(users) {
 
 function UserCard({ stats}) {
   return (
-    <div
-    >
-      <h2 >Users</h2>
-
-      <p><strong>Total Users:</strong> {stats.total}</p>
-      <p><strong>Regular:</strong> {stats.regular}</p>
-      <p><strong>Cashiers:</strong> {stats.cashier}</p>
-      <p><strong>Managers:</strong> {stats.manager}</p>
-      <p><strong>Superusers:</strong> {stats.superuser}</p>
-      <p><strong>Verified:</strong> {stats.verified}</p>
-      <p><strong>Not Verified:</strong> {stats.unverified}</p>
-
-    </div>
+    <>
+      <div className="stat-card-header">
+        <span className="stat-card-icon">👤</span>
+        <h2 className="stat-card-title">Users</h2>
+      </div>
+      <div className="stat-card-content">
+        <div className="stat-item">
+          <span className="stat-item-label">Total Users</span>
+          <span className="stat-item-value">{stats.total}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Regular</span>
+          <span className="stat-item-value">{stats.regular}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Cashiers</span>
+          <span className="stat-item-value">{stats.cashier}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Managers</span>
+          <span className="stat-item-value">{stats.manager}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Superusers</span>
+          <span className="stat-item-value">{stats.superuser}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Verified</span>
+          <span className="stat-item-value">{stats.verified}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Not Verified</span>
+          <span className="stat-item-value">{stats.unverified}</span>
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -148,23 +172,46 @@ function computeTransactionStats(transactions) {
 
 function TransactionCard({ stats}) {
   return (
-    <div
-    >
-      <h2>Transactions</h2>
-
-      <p><strong>Total:</strong> {stats.total}</p>
-      <p><strong>Purchase:</strong> {stats.purchase}</p>
-      <p><strong>Adjustment:</strong> {stats.adjustment}</p>
-      <p><strong>Redemption:</strong> {stats.redemption}</p>
-      <p><strong>Transfer:</strong> {stats.transfer}</p>
-      <p><strong>Event:</strong> {stats.event}</p>
-      <p><strong>Suspicious:</strong> {stats.suspicious}</p>
-      <p><strong>Not Suspicious:</strong> {stats.nonSuspicious}</p>
-
-      <Link to="/manager/transactions">
-
-      </Link>
-    </div>
+    <>
+      <div className="stat-card-header">
+        <span className="stat-card-icon">💸</span>
+        <h2 className="stat-card-title">Transactions</h2>
+      </div>
+      <div className="stat-card-content">
+        <div className="stat-item">
+          <span className="stat-item-label">Total</span>
+          <span className="stat-item-value">{stats.total}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Purchase</span>
+          <span className="stat-item-value">{stats.purchase}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Adjustment</span>
+          <span className="stat-item-value">{stats.adjustment}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Redemption</span>
+          <span className="stat-item-value">{stats.redemption}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Transfer</span>
+          <span className="stat-item-value">{stats.transfer}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Event</span>
+          <span className="stat-item-value">{stats.event}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Suspicious</span>
+          <span className="stat-item-value">{stats.suspicious}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Not Suspicious</span>
+          <span className="stat-item-value">{stats.nonSuspicious}</span>
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -240,23 +287,50 @@ function computeEventStats(events) {
 
 function EventCard({ stats }) {
   return (
-    <div>
-      <h2>Events</h2>
-
-      <p><strong>Total Events:</strong> {stats.total}</p>
-      <p><strong>Published:</strong> {stats.published}</p>
-      <p><strong>Unpublished:</strong> {stats.unpublished}</p>
-
-      <p><strong>Started:</strong> {stats.started}</p>
-      <p><strong>Not Started:</strong> {stats.notStarted}</p>
-
-      <p><strong>Ended:</strong> {stats.ended}</p>
-      <p><strong>Not Ended:</strong> {stats.notEnded}</p>
-
-      <p><strong>Full Events:</strong> {stats.full}</p>
-      <p><strong>Not Full:</strong> {stats.notFull}</p>
-
-    </div>
+    <>
+      <div className="stat-card-header">
+        <span className="stat-card-icon">🎪</span>
+        <h2 className="stat-card-title">Events</h2>
+      </div>
+      <div className="stat-card-content">
+        <div className="stat-item">
+          <span className="stat-item-label">Total Events</span>
+          <span className="stat-item-value">{stats.total}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Published</span>
+          <span className="stat-item-value">{stats.published}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Unpublished</span>
+          <span className="stat-item-value">{stats.unpublished}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Started</span>
+          <span className="stat-item-value">{stats.started}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Not Started</span>
+          <span className="stat-item-value">{stats.notStarted}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Ended</span>
+          <span className="stat-item-value">{stats.ended}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Not Ended</span>
+          <span className="stat-item-value">{stats.notEnded}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Full Events</span>
+          <span className="stat-item-value">{stats.full}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Not Full</span>
+          <span className="stat-item-value">{stats.notFull}</span>
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -329,44 +403,42 @@ export function computePromotionStats(promotions) {
 
 function PromotionCard({ stats }) {
   return (
-
-
-
-    <div
-    >
-      <h2>Promotions</h2>
-
-      <p><strong>Total Promotions:</strong> {stats.total}</p>
-      <p><strong>Automatic:</strong> {stats.automatic}</p>
-      <p><strong>One-Time:</strong> {stats.onetime}</p>
-      <p><strong>Expired:</strong> {stats.expired}</p>
-      <p><strong>Automatic Expired:</strong> {stats.expiredAutomatic}</p>
-      <p><strong>One-Time Expired:</strong> {stats.expiredOnetime}</p>
-
-    </div>
+    <>
+      <div className="stat-card-header">
+        <span className="stat-card-icon">🎁</span>
+        <h2 className="stat-card-title">Promotions</h2>
+      </div>
+      <div className="stat-card-content">
+        <div className="stat-item">
+          <span className="stat-item-label">Total Promotions</span>
+          <span className="stat-item-value">{stats.total}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Automatic</span>
+          <span className="stat-item-value">{stats.automatic}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">One-Time</span>
+          <span className="stat-item-value">{stats.onetime}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Expired</span>
+          <span className="stat-item-value">{stats.expired}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">Automatic Expired</span>
+          <span className="stat-item-value">{stats.expiredAutomatic}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-item-label">One-Time Expired</span>
+          <span className="stat-item-value">{stats.expiredOnetime}</span>
+        </div>
+      </div>
+    </>
   );
 }
 
 
-
-const cardStyle = {
-  background: "white",
-  padding: "24px",
-  borderRadius: "12px",
-  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-  transition: "0.2s ease",
-};
-
-const cardHover = {
-  transform: "translateY(-3px)",
-  boxShadow: "0 6px 16px rgba(0,0,0,0.15)",
-};
-
-const linkReset = {
-  textDecoration: "none",
-  color: "inherit",
-  display: "block",
-};
 
 export default function SuperuserDashboard() {
   const BACKEND_URL =
@@ -453,77 +525,45 @@ export default function SuperuserDashboard() {
 }, [BACKEND_URL, token]);
 
 
-  if (loading) return <p>Loading dashboard...</p>;
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading dashboard...</p>
+      </div>
+    );
+  }
 
   return (
-      <div style={{ padding: "30px" }}>
-        <h1>Superuser Dashboard</h1>
+    <div className="superuser-dashboard">
+      <div className="superuser-dashboard-header">
+        <h1 className="superuser-dashboard-title">👑 Superuser Dashboard</h1>
+        <p className="superuser-dashboard-subtitle">Overview of users, transactions, events, and promotions</p>
+      </div>
 
-        {/* 2×2 GRID */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "24px",
-            maxWidth: "1100px",
-            margin: "0 auto",
-            marginTop: "30px",
-          }}
-        >
+      <div className="stats-grid">
           {/* USERS */}
-          <Link
-            to="/manager/users"
-            style={{...cardStyle, ...linkReset}}
-            onMouseEnter={(e) => Object.assign(e.currentTarget.style, cardHover)}
-            onMouseLeave={(e) => Object.assign(e.currentTarget.style, cardStyle)}
-          >
+          <Link to="/manager/users" className="stat-card users">
             <UserCard stats={userStats} />
           </Link>
 
           {/* TRANSACTIONS */}
           {transactionStats && (
-            <Link
-              to="/manager/transactions"
-              style={{...cardStyle, ...linkReset}}
-              onMouseEnter={(e) =>
-                Object.assign(e.currentTarget.style, cardHover)
-              }
-              onMouseLeave={(e) =>
-                Object.assign(e.currentTarget.style, cardStyle)
-              }
-            >
+            <Link to="/manager/transactions" className="stat-card transactions">
               <TransactionCard stats={transactionStats} />
             </Link>
           )}
 
           {/* EVENTS */}
           {eventStats && (
-            <Link
-              to="/manager/events"
-              style={{...cardStyle, ...linkReset}}
-              onMouseEnter={(e) =>
-                Object.assign(e.currentTarget.style, cardHover)
-              }
-              onMouseLeave={(e) =>
-                Object.assign(e.currentTarget.style, cardStyle)
-              }
-            >
+            <Link to="/manager/events" className="stat-card events">
               <EventCard stats={eventStats} />
             </Link>
           )}
 
           {/* PROMOTIONS */}
           {promoStats && (
-            <Link
-              to="/manager/promotions"
-              style={{...cardStyle, ...linkReset}}
-              onMouseEnter={(e) =>
-                Object.assign(e.currentTarget.style, cardHover)
-              }
-              onMouseLeave={(e) =>
-                Object.assign(e.currentTarget.style, cardStyle)
-              }
-            >
+            <Link to="/manager/promotions" className="stat-card promotions">
               <PromotionCard stats={promoStats} />
             </Link>
           )}

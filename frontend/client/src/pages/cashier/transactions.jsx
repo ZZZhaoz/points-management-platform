@@ -2,6 +2,7 @@ import { useState } from "react";
 import Input from "../../components/global/Input";
 import Button from "../../components/global/Button";
 import { useAuth } from "../../contexts/AuthContext";
+import { useTransactions } from "../../contexts/TransactionContext";
 import "./transactions.css";
 
 export default function Transactions() {
@@ -52,8 +53,10 @@ export default function Transactions() {
       remark
     );
 
-    if (err){
-        setMessage(err);
+    setSubmitting(false);
+
+    if (result.error){
+        setMessage(result.error);
         setLoading(false);
         return;
     }

@@ -45,6 +45,7 @@ export default function NavBar() {
         <>
           <Link to="/promotions" className="nav-link">🎁 Promotions</Link>
           <Link to="/user/qr" className="nav-link">📱 My QR</Link>
+          <Link to="/statistics" className="nav-link">📊 Statistics</Link>
           
           <Dropdown title="💸 Transactions">
             <Dropdown.Item to="/transactions/my">My Transactions</Dropdown.Item>
@@ -60,8 +61,10 @@ export default function NavBar() {
       )}
 
       {/* CASHIER MENU */}
-      {role === "cashier" && (
+      {viewRole === "cashier" && (
         <>
+          <Link to="/statistics" className="nav-link">📊 Statistics</Link>
+          
           <Dropdown title="💸 Transactions">
             <Dropdown.Item to="/cashier/transactions">Create Transaction</Dropdown.Item>
           </Dropdown>
@@ -73,31 +76,30 @@ export default function NavBar() {
           <Dropdown title="🎪 Events">
             <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
           </Dropdown>
-
-
-     
-
-
         </>
       )}
 
       {/* MANAGER MENU */}
-      {role === "manager" && (
+      {viewRole === "manager" && (
         <>
           <Link to="/manager/users" className="nav-link">👥 Users</Link>
-          <Link to="/manager/transactions" className="nav-link">📊 All Transactions</Link>
+          <Link to="/manager/transactions" className="nav-link">📊 Transactions</Link>
           <Link to="/manager/promotions" className="nav-link">🎁 Promotions</Link>
+          <Link to="/manager/statistics" className="nav-link">📊 Statistics</Link>
           
           <Dropdown title="🎪 Events">
             <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
             <Dropdown.Item to="/events">All Events</Dropdown.Item>
           </Dropdown>
+        </>
+      )}
 
       {/* SUPERUSER MENU */}
-      {role === "superuser" && (
+      {viewRole === "superuser" && (
         <>
           <Link to="/manager/users" className="nav-link">👥 Users</Link>
-          <Link to="/manager/transactions" className="nav-link">📊 All Transactions</Link>
+          <Link to="/manager/transactions" className="nav-link">📊 Transactions</Link>
+          <Link to="/superuser/statistics" className="nav-link">📊 Statistics</Link>
           
           <Dropdown title="⚡ Admin">
             <Dropdown.Item to="/superuser/user-promotion">User Promotion</Dropdown.Item>
@@ -108,7 +110,6 @@ export default function NavBar() {
             <Dropdown.Item to="/events">All Events</Dropdown.Item>
           </Dropdown>
         </>
-        
       )}
 
       {/* Avatar = Profile Page */}
