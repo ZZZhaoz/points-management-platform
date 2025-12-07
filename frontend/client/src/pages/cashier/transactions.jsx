@@ -1,15 +1,18 @@
 import { useState } from "react";
 import Input from "../../components/global/Input";
 import Button from "../../components/global/Button";
-import { useTransactions } from "../../contexts/TransactionContext";  
+import { useAuth } from "../../contexts/AuthContext";
+import "./transactions.css";
 
 export default function Transactions() {
   const { createTransaction } = useTransactions();   
   
   const [utorid, setUtorid] = useState("");
   const [spent, setSpent] = useState("");
-  const [promotionIds, setPromotionIds] = useState([]);
+  const [promotionIds, setPromotionIds] = useState("");
   const [remark, setRemark] = useState("");
+  const [message, setMessage] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -17,23 +20,27 @@ export default function Transactions() {
 
   const submit = async (e) => {
     e.preventDefault();
-
-    setError(null);
-    setSuccess(null);
-
+    setMessage(null);
+    setLoading(true);
+    
     const type = "purchase";
     
     const spentNum = parseFloat(spent);
     if (isNaN(spentNum) || spentNum <= 0) {
-      setError("Please enter a valid amount greater than 0");
+      setMessage("Please enter a valid amount greater than 0");
+      setLoading(false);
       return;
     }
     
+    // Convert promotionIds string to number array
     const promotionIdsNum = promotionIds
-      .map(id => id.trim())
-      .filter(id => id !== "")
-      .map(id => parseInt(id, 10))
-      .filter(id => !isNaN(id));
+      ? promotionIds
+          .split(",")
+          .map(id => id.trim())
+          .filter(id => id !== "")
+          .map(id => parseInt(id, 10))
+          .filter(id => !isNaN(id))
+      : [];
     
     setSubmitting(true);
 
@@ -45,95 +52,82 @@ export default function Transactions() {
       remark
     );
 
-    setSubmitting(false);
-
-    if (result?.error) {
-      setError(result.error);
-      return;
+    if (err){
+        setMessage(err);
+        setLoading(false);
+        return;
     }
 
     setUtorid("");
     setSpent("");
-    setPromotionIds([]);
+    setPromotionIds("");
     setRemark("");
-
-    setSuccess("Transaction created successfully!");
+    setMessage("Transaction created successfully! ✨");
+    setLoading(false);
   };
 
+  const isSuccess = message && message.includes("successfully");
+
   return (
-    <div style={{ maxWidth: "650px", margin: "0 auto" }}>
+    <div className="create-transaction-page">
+      <div className="create-transaction-header">
+        <h1 className="create-transaction-title">Create Transaction 🛒</h1>
+        <p className="create-transaction-subtitle">Record a purchase transaction for a user</p>
+      </div>
 
-      <h1>Create Transaction</h1>
+      <div className="create-transaction-card">
+        <div className="create-transaction-icon">💳</div>
 
-      {/* Error Box */}
-      {error && (
-        <div
-          style={{
-            background: "#ffe5e5",
-            color: "#b00000",
-            padding: "1rem",
-            borderRadius: "8px",
-            marginBottom: "1rem",
-            fontWeight: "600",
-          }}
-        >
-          {error}
-        </div>
-      )}
+        <form onSubmit={submit}>
+          <Input
+            label="Customer UTORid"
+            placeholder="Enter customer's UTORid"
+            value={utorid}
+            onChange={setUtorid}
+            required
+          />
 
-      {/* Success Box */}
-      {success && (
-        <div
-          style={{
-            background: "#e5ffe5",
-            color: "#007700",
-            padding: "1rem",
-            borderRadius: "8px",
-            marginBottom: "1rem",
-            fontWeight: "600",
-          }}
-        >
-          {success}
-        </div>
-      )}
+          <Input
+            label="Amount Spent"
+            placeholder="Enter the amount spent"
+            type="number"
+            step="0.01"
+            min="0.01"
+            value={spent}
+            onChange={setSpent}
+            required
+          />
 
-      <form onSubmit={submit}>
-        <Input
-          label="UTORid"
-          placeholder="Enter your UTORid"
-          value={utorid}
-          onChange={(value) => setUtorid(value)}
-          required
-        />
+          <Input
+            label="Promotion IDs (Optional)"
+            placeholder="Enter promotion IDs separated by commas (e.g., 1, 2, 3)"
+            value={promotionIds}
+            onChange={setPromotionIds}
+          />
 
-        <Input
-          label="Amount Spent"
-          placeholder="Enter the amount spent"
-          type="number"
-          step="0.01"
-          value={spent}
-          onChange={(value) => setSpent(value)}
-          required
-        />
+          <Input
+            label="Remark (Optional)"
+            placeholder="Enter a remark"
+            value={remark}
+            onChange={setRemark}
+          />
 
-        <Input
-          label="Promotion IDs"
-          placeholder="Enter promotion IDs (comma-separated)"
-          value={promotionIds.join(",")}
-          onChange={(value) => setPromotionIds(value ? value.split(",") : [])}
-        />
+          {message && (
+            <div className={`alert ${isSuccess ? "alert-success" : "alert-error"}`} style={{ marginTop: "1rem" }}>
+              {message}
+            </div>
+          )}
 
-        <Input
-          label="Remark"
-          placeholder="Enter remark"
-          value={remark}
-          onChange={(value) => setRemark(value)}
-        />
-
-        <Button type="submit" disabled={submitting}>
-          {submitting ? "Creating..." : "Create Transaction"}
-        </Button>
-      </form>
+          <Button 
+            type="submit" 
+            variant="primary"
+            disabled={loading}
+            style={{ width: "100%", marginTop: "1.5rem" }}
+          >
+            {loading ? "Creating..." : "✨ Create Transaction"}
+          </Button>
+        </form>
+      </div>
     </div>
   );
 }

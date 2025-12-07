@@ -56,6 +56,11 @@ import OrganizerStatistics from "./pages/organizer/OrganizerStatistics";
 
 /* -----------------------------  Superuser Pages  ----------------------------- */
 import UserPromotion from "./pages/superuser/UserPromotion";
+import Transactions from "./pages/cashier/transactions";
+import RedemptionTransaction from "./pages/cashier/RedemptionTransaction";
+import Events from "./pages/organizer/Events";
+import EventDetail from "./pages/organizer/EventDetail";
+import EventEdit from "./pages/organizer/EventEdit";
 
 export default function App() {
   return (

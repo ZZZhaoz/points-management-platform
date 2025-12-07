@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import "./Events.css";
 import { useEvents } from "../../contexts/EventContext";
 import { Card } from "../../components/global/Card";
 
@@ -32,29 +34,47 @@ export default function Events() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="page-container">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading your events...</p>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div className="page-container">
+        <div className="alert alert-error">{error}</div>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <h1>My Events (As Organizer)</h1>
+    <div className="organizer-events-page">
+      <div className="organizer-events-header">
+        <h1 className="organizer-events-title">My Organized Events 👔</h1>
+        <p className="organizer-events-subtitle">Manage events you're organizing</p>
+      </div>
       
       {events.length === 0 ? (
-        <p>You are not organizing any events.</p>
+        <div className="empty-state">
+          <div className="empty-state-icon">📅</div>
+          <div className="empty-state-title">No events yet</div>
+          <div className="empty-state-text">You are not organizing any events.</div>
+        </div>
       ) : (
-        <div>
+        <div className="events-grid">
           {events.map((event) => (
-            <Card 
-              key={event.id} 
+            <div
+              key={event.id}
+              className="event-card-clickable"
               onClick={() => handleEventClick(event.id)}
-              style={{ cursor: "pointer", marginBottom: "1rem" }}
             >
-              <h2>{event.name}</h2>
-            </Card>
+              <h2>🎪 {event.name}</h2>
+            </div>
           ))}
         </div>
       )}

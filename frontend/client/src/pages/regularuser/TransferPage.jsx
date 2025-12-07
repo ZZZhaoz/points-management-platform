@@ -1,4 +1,7 @@
 import { useState } from "react";
+import Input from "../../components/global/Input";
+import Button from "../../components/global/Button";
+import "./TransferPage.css";
 
 export default function TransferPage() {
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
@@ -8,13 +11,16 @@ export default function TransferPage() {
   const [amount, setAmount] = useState("");
   const [remark, setRemark] = useState("");
   const [message, setMessage] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage(null);
+    setLoading(true);
 
     if (!recipientUtorid || !amount) {
       setMessage("Please fill in recipient and amount.");
+      setLoading(false);
       return;
     }
 
@@ -31,6 +37,7 @@ export default function TransferPage() {
 
       if (!lookupRes.ok) {
         setMessage("User not found.");
+        setLoading(false);
         return;
       }
 
@@ -69,72 +76,65 @@ export default function TransferPage() {
     } catch (err) {
       console.error(err);
       setMessage("Network error.");
+    } finally {
+      setLoading(false);
     }
   };
 
+  const isSuccess = message && message.includes("Successfully");
+
   return (
-    <div style={{ maxWidth: "400px", margin: "0 auto" }}>
-      <h2>Transfer Points</h2>
-      <p>Enter a user's UTORID to transfer points.</p>
+    <div className="transfer-page">
+      <div className="transfer-header">
+        <h1 className="transfer-title">Transfer Points 💸</h1>
+        <p className="transfer-subtitle">Send points to another user</p>
+      </div>
 
-      <form onSubmit={handleSubmit}>
-        
-        {/* Recipient UTORID */}
-        <div style={{ marginBottom: "10px" }}>
-          <label>Recipient UTORID</label>
-          <input
-            type="text"
-            value={recipientUtorid}
-            onChange={(e) => setRecipientUtorid(e.target.value)}
+      <div className="transfer-card">
+        <div className="transfer-icon">🔄</div>
+
+        <form onSubmit={handleSubmit}>
+          <Input
+            label="Recipient UTORid"
             placeholder="e.g., johndoe1"
-            style={{ width: "100%", padding: "8px", marginTop: "5px" }}
+            value={recipientUtorid}
+            onChange={setRecipientUtorid}
+            required
           />
-        </div>
 
-        {/* Amount */}
-        <div style={{ marginBottom: "10px" }}>
-          <label>Amount of Points</label>
-          <input
+          <Input
+            label="Amount of Points"
             type="number"
             min="1"
+            placeholder="Enter amount"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            style={{ width: "100%", padding: "8px", marginTop: "5px" }}
+            onChange={setAmount}
+            required
           />
-        </div>
 
-        {/* Remark */}
-        <div style={{ marginBottom: "10px" }}>
-          <label>Remark (optional)</label>
-          <input
-            type="text"
-            value={remark}
-            onChange={(e) => setRemark(e.target.value)}
+          <Input
+            label="Remark (Optional)"
             placeholder="e.g., Birthday gift"
-            style={{ width: "100%", padding: "8px", marginTop: "5px" }}
+            value={remark}
+            onChange={setRemark}
           />
-        </div>
 
-        <button
-          type="submit"
-          style={{
-            padding: "10px 15px",
-            background: "#007bff",
-            color: "white",
-            border: "none",
-            width: "100%",
-            borderRadius: "5px",
-          }}
-        >
-          Submit Transfer
-        </button>
-      </form>
+          {message && (
+            <div className={`alert ${isSuccess ? "alert-success" : "alert-error"}`} style={{ marginTop: "1rem" }}>
+              {message}
+            </div>
+          )}
 
-      {message && (
-        <p style={{ marginTop: "15px", color: "red", fontWeight: "bold" }}>
-          {message}
-        </p>
-      )}
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={loading}
+            style={{ width: "100%", marginTop: "1.5rem" }}
+          >
+            {loading ? "Transferring..." : "✨ Transfer Points"}
+          </Button>
+        </form>
+      </div>
     </div>
   );
 }

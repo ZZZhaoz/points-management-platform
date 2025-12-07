@@ -1,0 +1,49 @@
+.transfer-page {
+  padding: var(--space-xl);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.transfer-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+}
+
+.transfer-title {
+  font-size: 2.5rem;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--space-sm);
+}
+
+.transfer-subtitle {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+}
+
+.transfer-card {
+  background: var(--bg-primary);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-3xl);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.transfer-icon {
+  text-align: center;
+  font-size: 4rem;
+  margin-bottom: var(--space-lg);
+}
+
+@media (max-width: 768px) {
+  .transfer-page {
+    padding: var(--space-md);
+  }
+  
+  .transfer-card {
+    padding: var(--space-xl);
+  }
+}
+

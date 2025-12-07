@@ -1,0 +1,92 @@
+.qr-page {
+  padding: var(--space-xl);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.qr-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+}
+
+.qr-title {
+  font-size: 2.5rem;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--space-sm);
+}
+
+.qr-subtitle {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+}
+
+.qr-card {
+  background: var(--bg-primary);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-3xl);
+  text-align: center;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.qr-container {
+  background: var(--bg-primary);
+  padding: var(--space-xl);
+  border-radius: var(--radius-xl);
+  display: inline-block;
+  box-shadow: var(--shadow-md);
+  margin: var(--space-xl) 0;
+  border: 4px solid var(--primary);
+}
+
+.qr-info {
+  margin-top: var(--space-xl);
+  padding-top: var(--space-xl);
+  border-top: 2px solid var(--border-light);
+}
+
+.transaction-id-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--primary-gradient);
+  color: var(--text-inverse);
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 1.125rem;
+  margin-bottom: var(--space-md);
+}
+
+.qr-instructions {
+  margin-top: var(--space-lg);
+  padding: var(--space-lg);
+  background: var(--info-light);
+  border-left: 4px solid var(--info);
+  border-radius: var(--radius-lg);
+  color: #1e40af;
+}
+
+.qr-instructions strong {
+  display: block;
+  margin-bottom: var(--space-xs);
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .qr-page {
+    padding: var(--space-md);
+  }
+  
+  .qr-card {
+    padding: var(--space-xl);
+  }
+  
+  .qr-container {
+    padding: var(--space-md);
+  }
+}
+

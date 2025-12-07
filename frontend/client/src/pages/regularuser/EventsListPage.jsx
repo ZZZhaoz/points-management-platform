@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Input from "../../components/global/Input";
+import Button from "../../components/global/Button";
+import "./EventsListPage.css";
 
 export default function EventsListPage() {
   const BACKEND_URL =
     process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   const [events, setEvents] = useState([]);
   const [myEventIds, setMyEventIds] = useState(new Set());
@@ -107,23 +110,25 @@ export default function EventsListPage() {
   const totalPages = Math.ceil(count / limit);
 
   return (
-    <div>
-      <h2>Events</h2>
-      <p>All published events</p>
-
-      {filterMessage && (
-        <p style={{ color: "orange", fontWeight: "bold" }}>{filterMessage}</p>
-      )}
+    <div className="events-list-page">
+      <div className="events-header">
+        <h1 className="events-title">Events 🎪</h1>
+        <p className="events-subtitle">Discover and join exciting events!</p>
+      </div>
 
       {/* Filters */}
-      <div style={{ marginBottom: "20px" }}>
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            marginBottom: "10px",
-          }}
-        >
+      <div className="filters-card">
+        <div className="filters-title">
+          🔍 Filter Events
+        </div>
+
+        {filterMessage && (
+          <div className="alert alert-warning" style={{ marginBottom: "1rem" }}>
+            {filterMessage}
+          </div>
+        )}
+
+        <div className="filters-grid">
           <Input
             label="Search by name"
             value={name}
@@ -137,43 +142,37 @@ export default function EventsListPage() {
             onChange={setLocation}
             placeholder="Location"
           />
-        </div>
 
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          <label>
-            Started
+          <div className="filter-group">
+            <label className="filter-label">Started</label>
             <select
+              className="filter-select"
               value={started}
               onChange={(e) => setStarted(e.target.value)}
             >
-              <option value="">Started?</option>
+              <option value="">Any</option>
               <option value="true">Started</option>
               <option value="false">Not started</option>
             </select>
-          </label>
+          </div>
 
-          <label>
-            Ended
+          <div className="filter-group">
+            <label className="filter-label">Ended</label>
             <select
+              className="filter-select"
               value={ended}
               onChange={(e) => setEnded(e.target.value)}
             >
-              <option value="">Ended?</option>
+              <option value="">Any</option>
               <option value="true">Ended</option>
               <option value="false">Not ended</option>
             </select>
-          </label>
+          </div>
 
-          <label>
-            Attended
+          <div className="filter-group">
+            <label className="filter-label">Attended</label>
             <select
+              className="filter-select"
               value={attended}
               onChange={(e) => setAttended(e.target.value)}
             >
@@ -181,91 +180,114 @@ export default function EventsListPage() {
               <option value="true">Joined</option>
               <option value="false">Not Joined</option>
             </select>
-          </label>
+          </div>
         </div>
       </div>
 
+      {/* Loading State */}
+      {loading && (
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading events...</p>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!loading && displayedEvents.length === 0 && !error && (
+        <div className="empty-state">
+          <div className="empty-state-icon">📅</div>
+          <div className="empty-state-title">No events found</div>
+          <div className="empty-state-text">Try adjusting your filters or check back later!</div>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && !loading && (
+        <div className="alert alert-error">
+          {error}
+        </div>
+      )}
+
       {/* Events List */}
-      <div style={{ display: "grid", gap: "16px" }}>
-        {displayedEvents.map((event) => {
-          const isJoined = myEventIds.has(event.id);
+      {!loading && displayedEvents.length > 0 && (
+        <div className="events-grid">
+          {displayedEvents.map((event) => {
+            const isJoined = myEventIds.has(event.id);
+            const isFull = event.numGuests >= event.capacity;
 
-          return (
-            <div
-              key={event.id}
-              style={{
-                position: "relative",
-                border: "1px solid #ccc",
-                padding: "15px",
-                borderRadius: "8px",
-              }}
-            >
-              {isJoined && (
-                <span
-                  style={{
-                    position: "absolute",
-                    top: "10px",
-                    right: "10px",
-                    background: "#4caf50",
-                    color: "white",
-                    padding: "4px 8px",
-                    borderRadius: "4px",
-                    fontSize: "0.8rem",
-                  }}
+            return (
+              <div
+                key={event.id}
+                className={`event-card ${isFull ? "full" : ""}`}
+              >
+                {isJoined && (
+                  <div className="attending-badge">
+                    ✅ Attending
+                  </div>
+                )}
+
+                <h3 className="event-name">{event.name}</h3>
+                <p className="event-description">{event.description}</p>
+
+                <div className="event-details">
+                  <div className="event-detail">
+                    <strong>📍 Location:</strong>
+                    <span>{event.location}</span>
+                  </div>
+
+                  <div className="event-detail">
+                    <strong>🕐 Time:</strong>
+                    <span>
+                      {event.startTime?.slice(0, 10)} → {event.endTime?.slice(0, 10)}
+                    </span>
+                  </div>
+
+                  <div className="event-detail">
+                    <strong>👥 Capacity:</strong>
+                    <span className={isFull ? "capacity-full" : ""}>
+                      {event.numGuests}/{event.capacity}
+                      {isFull && " (FULL)"}
+                    </span>
+                  </div>
+                </div>
+
+                <Button
+                  onClick={() => navigate(`/events/${event.id}`)}
+                  variant="outline"
+                  style={{ width: "100%" }}
                 >
-                  Attending
-                </span>
-              )}
-
-              <h3>{event.name}</h3>
-              <p>{event.description}</p>
-
-              <p>
-                <strong>Time:</strong>{" "}
-                {event.startTime?.slice(0, 10)} → {event.endTime?.slice(0, 10)}
-              </p>
-
-              <p>
-                <strong>Location:</strong> {event.location}
-              </p>
-
-              <p>
-                <strong>Capacity:</strong> {event.numGuests}/{event.capacity}{" "}
-                {event.numGuests >= event.capacity ? " (FULL)" : ""}
-              </p>
-
-              <Link to={`/events/${event.id}`}>
-                <button style={{ marginTop: "10px" }}>View Details</button>
-              </Link>
-            </div>
-          );
-        })}
-      </div>
+                  View Details →
+                </Button>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Pagination */}
-      <div
-        style={{
-          marginTop: "25px",
-          display: "flex",
-          gap: "10px",
-          alignItems: "center",
-        }}
-      >
-        <button disabled={page === 1} onClick={() => setPage(page - 1)}>
-          Prev
-        </button>
+      {!loading && totalPages > 1 && (
+        <div className="pagination">
+          <button
+            className="pagination-button"
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+          >
+            ← Previous
+          </button>
 
-        <span>
-          Page {page} / {totalPages}
-        </span>
+          <span className="pagination-info">
+            Page {page} / {totalPages || 1}
+          </span>
 
-        <button
-          disabled={page === totalPages}
-          onClick={() => setPage(page + 1)}
-        >
-          Next
-        </button>
-      </div>
+          <button
+            className="pagination-button"
+            disabled={page >= totalPages}
+            onClick={() => setPage(page + 1)}
+          >
+            Next →
+          </button>
+        </div>
+      )}
     </div>
   );
 }

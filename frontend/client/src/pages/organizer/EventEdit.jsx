@@ -4,6 +4,7 @@ import { useEvents } from "../../contexts/EventContext";
 import { Card } from "../../components/global/Card";
 import Button from "../../components/global/Button";
 import Input from "../../components/global/Input";
+import "./OrganizerPage.css";
 
 export default function EventEdit() {
     const { eventId } = useParams();
@@ -141,54 +142,28 @@ export default function EventEdit() {
     };
 
     if (loading) {
-        return <div>Loading...</div>;
+        return (
+            <div className="page-container">
+                <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <p>Loading event...</p>
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div style={{ maxWidth: "700px", margin: "0 auto" }}>
-
-            {/* ===== Success message ===== */}
-            {success && (
-                <div
-                    style={{
-                        background: "#e6ffe6",
-                        color: "#0b730b",
-                        padding: "1rem",
-                        borderRadius: "8px",
-                        marginBottom: "1rem",
-                        fontWeight: "600",
-                    }}
-                >
-                    {success}
-                </div>
-            )}
-
-            {/* ===== Error message ===== */}
-            {error && (
-                <div
-                    style={{
-                        background: "#ffe5e5",
-                        color: "#b00000",
-                        padding: "1rem",
-                        borderRadius: "8px",
-                        marginBottom: "1rem",
-                        fontWeight: "600",
-                    }}
-                >
-                    {error}
-                </div>
-            )}
-
-            <div style={{ marginBottom: "1rem" }}>
-                <Button
-                    onClick={() => navigate(`/organizer/events/${eventId}`)}
-                    variant="secondary"
-                >
+        <div className="organizer-page">
+            <div className="back-button-container">
+                <Button onClick={() => navigate(`/organizer/events/${eventId}`)} variant="secondary">
                     ← Back to Event
                 </Button>
             </div>
 
-            <h1>Edit Event</h1>
+            <div className="organizer-header">
+                <h1 className="organizer-title">Edit Event ✏️</h1>
+                <p className="organizer-subtitle">Update event details</p>
+            </div>
 
             <Card>
                 <Input
@@ -260,36 +235,37 @@ export default function EventEdit() {
                         }
                     />
                     <span>Published</span>
-                </label>
+                    </label>
+                </div>
 
-                <div style={{ display: "flex", gap: "1rem" }}>
-                    <Button onClick={handleSave} disabled={saving}>
-                        {saving ? "Saving..." : "Save"}
+                {error && (
+                    <div className="alert alert-error" style={{ marginTop: "1rem" }}>
+                        {error}
+                    </div>
+                )}
+
+                <div className="action-buttons" style={{ marginTop: "1.5rem" }}>
+                    <Button onClick={handleSave} disabled={saving} variant="success">
+                        {saving ? "Saving..." : "💾 Save Changes"}
                     </Button>
-                    <Button
-                        onClick={handleCancel}
-                        variant="secondary"
-                        disabled={saving}
-                    >
-                        Cancel
+                    <Button onClick={handleCancel} variant="secondary" disabled={saving}>
+                        ❌ Cancel
                     </Button>
                 </div>
             </Card>
 
-            {/* ===== Add Guest Section ===== */}
-            <Card style={{ marginTop: "1.5rem" }}>
+            <Card style={{ marginTop: "2rem" }}>
+                <h3 style={{ marginBottom: "1rem" }}>👥 Add Guest</h3>
                 <Input
-                    label="Add Guest by UTORid"
-                    value={utorid}
-                    onChange={(v) => setUtorid(v)}
-                    placeholder="Enter UTORid"
+                    label="UTORid"
+                    value={utorid || ""}
+                    onChange={setUtorid}
+                    placeholder="Enter guest's UTORid"
                 />
 
-                <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
-                    <Button onClick={addUser} variant="secondary">
-                        Add Guest
-                    </Button>
-                </div>
+                <Button onClick={addUser} variant="primary" style={{ marginTop: "1rem" }}>
+                    ➕ Add Guest
+                </Button>
             </Card>
         </div>
     );

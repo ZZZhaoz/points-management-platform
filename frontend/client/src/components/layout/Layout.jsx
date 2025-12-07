@@ -1,17 +1,15 @@
 import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import Footer from "./Footer";
+import "./Layout.css";
 
 export default function Layout() {
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-
+    <div className="layout">
       <Header />
-
-      <div style={{ flex: 1, padding: "20px" }}>
+      <main className="layout-content">
         <Outlet />
-      </div>
-
+      </main>
       <Footer />
     </div>
   );

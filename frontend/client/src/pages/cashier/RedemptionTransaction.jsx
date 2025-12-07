@@ -1,12 +1,15 @@
 import { useState } from "react";
 import Input from "../../components/global/Input";
 import Button from "../../components/global/Button";
+import { useAuth } from "../../contexts/AuthContext";
+import "./RedemptionTransaction.css";
 import { useTransactions } from "../../contexts/TransactionContext";
 
 export default function RedemptionTransaction() {
   const { processRedemption } = useTransactions();
 
   const [transactionId, setTransactionId] = useState("");
+  const [message, setMessage] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
   const [error, setError] = useState(null);
@@ -14,13 +17,14 @@ export default function RedemptionTransaction() {
 
   const submit = async (e) => {
     e.preventDefault();
+    setMessage(null);
 
     setError(null);
     setSuccess(null);
 
     const id = parseInt(transactionId, 10);
     if (isNaN(id) || id <= 0) {
-      setError("Please enter a valid transaction ID greater than 0");
+      setMessage("Please enter a valid transaction ID greater than 0");
       return;
     }
 
@@ -28,65 +32,54 @@ export default function RedemptionTransaction() {
     const result = await processRedemption(id);
     setSubmitting(false);
 
-    if (result?.error) {
-      setError(result.error);
+    if (err) {
+      setMessage(err);
       return;
     }
 
     // Success
     setTransactionId("");
-    setSuccess("Redemption processed successfully!");
+    setMessage("Redemption processed successfully! ✨");
   };
 
+  const isSuccess = message && message.includes("successfully");
+
   return (
-    <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-      <h1>Process Redemption</h1>
+    <div className="process-redemption-page">
+      <div className="process-redemption-header">
+        <h1 className="process-redemption-title">Process Redemption 🎫</h1>
+        <p className="process-redemption-subtitle">Enter a transaction ID to process a redemption request</p>
+      </div>
 
-      {/* ----- Error Box ----- */}
-      {error && (
-        <div
-          style={{
-            background: "#ffe5e5",
-            color: "#b00000",
-            padding: "1rem",
-            borderRadius: "8px",
-            marginBottom: "1rem",
-            fontWeight: "600",
-          }}
-        >
-          {error}
-        </div>
-      )}
+      <div className="process-redemption-card">
+        <div className="process-redemption-icon">✅</div>
 
-      {/* ----- Success Box ----- */}
-      {success && (
-        <div
-          style={{
-            background: "#e5ffe5",
-            color: "#007700",
-            padding: "1rem",
-            borderRadius: "8px",
-            marginBottom: "1rem",
-            fontWeight: "600",
-          }}
-        >
-          {success}
-        </div>
-      )}
+        <form onSubmit={submit}>
+          <Input
+            label="Transaction ID"
+            placeholder="Enter the redemption transaction ID"
+            type="number"
+            value={transactionId}
+            onChange={setTransactionId}
+            required
+          />
 
-      <form onSubmit={submit}>
-        <Input
-          label="Transaction ID"
-          placeholder="Enter the transaction ID"
-          value={transactionId}
-          onChange={(value) => setTransactionId(value)}
-          required
-        />
+          {message && (
+            <div className={`alert ${isSuccess ? "alert-success" : "alert-error"}`} style={{ marginTop: "1rem" }}>
+              {message}
+            </div>
+          )}
 
-        <Button type="submit" disabled={submitting}>
-          {submitting ? "Processing..." : "Process Redemption"}
-        </Button>
-      </form>
+          <Button 
+            type="submit" 
+            variant="success"
+            disabled={submitting}
+            style={{ width: "100%", marginTop: "1.5rem" }}
+          >
+            {submitting ? "Processing..." : "✨ Process Redemption"}
+          </Button>
+        </form>
+      </div>
     </div>
   );
 }

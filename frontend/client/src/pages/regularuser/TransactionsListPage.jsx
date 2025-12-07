@@ -1,10 +1,22 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Input from "../../components/global/Input";
+import Button from "../../components/global/Button";
+import "./TransactionsListPage.css";
+
+const typeIcons = {
+  purchase: "🛒",
+  redemption: "🎫",
+  adjustment: "⚙️",
+  transfer: "💸",
+  event: "🎪",
+};
 
 export default function TransactionsListPage() {
   const BACKEND_URL =
     process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   const [transactions, setTransactions] = useState([]);
   const [count, setCount] = useState(0);
@@ -72,20 +84,19 @@ export default function TransactionsListPage() {
         if (res.ok) {
           setTransactions(data.results);
           setCount(data.count);
+          setError("");
+        } else {
+          setError(data.error || "Failed to load transactions");
         }
       })
+      .catch(() => {
+        setError("Network error. Please try again.");
+      })
       .finally(() => setLoading(false));
-  }, [debouncedFilters, page]);
-
-  const typeColor = {
-    purchase: "#4caf50",
-    redemption: "#ff9800",
-    adjustment: "#9c27b0",
-    transfer: "#2196f3",
-    event: "#f44336",
-  };
+  }, [debouncedFilters, page, BACKEND_URL, token]);
 
   const [promotionCache, setPromotionCache] = useState({});
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const loadPromotions = async () => {
@@ -112,38 +123,26 @@ export default function TransactionsListPage() {
   }, [transactions]);
 
   return (
-    <div style={{ maxWidth: "900px", margin: "0 auto" }}>
-      <h2>My Transactions</h2>
-      <p>All past transactions</p>
+    <div className="transactions-page">
+      <div className="transactions-header">
+        <h1 className="transactions-title">My Transactions 💸</h1>
+        <p className="transactions-subtitle">View and filter all your past transactions</p>
+      </div>
 
       {/* Filters */}
-      <div style={{ marginBottom: "20px" }}>
-        
-        <div
-          style={{
-            display: "flex",
-            gap: "12px",
-            marginBottom: "12px",
-          }}
-        >
-          <Input
-            label="Remark"
-            value={remark}
-            onChange={setRemark}
-            placeholder="Search remark text..."
-          />
+      <div className="filters-card">
+        <div className="filters-title">
+          🔍 Filter Transactions
         </div>
-
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "12px",
-          }}
-        >
-          <label>
-            Type
-            <select value={type} onChange={(e) => setType(e.target.value)}>
+        
+        <div className="filters-grid">
+          <div className="filter-group">
+            <label className="filter-label">Type</label>
+            <select 
+              className="filter-select"
+              value={type} 
+              onChange={(e) => setType(e.target.value)}
+            >
               <option value="">Any</option>
               <option value="purchase">Purchase</option>
               <option value="redemption">Redemption</option>
@@ -151,7 +150,7 @@ export default function TransactionsListPage() {
               <option value="transfer">Transfer</option>
               <option value="event">Event</option>
             </select>
-          </label>
+          </div>
 
           <Input
             label="Promotion Name"
@@ -165,144 +164,165 @@ export default function TransactionsListPage() {
             value={amount}
             onChange={setAmount}
             placeholder="e.g. 50"
+            type="number"
           />
 
-          <label>
-            Operator
+          <div className="filter-group">
+            <label className="filter-label">Operator</label>
             <select
+              className="filter-select"
               value={operator}
               onChange={(e) => setOperator(e.target.value)}
             >
               <option value="">None</option>
-              <option value="gte">≥</option>
-              <option value="lte">≤</option>
+              <option value="gte">≥ (Greater than or equal)</option>
+              <option value="lte">≤ (Less than or equal)</option>
             </select>
-          </label>
+          </div>
+        </div>
+
+        <div style={{ marginTop: "1rem" }}>
+          <Input
+            label="Remark"
+            value={remark}
+            onChange={setRemark}
+            placeholder="Search remark text..."
+          />
         </div>
       </div>
 
+      {/* Loading State */}
+      {loading && (
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading transactions...</p>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && !loading && (
+        <div className="alert alert-error">
+          {error}
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!loading && transactions.length === 0 && !error && (
+        <div className="empty-transactions">
+          <div className="empty-state-icon">📭</div>
+          <div className="empty-state-title">No transactions found</div>
+          <div className="empty-state-text">Try adjusting your filters or check back later!</div>
+        </div>
+      )}
+
       {/* Transactions */}
-      <div style={{ display: "grid", gap: "15px" }}>
-        {transactions.map((t) => (
-          <div
-            key={t.id}
-            style={{
-              border: "1px solid #ccc",
-              borderLeft: `8px solid ${typeColor[t.type] || "#000"}`,
-              padding: "15px",
-              borderRadius: "6px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-            }}
-          >
-            {/* Left side */}
-            <div>
-              <h3 style={{ margin: 0 }}>
-                {t.type.toUpperCase()} – ID #{t.id}
-              </h3>
+      {!loading && transactions.length > 0 && (
+        <div className="transactions-grid">
+          {transactions.map((t) => (
+            <div key={t.id} className={`transaction-card ${t.type}`}>
+              <div className="transaction-header">
+                <div>
+                  <div className="transaction-type">
+                    {typeIcons[t.type] || "📄"} {t.type}
+                    <span className="transaction-id"> #{t.id}</span>
+                  </div>
+                </div>
+                <div className={`transaction-amount ${t.amount > 0 ? "positive" : "negative"}`}>
+                  {t.amount > 0 ? "+" : ""}{t.amount} pts
+                </div>
+              </div>
 
-              <p style={{ margin: "6px 0" }}>
-                <strong>Amount:</strong> {t.amount}
-              </p>
+              <div className="transaction-details">
+                {t.spent != null && (
+                  <div className="transaction-detail">
+                    <strong>Spent:</strong>
+                    <span>${t.spent}</span>
+                  </div>
+                )}
 
-              {t.spent != null && (
-                <p style={{ margin: "6px 0" }}>
-                  <strong>Spent:</strong> ${t.spent}
-                </p>
-              )}
+                {t.relatedUtorid && (
+                  <div className="transaction-detail">
+                    <strong>{t.type === "transfer" ? "To:" : "With:"}</strong>
+                    <span style={{ fontWeight: "600" }}>{t.relatedUtorid}</span>
+                  </div>
+                )}
 
-              {t.relatedUtorid && (
-                <p style={{ margin: "6px 0" }}>
-                  <strong>Recipient:</strong>{" "}
-                  <span style={{ fontWeight: "bold" }}>{t.relatedUtorid}</span>
-                </p>
-              )}
-
-              {t.promotionIds?.length > 0 && (
-                <p>
-                  <strong>Promotions Used:</strong>{" "}
-                  {t.promotionIds.map((pid) => (
-                    <span key={pid} style={{ marginRight: "6px" }}>
-                      {promotionCache[pid] || "Loading..."}
+                {t.promotionIds?.length > 0 && (
+                  <div className="transaction-detail">
+                    <strong>Promotions:</strong>
+                    <span>
+                      {t.promotionIds.map((pid) => (
+                        <span key={pid} className="badge badge-primary" style={{ marginLeft: "0.5rem" }}>
+                          {promotionCache[pid] || "Loading..."}
+                        </span>
+                      ))}
                     </span>
-                  ))}
-                </p>
-              )}
+                  </div>
+                )}
 
-              <p style={{ margin: "6px 0" }}>
-                <strong>Created By:</strong> {t.createdBy}
-              </p>
-            </div>
+                <div className="transaction-detail">
+                  <strong>Created By:</strong>
+                  <span>{t.createdBy}</span>
+                </div>
 
-            {/* Right side */}
-            <div
-              style={{
-                marginLeft: "20px",
-                color: "#555",
-                fontStyle: "italic",
-                minWidth: "150px",
-                textAlign: "right",
-              }}
-            >
-              {/* Remark */}
-              {t.remark && <div>Remark: {t.remark}</div>}
+                {t.remark && (
+                  <div className="transaction-detail">
+                    <strong>Note:</strong>
+                    <span style={{ fontStyle: "italic" }}>"{t.remark}"</span>
+                  </div>
+                )}
+              </div>
 
-              {/* Redemption logic */}
-              {t.type === "redemption" && (
-                <div style={{ marginTop: "10px" }}>
-                  {t.processed ? (
-                    <span style={{ color: "green", fontWeight: "bold" }}>
+              <div className="transaction-footer">
+                <div className="transaction-time">
+                  📅 {new Date(t.createdAt).toLocaleString()}
+                </div>
+                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
+                  {t.type === "redemption" && !t.processed && (
+                    <Button
+                      size="sm"
+                      onClick={() => navigate(`/redeem/qr/${t.id}`)}
+                      variant="primary"
+                    >
+                      📱 View QR
+                    </Button>
+                  )}
+                  {t.type === "redemption" && t.processed && (
+                    <span className="badge badge-success">
                       ✔ Processed by {t.processedBy?.utorid || "cashier"}
                     </span>
-                  ) : (
-                    <button
-                      onClick={() =>
-                        (window.location.href = `/redeem/qr/${t.id}`)
-                      }
-                      style={{
-                        padding: "6px 10px",
-                        background: "#007bff",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "4px",
-                        fontSize: "0.85rem",
-                      }}
-                    >
-                      Open QR Code
-                    </button>
                   )}
                 </div>
-              )}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Pagination */}
-      <div
-        style={{
-          marginTop: "25px",
-          display: "flex",
-          gap: "12px",
-          alignItems: "center",
-        }}
-      >
-        <button disabled={page === 1} onClick={() => setPage(page - 1)}>
-          Prev
-        </button>
+      {!loading && totalPages > 1 && (
+        <div className="pagination">
+          <button
+            className="pagination-button"
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+          >
+            ← Previous
+          </button>
 
-        <span>
-          Page {page} / {totalPages || 1}
-        </span>
+          <span className="pagination-info">
+            Page {page} / {totalPages || 1}
+          </span>
 
-        <button
-          disabled={page === totalPages}
-          onClick={() => setPage(page + 1)}
-        >
-          Next
-        </button>
-      </div>
+          <button
+            className="pagination-button"
+            disabled={page >= totalPages}
+            onClick={() => setPage(page + 1)}
+          >
+            Next →
+          </button>
+        </div>
+      )}
     </div>
   );
 }

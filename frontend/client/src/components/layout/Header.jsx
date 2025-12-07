@@ -1,5 +1,6 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import NavBar from "../global/NavBar";
+import "./Header.css";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function Header() {
@@ -12,19 +13,19 @@ export default function Header() {
     location.pathname.startsWith("/reset/");
 
   return (
-    <header
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "15px 30px",
-        backgroundColor: "#f7f7f7",
-        borderBottom: "1px solid #ddd",
-      }}
-    >
-      <h2 style={{ margin: 0 }}>Loyalty Program</h2>
+    <header className="header">
+      <div className="header-content">
+        <Link to={isAuthPage ? "/" : "/dashboard"} className="header-logo">
+          <span className="header-logo-icon">🎁</span>
+          <span className="header-logo-text">LoyaltyHub</span>
+        </Link>
 
-      {!isAuthPage && <NavBar key={viewRole} />}   
+        {!isAuthPage && (
+          <div className="header-nav-wrapper">
+            <NavBar />
+          </div>
+        )}
+      </div>
     </header>
   );
 }

@@ -1,0 +1,167 @@
+.promotion-avatar {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), filter 0.3s ease;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  margin: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.promotion-avatar:hover {
+  transform: translateY(-8px) scale(1.05);
+  filter: brightness(1.1);
+}
+
+.promotion-avatar:focus {
+  outline: 3px solid #2196F3;
+  outline-offset: 4px;
+  border-radius: 50%;
+}
+
+/* Coin base styling */
+.promotion-avatar__coin {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* Fresh state animations */
+.promotion-avatar--fresh .promotion-avatar__coin {
+  animation: gentle-float 3s ease-in-out infinite;
+}
+
+/* Urgent state animations */
+.promotion-avatar--urgent .promotion-avatar__coin {
+  animation: urgent-pulse 2s ease-in-out infinite;
+}
+
+/* Expiring state animations */
+.promotion-avatar--expiring .promotion-avatar__coin {
+  animation: expiring-pulse 1.5s ease-in-out infinite;
+}
+
+/* Warning state - slightly desaturated */
+.promotion-avatar--warning .promotion-avatar__coin {
+  filter: saturate(0.8);
+}
+
+/* Urgent state - more desaturated */
+.promotion-avatar--urgent .promotion-avatar__coin {
+  filter: saturate(0.6);
+}
+
+/* Expiring state - very desaturated */
+.promotion-avatar--expiring .promotion-avatar__coin {
+  filter: saturate(0.4) grayscale(0.3);
+}
+
+/* Age marks container */
+.promotion-avatar__age-marks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Tooltip on hover */
+.promotion-avatar__tooltip {
+  position: absolute;
+  bottom: -60px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 100;
+}
+
+.promotion-avatar:hover .promotion-avatar__tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.promotion-avatar__name {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.promotion-avatar__time {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* Animations */
+@keyframes gentle-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes urgent-pulse {
+  0%, 100% {
+    box-shadow: 0 4px 16px rgba(255, 193, 7, 0.5);
+  }
+  50% {
+    box-shadow: 0 4px 24px rgba(255, 193, 7, 0.8);
+  }
+}
+
+@keyframes expiring-pulse {
+  0%, 100% {
+    box-shadow: 0 4px 16px rgba(244, 67, 54, 0.6);
+    border-color: rgba(244, 67, 54, 0.8);
+  }
+  50% {
+    box-shadow: 0 4px 24px rgba(244, 67, 54, 1);
+    border-color: rgba(244, 67, 54, 1);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-4px);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .promotion-avatar {
+    margin: 8px;
+  }
+
+  .promotion-avatar__tooltip {
+    display: none; /* Hide tooltips on mobile */
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .promotion-avatar__coin,
+  .promotion-avatar {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+
+
