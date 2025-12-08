@@ -170,7 +170,7 @@ export default function PromotionUpdate() {
       return;
     }
 
-    setSuccess("Promotion updated!");
+    setSuccess("Promotion updated successfully!");
     setError("");
   };
 
@@ -193,40 +193,49 @@ export default function PromotionUpdate() {
   };
 
 
+  const message = error || success;
+  const isSuccess = !!success && !error;
+
   return (
     <div className="edit-page">
       <div className="edit-page-header">
-        <h1 className="edit-page-title">Update Promotion</h1>
+        <h1 className="edit-page-title">🎁 Update Promotion</h1>
         <p className="edit-page-subtitle">Edit promotion details and settings</p>
       </div>
 
-      {error && <div className="alert alert-error">{error}</div>}
-      {success && <div className="alert alert-success">{success}</div>}
+      {message && (
+        <div className={isSuccess ? "alert alert-success" : "alert alert-error"}>
+          {message}
+        </div>
+      )}
 
       <form onSubmit={(e) => { e.preventDefault(); handleUpdate(); }}>
         <div className="edit-form-card">
-          {renderField("Name", "name", "text", form, setForm)}
-          {renderField("Description", "description", "text", form, setForm)}
-          {renderField("Type", "type", "select", form, setForm)}
-          {renderField("Start Time", "startTime", "datetime-local", form, setForm)}
-          {renderField("End Time", "endTime", "datetime-local", form, setForm)}
-          {renderField("Minimum Spending", "minSpending", "number", form, setForm)}
-          {renderField("Rate", "rate", "number", form, setForm)}
-          {renderField("Points", "points", "number", form, setForm)}
+          <h2 className="form-section-title">Promotion Details</h2>
+          <div className="form-grid">
+            {renderField("Name", "name", "text", form, setForm)}
+            {renderField("Description", "description", "text", form, setForm)}
+            {renderField("Type", "type", "select", form, setForm)}
+            {renderField("Start Time", "startTime", "datetime-local", form, setForm)}
+            {renderField("End Time", "endTime", "datetime-local", form, setForm)}
+            {renderField("Minimum Spending", "minSpending", "number", form, setForm)}
+            {renderField("Rate", "rate", "number", form, setForm)}
+            {renderField("Points", "points", "number", form, setForm)}
+          </div>
         </div>
 
         <div className="action-buttons">
           <button type="button" className="action-button secondary" onClick={() => navigate(-1)}>
-            Back
+            ← Back
           </button>
           <button type="button" className="action-button secondary" onClick={() => setForm({ ...originalForm })}>
             Reset
           </button>
           <button type="submit" className="action-button primary">
-            Save Changes
+            💾 Save Changes
           </button>
           <button type="button" className="action-button danger" onClick={handleDelete}>
-            Delete Promotion
+            🗑️ Delete Promotion
           </button>
         </div>
       </form>

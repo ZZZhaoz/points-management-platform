@@ -243,7 +243,7 @@ export default function EventUpdate() {
   return (
     <div className="edit-page">
       <div className="edit-page-header">
-        <h1 className="edit-page-title">Update Event</h1>
+        <h1 className="edit-page-title">🎪 Update Event</h1>
         <p className="edit-page-subtitle">Edit event details and manage guests</p>
       </div>
 
@@ -255,115 +255,123 @@ export default function EventUpdate() {
 
       <form onSubmit={(e) => { e.preventDefault(); handleUpdate(); }}>
         <div className="edit-form-card">
-          {renderField("Name", "name", "text", form, setForm)}
-          {renderField("Description", "description", "text", form, setForm)}
-          {renderField("Location", "location", "text", form, setForm)}
-          {renderField("Start Time", "startTime", "datetime-local", form, setForm)}
-          {renderField("End Time", "endTime", "datetime-local", form, setForm)}
-          {renderField("Capacity", "capacity", "number", form, setForm)}
-          {renderField("Points", "points", "number", form, setForm)}
-          {renderField("Publish", "published", "select", form, setForm)}
-        </div>
-
-      <div className="info-section">
-        <h3 className="info-section-title">Points Information</h3>
-        <div className="info-item">
-          <span className="info-label">Points Remaining:</span>
-          <span className="info-value">{event.pointsRemain || 0}</span>
-        </div>
-        <div className="info-item">
-          <span className="info-label">Points Awarded:</span>
-          <span className="info-value">{event.pointsAwarded || 0}</span>
-        </div>
-      </div>
-
-      <div className="info-section">
-        <h3 className="info-section-title">Organizers</h3>
-        <div className="data-table-container">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>UTORid</th>
-              </tr>
-            </thead>
-            <tbody>
-              {event.organizers.map((org) => (
-                <tr key={org.utorid}>
-                  <td>{org.name}</td>
-                  <td>{org.utorid}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div className="edit-form-card">
-        <h3 className="info-section-title">Add Guest</h3>
-        <div className="field-group">
-          <label className="field-label" htmlFor="newGuest">UTORid</label>
-          <div style={{ display: "flex", gap: "var(--space-sm)" }}>
-            <input
-              id="newGuest"
-              className="field-input"
-              value={newGuest}
-              onChange={(e) => setNewGuest(e.target.value)}
-              placeholder="Enter UTORid"
-            />
-            <button
-              type="button"
-              className="action-button primary"
-              onClick={addGuest}
-            >
-              Add Guest
-            </button>
+          <h2 className="form-section-title">Event Details</h2>
+          <div className="form-grid">
+            {renderField("Name", "name", "text", form, setForm)}
+            {renderField("Description", "description", "text", form, setForm)}
+            {renderField("Location", "location", "text", form, setForm)}
+            {renderField("Start Time", "startTime", "datetime-local", form, setForm)}
+            {renderField("End Time", "endTime", "datetime-local", form, setForm)}
+            {renderField("Capacity", "capacity", "number", form, setForm)}
+            {renderField("Points", "points", "number", form, setForm)}
+            {renderField("Publish", "published", "select", form, setForm)}
           </div>
         </div>
-      </div>
 
-      <div className="info-section">
-        <h3 className="info-section-title">Guests ({event.guests.length})</h3>
-        {event.guests.length === 0 ? (
-          <p style={{ color: "var(--text-secondary)", textAlign: "center", padding: "var(--space-lg)" }}>
-            No guests have joined this event yet.
-          </p>
-        ) : (
-          <div className="data-table-container">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>UTORid</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {event.guests.map((g) => (
-                  <tr key={g.id}>
-                    <td>{g.name}</td>
-                    <td>{g.utorid}</td>
-                    <td>
-                      <button
-                        type="button"
-                        className="action-button danger"
-                        style={{ padding: "0.5rem 1rem", fontSize: "0.875rem" }}
-                        onClick={() => {
-                          if (window.confirm("Are you sure you want to remove this user from the event?")) {
-                            removeGuest(g.id);
-                          }
-                        }}
-                      >
-                        Remove
-                      </button>
-                    </td>
+        <div className="info-section">
+          <h3 className="info-section-title">📊 Points Information</h3>
+          <div className="info-grid">
+            <div className="info-card">
+              <span className="info-label">Points Remaining</span>
+              <span className="info-value-large">{event.pointsRemain || 0}</span>
+            </div>
+            <div className="info-card">
+              <span className="info-label">Points Awarded</span>
+              <span className="info-value-large">{event.pointsAwarded || 0}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="info-section">
+          <h3 className="info-section-title">👥 Organizers</h3>
+          {event.organizers.length === 0 ? (
+            <p className="empty-info-text">No organizers assigned to this event.</p>
+          ) : (
+            <div className="data-table-container">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>UTORid</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {event.organizers.map((org) => (
+                    <tr key={org.utorid}>
+                      <td><strong>{org.name}</strong></td>
+                      <td>{org.utorid}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        <div className="edit-form-card">
+          <h2 className="form-section-title">➕ Add Guest</h2>
+          <div className="field-group">
+            <label className="field-label" htmlFor="newGuest">UTORid</label>
+            <div className="add-guest-input-group">
+              <input
+                id="newGuest"
+                className="field-input"
+                value={newGuest}
+                onChange={(e) => setNewGuest(e.target.value)}
+                placeholder="Enter UTORid"
+              />
+              <button
+                type="button"
+                className="action-button primary"
+                onClick={addGuest}
+              >
+                Add Guest
+              </button>
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+
+        <div className="info-section">
+          <h3 className="info-section-title">🎫 Guests ({event.guests.length})</h3>
+          {event.guests.length === 0 ? (
+            <div className="empty-state-small">
+              <p className="empty-info-text">No guests have joined this event yet.</p>
+            </div>
+          ) : (
+            <div className="data-table-container">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>UTORid</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {event.guests.map((g) => (
+                    <tr key={g.id}>
+                      <td><strong>{g.name}</strong></td>
+                      <td>{g.utorid}</td>
+                      <td>
+                        <button
+                          type="button"
+                          className="action-button danger small"
+                          onClick={() => {
+                            if (window.confirm("Are you sure you want to remove this user from the event?")) {
+                              removeGuest(g.id);
+                            }
+                          }}
+                        >
+                          Remove
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
 
         <div className="action-buttons">
           <button
@@ -371,7 +379,7 @@ export default function EventUpdate() {
             className="action-button secondary"
             onClick={() => navigate(-1)}
           >
-            Back
+            ← Back
           </button>
           <button
             type="button"
@@ -384,14 +392,14 @@ export default function EventUpdate() {
             type="submit"
             className="action-button primary"
           >
-            Save Changes
+            💾 Save Changes
           </button>
           <button
             type="button"
             className="action-button danger"
             onClick={handleDelete}
           >
-            Delete Event
+            🗑️ Delete Event
           </button>
         </div>
       </form>

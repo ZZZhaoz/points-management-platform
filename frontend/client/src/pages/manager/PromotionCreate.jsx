@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Input from "../../components/global/Input";
+import Button from "../../components/global/Button";
+import "./PromotionCreate.css";
 
 export default function PromotionsCreate() {
   const navigate = useNavigate();
@@ -22,23 +25,47 @@ export default function PromotionsCreate() {
   // use state for error and success message
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleCreate = (e) => {
+  const handleCreate = async (e) => {
     // Prevent page reload
     e.preventDefault();
     setError("");
+    setSuccess("");
+    setLoading(true);
 
+    if (!name.trim()) {
+      setError("Name is required.");
+      setLoading(false);
+      return;
+    }
+    if (!description.trim()) {
+      setError("Description is required.");
+      setLoading(false);
+      return;
+    }
+    if (!startTime) {
+      setError("Start time is required.");
+      setLoading(false);
+      return;
+    }
+    if (!endTime) {
+      setError("End time is required.");
+      setLoading(false);
+      return;
+    }
 
-    if (!name.trim()) return setError("Name is required.");
-    if (!description.trim()) return setError("Description is required.");
-    if (!startTime) return setError("Start time is required.");
-    if (!endTime) return setError("End time is required.");
+    if (new Date(startTime) < new Date()) {
+      setError("Start time cannot be in the past.");
+      setLoading(false);
+      return;
+    }
 
-    if (new Date(startTime) < new Date())
-      return setError("Start time cannot be in the past.");
-
-    if (new Date(endTime) <= new Date(startTime))
-      return setError("End time must be after start time.");
+    if (new Date(endTime) <= new Date(startTime)) {
+      setError("End time must be after start time.");
+      setLoading(false);
+      return;
+    }
 
     // Build payload
     const payload = {
@@ -60,133 +87,170 @@ export default function PromotionsCreate() {
          payload.points = Number(points);
     }
 
-    fetch(`${BACKEND_URL}/promotions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          const msg = await res.text();
-          setError("Failed to create promotion: " + msg);
-          return;
-        }
+    try {
+      const res = await fetch(`${BACKEND_URL}/promotions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
 
-        setSuccess("Promotion created!");
+      if (!res.ok) {
+        const msg = await res.text();
+        setError("Failed to create promotion: " + msg);
+        setLoading(false);
+        return;
+      }
 
-        // Reset the fields
-        setName("");
-        setDescription("");
-        setType("automatic");
-        setStartTime("");
-        setEndTime("");
-        setMinSpending("");
-        setRate("");
-        setPoints("");
+      setSuccess("Promotion created successfully! ✨");
 
-      })
-      .catch((err) => setError("Network error: " + err.message));
+      // Reset the fields
+      setName("");
+      setDescription("");
+      setType("automatic");
+      setStartTime("");
+      setEndTime("");
+      setMinSpending("");
+      setRate("");
+      setPoints("");
+      setLoading(false);
+    } catch (err) {
+      setError("Network error: " + err.message);
+      setLoading(false);
+    }
   };
 
+  const message = error || success;
+  const isSuccess = !!success && !error;
+
   return (
-    <div>
-      <h1>Create Promotion</h1>
+    <div className="create-promotion-page">
+      <div className="create-promotion-header">
+        <h1 className="create-promotion-title">Create Promotion 🎁</h1>
+        <p className="create-promotion-subtitle">Set up a new promotion for your loyalty program</p>
+      </div>
 
-      {error && (
-        <p>{error}</p>
-      )}
+      <div className="create-promotion-card">
+        <div className="create-promotion-icon">🎉</div>
 
-      {success && <p>{success}</p>}
-
-
-      <form onSubmit={handleCreate}>
-
-        {/* Promotion Name */}
-        <div>
-          <label>Name (required): </label>
-          <input value={name} onChange={(e) => setName(e.target.value)} />
-        </div>
-
-        {/* Promotion Description */}
-        <div>
-          <label>Description (required): </label><br />
-          <textarea
-            rows={3}
-            style={{ width: "300px" }}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+        <form onSubmit={handleCreate}>
+          <Input
+            label="Promotion Name"
+            placeholder="Enter promotion name"
+            value={name}
+            onChange={setName}
+            required
           />
-        </div>
 
-        {/* Promotion Type */}
-        <div>
-          <label>Type (required): </label>
-          <select value={type} onChange={(e) => setType(e.target.value)}>
-            <option value="automatic">Automatic</option>
-            <option value="one-time">One-Time</option>
-          </select>
-        </div>
+          {/* Description Textarea */}
+          <div className="input-wrapper">
+            <label className="input-label">
+              Description <span className="required">*</span>
+            </label>
+            <textarea
+              className="input-field"
+              rows={4}
+              placeholder="Enter promotion description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+              style={{ 
+                resize: "vertical",
+                minHeight: "100px",
+                fontFamily: "var(--font-sans)"
+              }}
+            />
+          </div>
 
-        {/* Promotion Start Time */}
-        <div>
-          <label>Start Time (required): </label>
-          <input
+          {/* Type Select */}
+          <div className="input-wrapper">
+            <label className="input-label">
+              Type <span className="required">*</span>
+            </label>
+            <select
+              className="input-field"
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              style={{ cursor: "pointer" }}
+            >
+              <option value="automatic">Automatic</option>
+              <option value="one-time">One-Time</option>
+            </select>
+          </div>
+
+          <Input
+            label="Start Time"
             type="datetime-local"
             value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
+            onChange={setStartTime}
+            required
           />
-        </div>
 
-        {/* Promotion End Time */}
-        <div>
-          <label>End Time (required): </label>
-          <input
+          <Input
+            label="End Time"
             type="datetime-local"
             value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
+            onChange={setEndTime}
+            required
           />
-        </div>
 
-        {/* OPTIONAL FIELDS */}
-
-        <div>
-          <label>Min Spending: </label>
-          <input
+          <Input
+            label="Min Spending (Optional)"
             type="number"
+            step="0.01"
+            min="0"
+            placeholder="Enter minimum spending amount"
             value={minSpending}
-            onChange={(e) => setMinSpending(e.target.value)}
+            onChange={setMinSpending}
           />
-        </div>
 
-        <div>
-          <label>Rate: </label>
-          <input
+          <Input
+            label="Rate (Optional)"
             type="number"
+            step="0.01"
+            min="0"
+            placeholder="Enter rate"
             value={rate}
-            onChange={(e) => setRate(e.target.value)}
+            onChange={setRate}
           />
-        </div>
 
-        <div>
-          <label>Points: </label>
-          <input
+          <Input
+            label="Points (Optional)"
             type="number"
+            min="0"
+            placeholder="Enter points"
             value={points}
-            onChange={(e) => setPoints(e.target.value)}
+            onChange={setPoints}
           />
-        </div>
 
-        <br />
+          {message && (
+            <div className={`alert ${isSuccess ? "alert-success" : "alert-error"}`} style={{ marginTop: "1rem" }}>
+              {message}
+            </div>
+          )}
 
-        <button type="submit">Create Promotion</button>
-        <button type="button" onClick={() => navigate("/dashboard")}>
-          Cancel
-        </button>
-
-      </form>
+          <div style={{ display: "flex", gap: "1rem", marginTop: "1.5rem" }}>
+            <Button 
+              type="submit" 
+              variant="primary"
+              disabled={loading}
+              style={{ flex: 1 }}
+            >
+              {loading ? "Creating..." : "✨ Create Promotion"}
+            </Button>
+            <Button 
+              type="button" 
+              variant="secondary"
+              onClick={() => navigate("/dashboard")}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

@@ -13,7 +13,8 @@
    npm install --save-dev nodemon (Optional for development mode)
 
 2. Create a .env file in the backend directory with:
-   JWT_SECRET=your-secret-key-here-make-it-long-and-random
+   JWT_SECRET=my_csc309_secret_12345
+   DATABASE_URL="file:./dev.db"
    PORT=8000
 
 3. Set up the database:
@@ -37,6 +38,8 @@ npm run createsuperuser admin admin@mail.utoronto.ca Admin123!
 
 5. Frontend setup:
    cd frontend/client
+   Create a .env file in the frontend/client directory with:
+   REACT_APP_BACKEND_URL=http://localhost:8000
    npm i
    npm start
    The app opens at http://localhost:3000

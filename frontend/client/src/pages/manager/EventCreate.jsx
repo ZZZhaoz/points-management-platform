@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Input from "../../components/global/Input";
+import Button from "../../components/global/Button";
+import "./EventCreate.css";
 
 export default function EventsCreate() {
   const navigate = useNavigate();
@@ -25,25 +28,57 @@ export default function EventsCreate() {
   // Messages
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleCreate = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+    setLoading(true);
 
     // VALIDATION
-    if (!name.trim()) return setError("Name is required.");
-    if (!description.trim()) return setError("Description is required.");
-    if (!location.trim()) return setError("Location is required.");
-    if (!startTime) return setError("Start time is required.");
-    if (!endTime) return setError("End time is required.");
-    if (!points) return setError("Points are required.");
+    if (!name.trim()) {
+      setError("Name is required.");
+      setLoading(false);
+      return;
+    }
+    if (!description.trim()) {
+      setError("Description is required.");
+      setLoading(false);
+      return;
+    }
+    if (!location.trim()) {
+      setError("Location is required.");
+      setLoading(false);
+      return;
+    }
+    if (!startTime) {
+      setError("Start time is required.");
+      setLoading(false);
+      return;
+    }
+    if (!endTime) {
+      setError("End time is required.");
+      setLoading(false);
+      return;
+    }
+    if (!points) {
+      setError("Points are required.");
+      setLoading(false);
+      return;
+    }
 
-    if (new Date(startTime) < new Date())
-      return setError("Start time cannot be in the past.");
+    if (new Date(startTime) < new Date()) {
+      setError("Start time cannot be in the past.");
+      setLoading(false);
+      return;
+    }
 
-    if (new Date(endTime) <= new Date(startTime))
-      return setError("End time must be after start time.");
+    if (new Date(endTime) <= new Date(startTime)) {
+      setError("End time must be after start time.");
+      setLoading(false);
+      return;
+    }
 
     const payload = {
       name,
@@ -72,7 +107,9 @@ export default function EventsCreate() {
       const created = await res.json();
 
       if (!res.ok) {
-        return setError("Failed to create event: " + JSON.stringify(created));
+        setError("Failed to create event: " + JSON.stringify(created));
+        setLoading(false);
+        return;
       }
 
       const eventId = created.id;
@@ -93,13 +130,13 @@ export default function EventsCreate() {
 
         if (!orgRes.ok) {
           const msg = await orgRes.text();
-          return setError(
-            `Event created but failed to add organizer: ${msg}`
-          );
+          setError(`Event created but failed to add organizer: ${msg}`);
+          setLoading(false);
+          return;
         }
       }
 
-      setSuccess("Event created successfully!");
+      setSuccess("Event created successfully! ✨");
       // reset inputs
       setName("");
       setDescription("");
@@ -109,101 +146,132 @@ export default function EventsCreate() {
       setPoints("");
       setCapacity("");
       setOrganizerUtorid("");
+      setLoading(false);
 
     } catch (err) {
       setError("Network error: " + err.message);
+      setLoading(false);
     }
   };
 
+  const message = error || success;
+  const isSuccess = !!success && !error;
+
   return (
-    <div>
-      <h1>Create Event</h1>
+    <div className="create-event-page">
+      <div className="create-event-header">
+        <h1 className="create-event-title">Create Event 🎪</h1>
+        <p className="create-event-subtitle">Set up a new event for your loyalty program</p>
+      </div>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {success && <p style={{ color: "green" }}>{success}</p>}
+      <div className="create-event-card">
+        <div className="create-event-icon">🎉</div>
 
-      <form onSubmit={handleCreate}>
-        {/* Event Name */}
-        <div>
-          <label>Name: </label>
-          <input value={name} onChange={(e) => setName(e.target.value)} />
-        </div>
-
-        {/* Description */}
-        <div>
-          <label>Description: </label><br />
-          <textarea
-            rows={3}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+        <form onSubmit={handleCreate}>
+          <Input
+            label="Event Name"
+            placeholder="Enter event name"
+            value={name}
+            onChange={setName}
+            required
           />
-        </div>
 
-        {/* Location */}
-        <div>
-          <label>Location: </label>
-          <input
+          {/* Description Textarea */}
+          <div className="input-wrapper">
+            <label className="input-label">
+              Description <span className="required">*</span>
+            </label>
+            <textarea
+              className="input-field"
+              rows={4}
+              placeholder="Enter event description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+              style={{ 
+                resize: "vertical",
+                minHeight: "100px",
+                fontFamily: "var(--font-sans)"
+              }}
+            />
+          </div>
+
+          <Input
+            label="Location"
+            placeholder="Enter event location"
             value={location}
-            onChange={(e) => setLocation(e.target.value)}
+            onChange={setLocation}
+            required
           />
-        </div>
 
-        {/* Start Time */}
-        <div>
-          <label>Start Time: </label>
-          <input
+          <Input
+            label="Start Time"
             type="datetime-local"
             value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
+            onChange={setStartTime}
+            required
           />
-        </div>
 
-        {/* End Time */}
-        <div>
-          <label>End Time: </label>
-          <input
+          <Input
+            label="End Time"
             type="datetime-local"
             value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
+            onChange={setEndTime}
+            required
           />
-        </div>
 
-        {/* Optional Capacity */}
-        <div>
-          <label>Capacity (optional): </label>
-          <input
+          <Input
+            label="Points"
             type="number"
-            value={capacity}
-            onChange={(e) => setCapacity(e.target.value)}
-          />
-        </div>
-
-        {/* Required Points */}
-        <div>
-          <label>Points: </label>
-          <input
-            type="number"
+            min="0"
+            placeholder="Enter points to award"
             value={points}
-            onChange={(e) => setPoints(e.target.value)}
+            onChange={setPoints}
+            required
           />
-        </div>
 
-        {/* Organizer */}
-        <div>
-          <label>Organizer UTORID (optional): </label>
-          <input
+          <Input
+            label="Capacity (Optional)"
+            type="number"
+            min="1"
+            placeholder="Enter maximum capacity"
+            value={capacity}
+            onChange={setCapacity}
+          />
+
+          <Input
+            label="Organizer UTORID (Optional)"
+            placeholder="Enter organizer's UTORID"
             value={organizerUtorid}
-            onChange={(e) => setOrganizerUtorid(e.target.value)}
+            onChange={setOrganizerUtorid}
           />
-        </div>
 
-        <br />
+          {message && (
+            <div className={`alert ${isSuccess ? "alert-success" : "alert-error"}`} style={{ marginTop: "1rem" }}>
+              {message}
+            </div>
+          )}
 
-        <button type="submit">Create Event</button>
-        <button type="button" onClick={() => navigate("/dashboard")}>
-          Cancel
-        </button>
-      </form>
+          <div style={{ display: "flex", gap: "1rem", marginTop: "1.5rem" }}>
+            <Button 
+              type="submit" 
+              variant="primary"
+              disabled={loading}
+              style={{ flex: 1 }}
+            >
+              {loading ? "Creating..." : "✨ Create Event"}
+            </Button>
+            <Button 
+              type="button" 
+              variant="secondary"
+              onClick={() => navigate("/dashboard")}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

@@ -11,6 +11,7 @@ function getQuery(filters) {
   if (filters.promotionId) params.set("promotionId", filters.promotionId);
   if (filters.type) params.set("type", filters.type);
   if (filters.relatedId) params.set("relatedId", filters.relatedId);
+  if (filters.id) params.set("id", filters.id);
   if (filters.amount) params.set("amount", filters.amount);
   if (filters.operator) params.set("operator", filters.operator);
 
@@ -47,6 +48,7 @@ export default function TransactionsList() {
     promotionId: "",
     type: "",
     relatedId: "",
+    id: "",
     amount: "",
     operator: "",
     page: 1,
@@ -197,9 +199,9 @@ export default function TransactionsList() {
             <input
               type="number"
               className="filter-input"
-              value={filters.relatedId}
+              value={filters.id}
               onChange={(e) =>
-                setFilters({ ...filters, relatedId: e.target.value, page: 1 })
+                setFilters({ ...filters, id: e.target.value, page: 1 })
               }
               placeholder="Enter ID..."
             />

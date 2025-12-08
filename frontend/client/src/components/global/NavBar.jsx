@@ -81,8 +81,8 @@ export default function NavBar() {
         <>
           <Link to="/manager/statistics" className="nav-link">Statistics</Link>  
           <Dropdown title="Users">
-            <Dropdown.Item to="/manager/users">View Users</Dropdown.Item>
             <Dropdown.Item to="/register">Register User</Dropdown.Item>
+            <Dropdown.Item to="/manager/users">View Users</Dropdown.Item>
           </Dropdown>
           
           <Dropdown title="Transactions">
@@ -90,7 +90,7 @@ export default function NavBar() {
               Create Transaction
             </Dropdown.Item>
             <Dropdown.Item to="/manager/transactions">
-              All Transactions
+              View Transactions
             </Dropdown.Item>
             <Dropdown.Item to="/cashier/redemption">
               Process Redemption
@@ -126,8 +126,8 @@ export default function NavBar() {
           <Link to="/manager/statistics" className="nav-link">Statistics</Link> 
           
           <Dropdown title="Users">
-            <Dropdown.Item to="/manager/users">View Users</Dropdown.Item>
             <Dropdown.Item to="/register">Register User</Dropdown.Item>
+            <Dropdown.Item to="/manager/users">View Users</Dropdown.Item>
             <Dropdown.Item to="/superuser/user-promotion"> User Promotion</Dropdown.Item>
           </Dropdown>
           <Dropdown title="Transactions">
@@ -135,7 +135,7 @@ export default function NavBar() {
               Create Transaction
             </Dropdown.Item>
             <Dropdown.Item to="/manager/transactions">
-              All Transactions
+              View Transactions
             </Dropdown.Item>
              <Dropdown.Item to="/cashier/redemption">
               Process Redemption
