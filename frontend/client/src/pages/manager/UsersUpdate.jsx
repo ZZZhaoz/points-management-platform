@@ -13,7 +13,7 @@ export default function UsersUpdate() {
   const [user, setUser] = useState(null);
 
   // For editable fields
-  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
   const [verified, setVerified] = useState(false);
   const [suspicious, setSuspicious] = useState(false);
@@ -33,7 +33,7 @@ export default function UsersUpdate() {
         const data = await res.json();
 
         setUser(data);
-        setName(data.name ?? "");
+        setEmail(data.email ?? "");
         setRole(data.role ?? "");
         setVerified(data.verified ?? false);
         setSuspicious(data.suspicious ?? false);
@@ -72,7 +72,7 @@ export default function UsersUpdate() {
         Authorization: `Bearer ${token}`
       },
       body: JSON.stringify({
-        name,
+        email,
         role,
         verified,
         suspicious
@@ -116,13 +116,13 @@ export default function UsersUpdate() {
         <div className="edit-form-card">
           {/* Name */}
           <div className="field-group">
-            <label className="field-label" htmlFor="name">Name</label>
+            <label className="field-label" htmlFor="name">Email</label>
             <input
               id="name"
               className="field-input"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              placeholder="Enter user name"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="Enter user email"
               required
             />
           </div>
