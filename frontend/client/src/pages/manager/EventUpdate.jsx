@@ -392,14 +392,14 @@ export default function EventUpdate() {
             type="submit"
             className="action-button primary"
           >
-            💾 Save Changes
+            Save Changes
           </button>
           <button
             type="button"
             className="action-button danger"
             onClick={handleDelete}
           >
-            🗑️ Delete Event
+            Delete Event
           </button>
         </div>
       </form>

@@ -235,10 +235,10 @@ export default function EventEdit() {
 
                 <div className="action-buttons" style={{ marginTop: "1.5rem" }}>
                     <Button onClick={handleSave} disabled={saving} variant="success">
-                        {saving ? "Saving..." : "💾 Save Changes"}
+                        {saving ? "Saving..." : "Save Changes"}
                     </Button>
                     <Button onClick={handleCancel} variant="secondary" disabled={saving}>
-                        ❌ Cancel
+                        Cancel
                     </Button>
                 </div>
             </Card>
@@ -253,7 +253,7 @@ export default function EventEdit() {
                 />
 
                 <Button onClick={addUser} variant="primary" style={{ marginTop: "1rem" }}>
-                    ➕ Add Guest
+                     Add Guest
                 </Button>
             </Card>
         </div>
@@ -353,10 +353,10 @@ export default function EventEdit() {
         {/* SAVE / CANCEL BUTTONS */}
         <div className="action-buttons" style={{ marginTop: "1.5rem" }}>
           <Button onClick={handleSave} disabled={saving} variant="success">
-            {saving ? "Saving..." : "💾 Save Changes"}
+            {saving ? "Saving..." : "Save Changes"}
           </Button>
           <Button onClick={handleCancel} variant="secondary" disabled={saving}>
-            ❌ Cancel
+            Cancel
           </Button>
         </div>
       </Card>
@@ -377,7 +377,7 @@ export default function EventEdit() {
           variant="primary"
           style={{ marginTop: "1rem" }}
         >
-          ➕ Add Guest
+          Add Guest
         </Button>
       </Card>
     </div>

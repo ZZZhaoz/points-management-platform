@@ -148,7 +148,7 @@ export default function ResetPasswordPage() {
             disabled={loading}
             style={{ width: "100%", marginTop: "1rem" }}
           >
-            {loading ? "Resetting..." : "✨ Reset Password"}
+            {loading ? "Resetting..." : "Reset Password"}
           </Button>
         </form>
       </div>

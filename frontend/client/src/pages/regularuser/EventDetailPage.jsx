@@ -128,19 +128,19 @@ export default function EventDetailPage() {
 
         <div className="event-detail-info">
           <div className="event-detail-item">
-            <strong>📍 Location:</strong>
+            <strong>Location:</strong>
             <span>{event.location}</span>
           </div>
 
           <div className="event-detail-item">
-            <strong>🕐 Time:</strong>
+            <strong>Time:</strong>
             <span>
               {new Date(event.startTime).toLocaleString()} → {new Date(event.endTime).toLocaleString()}
             </span>
           </div>
 
           <div className="event-detail-item">
-            <strong>👥 Capacity:</strong>
+            <strong>Capacity:</strong>
             <span className={isFull ? "capacity-full" : ""}>
               {event.numGuests}/{event.capacity}
               {isFull && " (FULL)"}
@@ -149,7 +149,7 @@ export default function EventDetailPage() {
 
           {attending && (
             <div className="event-detail-item">
-              <strong>✅ Status:</strong>
+              <strong>Status:</strong>
               <span className="badge badge-success">You are attending this event</span>
             </div>
           )}
@@ -172,7 +172,7 @@ export default function EventDetailPage() {
               variant="error"
               style={{ width: "100%" }}
             >
-              ❌ Cancel RSVP
+              Cancel RSVP
             </Button>
           ) : (
             <Button
@@ -181,7 +181,7 @@ export default function EventDetailPage() {
               variant={isFull ? "secondary" : "success"}
               style={{ width: "100%" }}
             >
-              {isFull ? "Event Full" : "✨ Join Event (RSVP)"}
+              {isFull ? "Event Full" : "Join Event (RSVP)"}
             </Button>
           )}
         </div>

@@ -13,7 +13,7 @@ export default function RedemptionQRPage() {
   return (
     <div className="qr-page">
       <div className="qr-header">
-        <h1 className="qr-title">Redemption QR Code 📱</h1>
+        <h1 className="qr-title">Redemption QR Code</h1>
         <p className="qr-subtitle">Show this QR code to a cashier to process your redemption</p>
       </div>
 
@@ -24,11 +24,11 @@ export default function RedemptionQRPage() {
 
         <div className="qr-info">
           <div className="transaction-id-badge">
-            🎫 Transaction ID: #{transactionId}
+            Transaction ID: #{transactionId}
           </div>
 
           <div className="qr-instructions">
-            <strong>📋 Instructions:</strong>
+            <strong>Instructions:</strong>
             <p style={{ margin: 0, fontSize: "0.9375rem" }}>
               Present this QR code to a cashier. They will scan it to process your redemption request.
             </p>

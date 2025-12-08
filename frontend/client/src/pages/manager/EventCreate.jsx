@@ -259,7 +259,7 @@ export default function EventsCreate() {
               disabled={loading}
               style={{ flex: 1 }}
             >
-              {loading ? "Creating..." : "✨ Create Event"}
+              {loading ? "Creating..." : "Create Event"}
             </Button>
             <Button 
               type="button" 

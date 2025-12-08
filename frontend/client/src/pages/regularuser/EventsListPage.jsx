@@ -222,7 +222,7 @@ export default function EventsListPage() {
               >
                 {isJoined && (
                   <div className="attending-badge">
-                    ✅ Attending
+                    Attending
                   </div>
                 )}
 
@@ -231,19 +231,19 @@ export default function EventsListPage() {
 
                 <div className="event-details">
                   <div className="event-detail">
-                    <strong>📍 Location:</strong>
+                    <strong>Location:</strong>
                     <span>{event.location}</span>
                   </div>
 
                   <div className="event-detail">
-                    <strong>🕐 Time:</strong>
+                    <strong>Time:</strong>
                     <span>
                       {event.startTime?.slice(0, 10)} → {event.endTime?.slice(0, 10)}
                     </span>
                   </div>
 
                   <div className="event-detail">
-                    <strong>👥 Capacity:</strong>
+                    <strong>Capacity:</strong>
                     <span className={isFull ? "capacity-full" : ""}>
                       {event.numGuests}/{event.capacity}
                       {isFull && " (FULL)"}

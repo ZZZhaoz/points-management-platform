@@ -13,7 +13,7 @@ export default function LogoutButton() {
 
   return (
     <Button onClick={handleLogout} variant="danger">
-      🚪 Logout
+      Logout
     </Button>
   );
 }

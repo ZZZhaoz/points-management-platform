@@ -271,7 +271,7 @@ async function addGuestMe(req, res) {
             return res.status(404).json({ error: 'Not Found' });
         }
 
-        const result = await eventService.addGuestMe(eventId, req.user.id);
+        const result = await eventService.addGuestMe(eventId, req.user.utorid);
         return res.status(201).json(result);
     } catch (err) {
         if (err.message === 'Not Found') {

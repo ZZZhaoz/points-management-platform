@@ -142,7 +142,7 @@ export default function RegisterUser() {
             disabled={loading}
             style={{ width: "100%", marginTop: "1.5rem" }}
           >
-            {loading ? "Creating..." : "✨ Create User"}
+            {loading ? "Creating..." : "Create User"}
           </Button>
         </form>
       </div>

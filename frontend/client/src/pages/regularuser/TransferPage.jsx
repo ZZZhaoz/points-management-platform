@@ -131,7 +131,7 @@ export default function TransferPage() {
             disabled={loading}
             style={{ width: "100%", marginTop: "1.5rem" }}
           >
-            {loading ? "Transferring..." : "✨ Transfer Points"}
+            {loading ? "Transferring..." : "Transfer Points"}
           </Button>
         </form>
       </div>

@@ -115,57 +115,57 @@ export default function EventDetail() {
             <Card>
                 <div className="action-buttons">
                     <Button onClick={() => navigate(`/organizer/events/${eventId}/award-points`)} variant="success">
-                        ⭐ Award Points
+                        Award Points
                     </Button>
                     <Button onClick={() => navigate(`/organizer/events/${eventId}/edit`)} variant="primary">
-                        ✏️ Edit Event
+                        Edit Event
                     </Button>
                 </div>
 
                 <div className="event-info-grid">
                     <div className="event-info-item">
-                        <strong>📝 Description:</strong>
+                        <strong>Description:</strong>
                         <span>{event.description || "No description"}</span>
                     </div>
 
                     <div className="event-info-item">
-                        <strong>📍 Location:</strong>
+                        <strong>Location:</strong>
                         <span>{event.location}</span>
                     </div>
 
                     <div className="event-info-item">
-                        <strong>🕐 Start Time:</strong>
+                        <strong>Start Time:</strong>
                         <span>{formatDate(event.startTime)}</span>
                     </div>
 
                     <div className="event-info-item">
-                        <strong>🕐 End Time:</strong>
+                        <strong>End Time:</strong>
                         <span>{formatDate(event.endTime)}</span>
                     </div>
 
                     {event.capacity !== null && (
                         <div className="event-info-item">
-                            <strong>👥 Capacity:</strong>
+                            <strong>Capacity:</strong>
                             <span>{event.numGuests || 0} / {event.capacity}</span>
                         </div>
                     )}
 
                     {event.pointsAwarded !== null && (
                         <div className="event-info-item">
-                            <strong>⭐ Points Awarded:</strong>
+                            <strong>Points Awarded:</strong>
                             <span>{event.pointsAwarded}</span>
                         </div>
                     )}
 
                     {event.pointsRemain !== undefined && (
                         <div className="event-info-item">
-                            <strong>💎 Points Remaining:</strong>
+                            <strong>Points Remaining:</strong>
                             <span>{event.pointsRemain}</span>
                         </div>
                     )}
 
                     <div className="event-info-item">
-                        <strong>📢 Published:</strong>
+                        <strong>Published:</strong>
                         <span>
                             {event.published ? (
                                 <span className="badge badge-success">Yes</span>
@@ -177,7 +177,7 @@ export default function EventDetail() {
 
                     {event.organizers && event.organizers.length > 0 && (
                         <div className="event-info-item">
-                            <strong>👔 Organizers:</strong>
+                            <strong>Organizers:</strong>
                             <span>{event.organizers.map((org) => org.name).join(", ")}</span>
                         </div>
                     )}

@@ -163,7 +163,7 @@ export default function Dashboard() {
 
                 <div className="transaction-footer">
                   <div className="transaction-time">
-                    📅 {new Date(t.createdAt).toLocaleString()}
+                    {new Date(t.createdAt).toLocaleString()}
                   </div>
                   <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                     {t.type === "redemption" && !t.processed && (
@@ -172,7 +172,7 @@ export default function Dashboard() {
                         onClick={() => navigate(`/redeem/qr/${t.id}`)}
                         className="btn-primary"
                       >
-                        📱 View QR
+                        View QR
                       </Button>
                     )}
                     {t.type === "redemption" && t.processed && (

@@ -155,24 +155,24 @@ export default function AwardPoints() {
       <Card style={{ marginBottom: "2rem" }}>
         <div className="event-info-grid">
           <div className="event-info-item">
-            <strong>💎 Points Remaining:</strong>
+            <strong>Points Remaining:</strong>
             <span style={{ fontSize: "1.25rem", fontWeight: "700", color: "var(--primary)" }}>
               {event.pointsRemain}
             </span>
           </div>
           <div className="event-info-item">
-            <strong>⭐ Points Awarded:</strong>
+            <strong>Points Awarded:</strong>
             <span>{event.pointsAwarded || 0}</span>
           </div>
           <div className="event-info-item">
-            <strong>👥 Guests (RSVPed):</strong>
+            <strong>Guests (RSVPed):</strong>
             <span>{event.guests?.length || 0}</span>
           </div>
         </div>
       </Card>
 
       <Card>
-        <h2 style={{ marginBottom: "1.5rem" }}>⭐ Award Points</h2>
+        <h2 style={{ marginBottom: "1.5rem" }}>Award Points</h2>
         
         <Input
           label="Points Amount"
@@ -210,7 +210,7 @@ export default function AwardPoints() {
             variant="success"
             style={{ width: "100%" }}
           >
-            {awarding ? "Awarding..." : `✨ Award to All Guests (${event.guests?.length || 0})`}
+            {awarding ? "Awarding..." : `Award to All Guests (${event.guests?.length || 0})`}
           </Button>
         </div>
 

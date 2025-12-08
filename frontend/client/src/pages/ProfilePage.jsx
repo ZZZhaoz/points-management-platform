@@ -264,20 +264,20 @@ export default function ProfilePage() {
           {!editing ? (
             <>
               <Button onClick={() => setEditing(true)} variant="primary">
-                ✏️ Edit Profile
+                Edit Profile
               </Button>
               <Button onClick={() => navigate("/change-password")} variant="warning">
-                🔑 Change Password
+                Change Password
               </Button>
               <LogoutButton />
             </>
           ) : (
             <>
               <Button onClick={handleSave} variant="success">
-                💾 Save Changes
+                Save Changes
               </Button>
               <Button onClick={() => setEditing(false)} variant="secondary">
-                ❌ Cancel
+                Cancel
               </Button>
             </>
           )}

@@ -115,7 +115,7 @@ export default function RedemptionPage() {
             disabled={loading}
             style={{ width: "100%", marginTop: "1.5rem" }}
           >
-            {loading ? "Processing..." : "✨ Submit Redemption Request"}
+            {loading ? "Processing..." : "Submit Redemption Request"}
           </Button>
         </form>
 
@@ -129,7 +129,7 @@ export default function RedemptionPage() {
               variant="primary"
               style={{ width: "100%" }}
             >
-              📱 View QR Code
+              View QR Code
             </Button>
           </div>
         )}

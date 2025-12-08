@@ -275,7 +275,7 @@ export default function TransactionsListPage() {
 
               <div className="transaction-footer">
                 <div className="transaction-time">
-                  📅 {new Date(t.createdAt).toLocaleString()}
+                  {new Date(t.createdAt).toLocaleString()}
                 </div>
                 <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
                   {t.type === "redemption" && !t.processed && (
@@ -284,7 +284,7 @@ export default function TransactionsListPage() {
                       onClick={() => navigate(`/redeem/qr/${t.id}`)}
                       variant="primary"
                     >
-                      📱 View QR
+                      View QR
                     </Button>
                   )}
                   {t.type === "redemption" && t.processed && (

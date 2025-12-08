@@ -65,7 +65,7 @@ export default function Transactions() {
     setSpent("");
     setPromotionIds("");
     setRemark("");
-    setMessage("Transaction created successfully! ✨");
+    setMessage("Transaction created successfully!");
     setLoading(false);
   };
 
@@ -127,7 +127,7 @@ export default function Transactions() {
             disabled={loading}
             style={{ width: "100%", marginTop: "1.5rem" }}
           >
-            {loading ? "Creating..." : "✨ Create Transaction"}
+            {loading ? "Creating..." : "Create Transaction"}
           </Button>
         </form>
       </div>

@@ -69,7 +69,7 @@ export default function PromotionsPage() {
       {/* Filters */}
       <div className="filters-card">
         <div className="filters-title">
-          🔍 Search Promotions
+          Search Promotions
         </div>
         <Input
           label="Search by name"
@@ -123,7 +123,7 @@ export default function PromotionsPage() {
               >
                 <div className="promotion-card-header">
                   <div>
-                    <h3 className="promotion-name">🎁 {promo.name}</h3>
+                    <h3 className="promotion-name">{promo.name}</h3>
                     <div className="promotion-type-badge">
                       {promo.type === "automatic" ? (
                         <span className="badge badge-primary">∞ Automatic</span>
@@ -134,7 +134,7 @@ export default function PromotionsPage() {
                   </div>
                   {isExpiringSoon && (
                     <div className="promotion-urgent-badge">
-                      ⏰ Expires Soon!
+                      Expires Soon!
                     </div>
                   )}
                 </div>
@@ -146,32 +146,32 @@ export default function PromotionsPage() {
                 <div className="promotion-details">
                   {promo.points && (
                     <div className="promotion-detail">
-                      <strong>⭐ Bonus Points:</strong>
+                      <strong>Bonus Points:</strong>
                       <span className="promotion-value">{promo.points} pts</span>
                     </div>
                   )}
 
                   {promo.rate && (
                     <div className="promotion-detail">
-                      <strong>📈 Rate Bonus:</strong>
+                      <strong>Rate Bonus:</strong>
                       <span className="promotion-value">{Math.round(promo.rate * 100)}%</span>
                     </div>
                   )}
 
                   {promo.minSpending && (
                     <div className="promotion-detail">
-                      <strong>💰 Minimum Spending:</strong>
+                      <strong>Minimum Spending:</strong>
                       <span className="promotion-value">${promo.minSpending}</span>
                     </div>
                   )}
 
                   <div className="promotion-detail">
-                    <strong>📅 Valid Until:</strong>
+                    <strong>Valid Until:</strong>
                     <span>{endDate.toLocaleDateString()}</span>
                   </div>
 
                   <div className="promotion-detail">
-                    <strong>⏰ Time Remaining:</strong>
+                    <strong>Time Remaining:</strong>
                     <span className={isExpiringSoon ? "promotion-expiring" : isUrgent ? "promotion-urgent" : ""}>
                       {daysRemaining} {daysRemaining === 1 ? "day" : "days"}
                     </span>

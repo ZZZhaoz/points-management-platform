@@ -238,7 +238,7 @@ export default function PromotionsCreate() {
               disabled={loading}
               style={{ flex: 1 }}
             >
-              {loading ? "Creating..." : "✨ Create Promotion"}
+              {loading ? "Creating..." : "Create Promotion"}
             </Button>
             <Button 
               type="button" 

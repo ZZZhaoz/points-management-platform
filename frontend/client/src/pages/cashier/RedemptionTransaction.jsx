@@ -76,7 +76,7 @@ export default function RedemptionTransaction() {
             disabled={submitting}
             style={{ width: "100%", marginTop: "1.5rem" }}
           >
-            {submitting ? "Processing..." : "✨ Process Redemption"}
+            {submitting ? "Processing..." : "Process Redemption"}
           </Button>
         </form>
       </div>

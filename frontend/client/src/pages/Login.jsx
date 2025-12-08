@@ -77,13 +77,13 @@ export default function Login() {
             className="btn-primary"
             style={{ width: "100%", marginTop: "1rem" }}
           >
-            {loading ? "Signing in..." : "✨ Sign In"}
+            {loading ? "Signing in..." : "Sign In"}
           </Button>
         </form>
 
         <div className="auth-link">
           <Link to="/forgot-password">
-            🔑 Forgot password?
+            Forgot password?
           </Link>
         </div>
       </div>

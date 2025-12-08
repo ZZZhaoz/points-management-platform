@@ -89,7 +89,7 @@ export default function ForgotPasswordPage() {
             disabled={loading}
             style={{ width: "100%", marginTop: "1rem" }}
           >
-            {loading ? "Sending..." : "📧 Send Reset Link"}
+            {loading ? "Sending..." : "Send Reset Link"}
           </Button>
         </form>
 
