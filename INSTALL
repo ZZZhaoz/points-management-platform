@@ -3,13 +3,16 @@
 # You should write detailed description on:
 
 # 1. All the packages you need to install
+Node.js (version 18+)
+npm
+Prisma CLI (npx prisma …)
 
 # 2. How to configure various servers (e.g., Nginx, Apache, etc)
 
+Local Deployment:
 1. Install the dependencies:
    cd backend
    npm install
-   npm install dotenv
    npm install --save-dev nodemon (Optional for development mode)
 
 2. Create a .env file in the backend directory with:
@@ -23,13 +26,13 @@
    Or if you want to reset and apply all migrations:
    npx prisma migrate dev
 
-(Optional) Seed the database with sample data:
-npm run seed
-This creates test users (password: pass), events, promotions, and transactions.
-(Optional) Create a superuser:
-npm run createsuperuser <utorid> <email> <password>
-Example:
-npm run createsuperuser admin admin@mail.utoronto.ca Admin123!
+   (Optional) Seed the database with sample data:
+   npm run seed
+   This creates test users (password: pass), events, promotions, and transactions.
+   (Optional) Create a superuser:
+   npm run createsuperuser <utorid> <email> <password>
+   Example:
+   npm run createsuperuser admin admin@mail.utoronto.ca Admin123!
 
 4. Start the server:
    npm run start
@@ -45,16 +48,25 @@ npm run createsuperuser admin admin@mail.utoronto.ca Admin123!
    The app opens at http://localhost:3000
 
 6. Summary:
-
    Access the application
    Frontend: http://localhost:3000
    Backend API: http://localhost:8000
 
-   Test accounts (if you ran the seed script)
-   Regular users: alice1, bob2, charlie3 (password: pass)
-   Cashier: cashier01 (password: pass)
-   Manager: manager01 (password: pass)
-   Superuser: super01 (password: pass)
+   Demo Accounts (Seeded Users)
+   If you run npm run seed, the following demo accounts will be created (all passwords are pass):
+   | UTORid    | Name        | Role      | Verified | Student | Points |
+   | --------- | ----------- | --------- | -------- | ------- | ------ |
+   | alice1    | Alice Zhang | regular   | ✔        | ✔       | 200    |
+   | bob2      | Bob Li      | regular   | ✘        | ✔       | 150    |
+   | charlie3  | Charlie Kim | regular   | ✔        | ✔       | 50     |
+   | cashier01 | Cashier One | cashier   | ✔        | ✘       | 100    |
+   | manager01 | Manager One | manager   | ✔        | ✘       | 300    |
+   | super01   | Super User  | superuser | ✔        | ✘       | 300    |
+   | david4    | David Tan   | regular   | ✘        | ✔       | 80     |
+   | ella5     | Ella Smith  | regular   | ✔        | ✘       | 300    |
+   | frank6    | Frank Lee   | regular   | ✘        | ✔       | 0      |
+   | george7   | George Wu   | regular   | ✔        | ✘       | 120    |
+   | zhaoz188  | Jason Zhao  | regular   | ✔        | ✘       | 120    |
 
    Additional notes
    Backend CORS is configured for http://localhost:3000
@@ -66,3 +78,50 @@ npm run createsuperuser admin admin@mail.utoronto.ca Admin123!
    If the backend fails to start, ensure .env exists with JWT_SECRET
    If Prisma errors occur, run npx prisma generate again
    If the frontend can't connect, verify the backend is running on port 8000
+
+Production Deployment (Railway):
+Our production environment is deployed on Railway, where the backend and frontend run as two separate services.
+
+1. Backend Deployment (Express + Prisma)
+
+   Backend Production URL： https://csc309-project-production-f77a.up.railway.app
+   Environment Variables:
+   FRONTEND_URL="https://inspiring-expression-production.up.railway.app"
+   JWT_SECRET="super_secret_token_key_123"
+   
+   Deployment Notes：
+   Railway automatically installs dependencies using npm install.
+   Prisma migrations run during deployment with the script:
+   "postinstall": "prisma migrate deploy && npm run seed"
+   CORS is configured to allow the production frontend URL.
+ 
+
+2. Frontend Deployment (React)
+
+   Frontend Production URL： https://inspiring-expression-production.up.railway.app
+   Environment Variables:
+   CI="false"
+   REACT_APP_BACKEND_URL="https://csc309-project-production-f77a.up.railway.app"
+   
+   Deployment Notes
+   Railway builds the React app using npm run build.
+   The static build output is served automatically by Railway.
+
+Short Architecture Summary：
+      Our project uses a standard client–server architecture with a React frontend and a Node.js/Express backend. The backend provides a RESTful API that handles authentication, role-based access control, promotions, events, and point transactions. The frontend communicates with the backend over HTTPS and presents different views for regular users, cashiers, organizers, managers, and superusers.
+   
+   The backend uses Prisma ORM with a SQLite database, which manages schema migrations and all data access. User-uploaded files (e.g., avatars) are stored on the backend server. The system enforces strict permission checks across both API routes and the UI.
+   
+   In production, the frontend and backend are deployed as two Railway services. Railway builds and hosts the React frontend as static files, while the backend runs in a Node.js container that automatically applies Prisma migrations and loads demo data.
+
+Technology Stack Summary：
+   Frontend:
+   React, React Router, Recharts for data visualization, QR code generation, and custom UI components. The frontend communicates with the backend via Fetch API.
+   
+   Backend:
+   Node.js with Express, Prisma ORM, SQLite database, JWT-based authentication, bcrypt for password hashing, and Multer for handling file uploads.
+   
+   Deployment:
+   Both frontend and backend are deployed as separate Railway services. Railway handles dependency installation, build steps, Prisma migrations, environment variables, and HTTPS communication.
+
+
