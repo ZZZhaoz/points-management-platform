@@ -23,6 +23,22 @@ export default function NavBar() {
   const avatarUrl = localStorage.getItem("avatarUrl");
   const displayLetter = utorid[0].toUpperCase();
 
+  // Role hierarchy for interface switching
+  const roleRank = {
+    regular: 1,
+    cashier: 2,
+    manager: 3,
+    superuser: 4,
+  };
+
+  // Check if user can switch to a given role
+  const canSwitchTo = (targetRole) => {
+    if (!realRole) return false;
+    const currentRank = roleRank[realRole] || 0;
+    const targetRank = roleRank[targetRole] || 0;
+    return targetRank <= currentRank;
+  };
+
   return (
     <nav className="nav-bar">
       <Link to="/dashboard" className="nav-link">Home</Link>
@@ -124,8 +140,6 @@ export default function NavBar() {
               Process Redemption
             </Dropdown.Item>
           </Dropdown>
-        </>
-      )}
 
           <Dropdown title="Promotions">
             <Dropdown.Item to="/manager/promotions/create">
@@ -136,20 +150,12 @@ export default function NavBar() {
             </Dropdown.Item>
           </Dropdown>
 
-
           <Dropdown title="Events">
-            
             <Dropdown.Item to="/manager/events">View Events</Dropdown.Item>
             <Dropdown.Item to="/manager/events/create">
               Create Event
             </Dropdown.Item>
           </Dropdown>
-
-
-          
-
-           
-
         </>
       )}
 

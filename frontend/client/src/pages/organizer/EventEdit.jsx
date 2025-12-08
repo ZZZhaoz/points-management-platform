@@ -257,7 +257,6 @@ export default function EventEdit() {
                 </Button>
             </Card>
         </div>
-      </div>
     );
   }
 
