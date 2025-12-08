@@ -1,4 +1,7 @@
 import { useState } from "react";
+import Button from "../components/global/Button";
+import Input from "../components/global/Input";
+import "./ChangePassword.css";
 
 export default function ChangePasswordPage() {
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -41,6 +44,9 @@ export default function ChangePasswordPage() {
 
       if (res.status === 200) {
         setSuccessMessage("Password updated successfully.");
+        setOldPassword("");
+        setNewPassword("");
+        setConfirmNew("");
       } else if (res.status === 403) {
         setErrorMessage("Incorrect current password.");
       } else if (res.status === 400) {
@@ -57,101 +63,81 @@ export default function ChangePasswordPage() {
   };
 
   return (
-    <div
-      style={{
-        maxWidth: 400,
-        margin: "80px auto",
-        padding: 20,
-        border: "1px solid #ccc",
-        borderRadius: 10,
-      }}
-    >
-      <h2 style={{ textAlign: "center" }}>Change Password</h2>
+    <div className="change-password-page">
+      <div className="change-password-header">
+        <h1 className="change-password-title">Change Password 🔑</h1>
+        <p className="change-password-subtitle">Update your account password</p>
+      </div>
 
-      <form onSubmit={handleSubmit}>
-        <label>Current Password</label>
-        <input
-          type="password"
-          value={oldPassword}
-          onChange={(e) => setOldPassword(e.target.value)}
-          required
-          style={{ width: "100%", marginBottom: 15 }}
-        />
+      <div className="change-password-card">
+        <form onSubmit={handleSubmit} className="change-password-form">
+          <Input
+            label="Current Password"
+            type="password"
+            value={oldPassword}
+            onChange={setOldPassword}
+            placeholder="Enter your current password"
+            required
+          />
 
-        <label>New Password</label>
-        <input
-          type="password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          required
-          style={{ width: "100%", marginBottom: 15 }}
-        />
+          <Input
+            label="New Password"
+            type="password"
+            value={newPassword}
+            onChange={setNewPassword}
+            placeholder="Enter your new password"
+            required
+          />
 
-        <label>Confirm New Password</label>
-        <input
-          type="password"
-          value={confirmNew}
-          onChange={(e) => setConfirmNew(e.target.value)}
-          required
-          style={{ width: "100%", marginBottom: 15 }}
-        />
+          <Input
+            label="Confirm New Password"
+            type="password"
+            value={confirmNew}
+            onChange={setConfirmNew}
+            placeholder="Confirm your new password"
+            required
+          />
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            width: "100%",
-            padding: "10px 0",
-            backgroundColor: "#1976d2",
-            color: "white",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer",
-          }}
-        >
-          {loading ? "Updating..." : "Change Password"}
-        </button>
-      </form>
+          {/* Error message */}
+          {errorMessage && (
+            <div className="error-message">
+              {errorMessage}
+            </div>
+          )}
 
-      {/* Error message */}
-      {errorMessage && (
-        <div
-          style={{
-            marginTop: 12,
-            color: "red",
-            whiteSpace: "pre-line",
-            fontSize: "14px",
-          }}
-        >
-          {errorMessage}
-        </div>
-      )}
+          {/* Password rules */}
+          {showRules && (
+            <div className="password-rules">
+              <div className="password-rules-title">Password requirements:</div>
+              <ul className="password-rules-list">
+                <li>8-20 characters</li>
+                <li>At least 1 uppercase letter</li>
+                <li>At least 1 lowercase letter</li>
+                <li>At least 1 number</li>
+                <li>At least 1 special character (@$!%*?&)</li>
+              </ul>
+            </div>
+          )}
 
-      {/* Password rules */}
-      {showRules && (
-        <p style={{ marginTop: 10, color: "#666", fontSize: "14px" }}>
-          Password requirements:
-          <br />• 8-20 characters
-          <br />• At least 1 uppercase letter
-          <br />• At least 1 lowercase letter
-          <br />• At least 1 number
-          <br />• At least 1 special character (@$!%*?&)
-        </p>
-      )}
+          {/* Success message */}
+          {successMessage && (
+            <div className="success-message">
+              {successMessage}
+            </div>
+          )}
 
-      {/* Success message */}
-      {successMessage && (
-        <div
-          style={{
-            marginTop: 12,
-            color: "green",
-            whiteSpace: "pre-line",
-            fontSize: "14px",
-          }}
-        >
-          {successMessage}
-        </div>
-      )}
+          <div className="change-password-actions">
+            <Button
+              type="submit"
+              disabled={loading}
+              variant="primary"
+              size="lg"
+            >
+              {loading ? "Updating..." : "🔑 Change Password"}
+            </Button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
