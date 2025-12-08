@@ -2,14 +2,14 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Dropdown from "./Dropdown";
 import "./NavBar.css";
-import { useAuth } from "../../contexts/AuthContext"; 
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function NavBar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { viewRole, changeViewRole } = useAuth();
-
+  const { user, viewRole, changeViewRole } = useAuth();
+  if (!user) return null;
   const realRole = localStorage.getItem("role");    
   const isOrganizer = localStorage.getItem("isOrganizer") === "true";
 
@@ -22,18 +22,6 @@ export default function NavBar() {
   const utorid = localStorage.getItem("utorid") || "U";
   const avatarUrl = localStorage.getItem("avatarUrl");
   const displayLetter = utorid[0].toUpperCase();
-
-  const roleRank = {
-    regular: 1,
-    cashier: 2,
-    organizer: 3,
-    manager: 4,
-    superuser: 5,
-  };
-
-  const canSwitchTo = (targetRole) => {
-    return roleRank[realRole] >= roleRank[targetRole];
-  };
 
   return (
     <nav className="nav-bar">
@@ -112,11 +100,6 @@ export default function NavBar() {
             </Dropdown.Item>
             <Dropdown.Item to="/manager/events">View Events</Dropdown.Item>
           </Dropdown>
-
-
-     
-
-
         </>
       )}
 
@@ -141,6 +124,8 @@ export default function NavBar() {
               Process Redemption
             </Dropdown.Item>
           </Dropdown>
+        </>
+      )}
 
           <Dropdown title="Promotions">
             <Dropdown.Item to="/manager/promotions/create">
@@ -166,7 +151,6 @@ export default function NavBar() {
            
 
         </>
-        
       )}
 
       {/* ------------------------ Organizer Tools (real organizer) ------------------------ */}
