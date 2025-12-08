@@ -16,9 +16,23 @@ app.use(express.json());
 const port = process.env.PORT || 8000;
 
 const cors = require('cors');
+const allowedOrigins = [
+    "http://localhost:3000",
+    "https://inspiring-expression-production.up.railway.app",
+];
+
 app.use(cors({
-    origin: 'http://localhost:3000',   // React dev server
-    credentials: true,                 // Allow cookies
+    origin: function (origin, callback) {
+   
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        } else {
+            return callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true,
 }));
 
 const routes = require("./src/routes");
