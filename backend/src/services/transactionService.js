@@ -417,7 +417,19 @@ class TransactionService {
   }
 
   async getUserTransactions(userId, params) {
-    const { type, relatedId, promotionId, amount, operator, page, limit, from, to } = params;
+    const {
+      type,
+      relatedId,
+      promotionId,
+      promotionName,
+      remark,
+      amount,
+      operator,
+      page,
+      limit,
+      from,
+      to
+    } = params;
 
     const filters = { userId };
 
@@ -426,7 +438,7 @@ class TransactionService {
       if (from) filters.createdAt.gte = new Date(from);
       if (to) filters.createdAt.lte = new Date(to);
     }
-      
+
     if (relatedId && type) {
       filters.relatedId = relatedId;
       filters.type = type;
@@ -434,13 +446,31 @@ class TransactionService {
       filters.type = type;
     }
 
-    if (promotionId) {
-      filters.promotionIds = { some: { id: promotionId } };
+    if (promotionId || promotionName) {
+      filters.promotionIds = { some: {} };
+
+      if (promotionId) {
+        filters.promotionIds.some.id = promotionId;
+      }
+
+      if (promotionName) {
+        filters.promotionIds.some.name = {
+          contains: promotionName,
+          mode: "insensitive"
+        };
+      }
+    }
+
+    if (remark) {
+      filters.remark = {
+        contains: remark,
+        mode: "insensitive"
+      };
     }
 
     if (amount && operator) {
       const op = operator === "gte" ? "gte" : "lte";
-      filters.amount = { [op]: amount };
+      filters.amount = { [op]: Number(amount) };
     }
 
     const skip = (page - 1) * limit;
@@ -453,19 +483,20 @@ class TransactionService {
         take: limit,
         include: {
           createdBy: { select: { utorid: true } },
-          promotionIds: { select: { id: true } }
+          promotionIds: { select: { id: true, name: true } }
         },
         orderBy: { id: "asc" }
       })
     ]);
 
-    const formatted = results.map(t => ({
+    const formatted = results.map((t) => ({
       id: t.id,
       amount: t.amount,
       type: t.type,
       spent: t.spent ?? undefined,
       relatedId: t.relatedId ?? undefined,
-      promotionIds: t.promotionIds.map(p => p.id),
+      promotionIds: t.promotionIds.map((p) => p.id),
+      promotionNames: t.promotionIds.map((p) => p.name),
       remark: t.remark,
       createdBy: t.createdBy.utorid,
       createdAt: t.createdAt
@@ -473,6 +504,7 @@ class TransactionService {
 
     return { count, results: formatted };
   }
+
 
   async processRedemption(transactionId, processorId) {
       const transaction = await prisma.transaction.findUnique({
