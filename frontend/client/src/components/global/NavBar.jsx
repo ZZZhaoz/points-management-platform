@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import LogoutButton from "./LogoutButton";
 import Dropdown from "./Dropdown";
 import "./NavBar.css";
-import { useAuth } from "../../contexts/AuthContext"; 
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ export default function NavBar() {
 
   const { viewRole, changeViewRole } = useAuth();
 
-  const realRole = localStorage.getItem("role");    
+  const realRole = localStorage.getItem("role");
   const isOrganizer = localStorage.getItem("isOrganizer") === "true";
 
   const isAuthPage =
@@ -23,18 +23,6 @@ export default function NavBar() {
   const avatarUrl = localStorage.getItem("avatarUrl");
   const displayLetter = utorid[0].toUpperCase();
 
-  const roleRank = {
-    regular: 1,
-    cashier: 2,
-    organizer: 3,
-    manager: 4,
-    superuser: 5,
-  };
-
-  const canSwitchTo = (targetRole) => {
-    return roleRank[realRole] >= roleRank[targetRole];
-  };
-
   return (
     <nav className="nav-bar">
       {/* Home */}
@@ -45,7 +33,7 @@ export default function NavBar() {
         <>
           <Link to="/promotions" className="nav-link">🎁 Promotions</Link>
           <Link to="/user/qr" className="nav-link">📱 My QR</Link>
-          
+
           <Dropdown title="💸 Transactions">
             <Dropdown.Item to="/transactions/my">My Transactions</Dropdown.Item>
             <Dropdown.Item to="/transfer">Transfer Points</Dropdown.Item>
@@ -60,7 +48,7 @@ export default function NavBar() {
       )}
 
       {/* CASHIER MENU */}
-      {role === "cashier" && (
+      {realRole === "cashier" && (
         <>
           <Dropdown title="💸 Transactions">
             <Dropdown.Item to="/cashier/transactions">Create Transaction</Dropdown.Item>
@@ -73,45 +61,41 @@ export default function NavBar() {
           <Dropdown title="🎪 Events">
             <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
           </Dropdown>
-
-
-     
-
-
         </>
       )}
 
       {/* MANAGER MENU */}
-      {role === "manager" && (
+      {realRole === "manager" && (
         <>
           <Link to="/manager/users" className="nav-link">👥 Users</Link>
           <Link to="/manager/transactions" className="nav-link">📊 All Transactions</Link>
           <Link to="/manager/promotions" className="nav-link">🎁 Promotions</Link>
-          
-          <Dropdown title="🎪 Events">
-            <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
-            <Dropdown.Item to="/events">All Events</Dropdown.Item>
-          </Dropdown>
 
-      {/* SUPERUSER MENU */}
-      {role === "superuser" && (
-        <>
-          <Link to="/manager/users" className="nav-link">👥 Users</Link>
-          <Link to="/manager/transactions" className="nav-link">📊 All Transactions</Link>
-          
-          <Dropdown title="⚡ Admin">
-            <Dropdown.Item to="/superuser/user-promotion">User Promotion</Dropdown.Item>
-          </Dropdown>
-          
           <Dropdown title="🎪 Events">
             <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
             <Dropdown.Item to="/events">All Events</Dropdown.Item>
           </Dropdown>
         </>
-        
       )}
 
-      {/* Avatar = Profile Page */}
+      {/* SUPERUSER MENU */}
+      {realRole === "superuser" && (
+        <>
+          <Link to="/manager/users" className="nav-link">👥 Users</Link>
+          <Link to="/manager/transactions" className="nav-link">📊 All Transactions</Link>
+
+          <Dropdown title="⚡ Admin">
+            <Dropdown.Item to="/superuser/user-promotion">User Promotion</Dropdown.Item>
+          </Dropdown>
+
+          <Dropdown title="🎪 Events">
+            <Dropdown.Item to="/organizer/events">My Organized Events</Dropdown.Item>
+            <Dropdown.Item to="/events">All Events</Dropdown.Item>
+          </Dropdown>
+        </>
+      )}
+
+      {/* Avatar */}
       <div
         className="nav-avatar"
         onClick={() => navigate("/profile")}
