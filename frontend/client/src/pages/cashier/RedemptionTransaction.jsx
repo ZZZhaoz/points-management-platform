@@ -32,8 +32,8 @@ export default function RedemptionTransaction() {
     const result = await processRedemption(id);
     setSubmitting(false);
 
-    if (err) {
-      setMessage(err);
+    if (result.error) {
+      setMessage(result.error);
       return;
     }
 

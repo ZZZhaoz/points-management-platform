@@ -5,6 +5,7 @@ import {
   XAxis, YAxis, Tooltip, Legend,
   CartesianGrid, ResponsiveContainer
 } from "recharts";
+import "./ManagerStatistics.css";
 
 async function fetchAllUsers(BACKEND_URL, token, limit = 50) {
   let all = [];
@@ -287,41 +288,57 @@ export default function ManagerStatistics() {
   }, [category, range, rawUsers, rawEvents, rawPromos, rawTxs]);
 
   return (
-    <div style={{ padding: 30 }}>
-      <h1>Statistics</h1>
-
-      <p style={{ marginTop: -10, color: "#555" }}>
-        View historical totals and distributions for users, events, promotions, and transactions.
-      </p>
-
-      <div style={{ display: "flex", gap: "20px", marginBottom: 20 }}>
-        <select value={category} onChange={(e) => setCategory(e.target.value)}>
-          <option value="users">Users</option>
-          <option value="events">Events</option>
-          <option value="promotions">Promotions</option>
-          <option value="transactions">Transactions</option>
-        </select>
-
-      {category === "users" && (
-        <select value={range} onChange={(e) => setRange(e.target.value)}>
-          <option value="day">Today</option>
-          <option value="week">Past Week</option>
-          <option value="month">Past Month</option>
-          <option value="year">Past Year</option>
-          <option value="5years">Past 5 Years</option>
-        </select>
-      )}
+    <div className="manager-statistics">
+      <div className="statistics-header">
+        <h1 className="statistics-title">Statistics</h1>
+        <p className="statistics-subtitle">
+          View historical totals and distributions for users, events, promotions, and transactions.
+        </p>
       </div>
 
-      <h2>Total: {total}</h2>
-
-      <div style={{ marginTop: 40 }}>
+      <div className="controls-container">
+        <div className="control-group">
+          <label className="control-label">Category</label>
+          <select 
+            className="control-select"
+            value={category} 
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            <option value="users">Users</option>
+            <option value="events">Events</option>
+            <option value="promotions">Promotions</option>
+            <option value="transactions">Transactions</option>
+          </select>
+        </div>
 
         {category === "users" && (
-        <div style={{ width: "100%" }}>
+          <div className="control-group">
+            <label className="control-label">Time Range</label>
+            <select 
+              className="control-select"
+              value={range} 
+              onChange={(e) => setRange(e.target.value)}
+            >
+              <option value="day">Today</option>
+              <option value="week">Past Week</option>
+              <option value="month">Past Month</option>
+              <option value="year">Past Year</option>
+              <option value="5years">Past 5 Years</option>
+            </select>
+          </div>
+        )}
+      </div>
 
+      <div className="total-display">Total: {total}</div>
+
+      <div>
+        {category === "users" && (
+          <div>
             {/* MAIN USER DISTRIBUTION BAR CHART */}
-            <ResponsiveContainer width="100%" height={350}>
+            <div className="chart-section">
+              <h3 className="chart-title">User Distribution by Role</h3>
+              <div className="chart-container">
+                <ResponsiveContainer>
             <BarChart data={graphData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="role" />
@@ -333,8 +350,10 @@ export default function ManagerStatistics() {
                     <Cell key={index} fill={entry.fill} />
                 ))}
                 </Bar>
-            </BarChart>
-            </ResponsiveContainer>
+                </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
 
             {/* ---------- SNAPSHOT FILTERED USERS ---------- */}
             {(() => {
@@ -351,8 +370,10 @@ export default function ManagerStatistics() {
             return (
                 <>
                 {/* ---------- VERIFIED PIE CHART ---------- */}
-                <h3 style={{ marginTop: 40 }}>Verified Accounts (at selected time)</h3>
-                <ResponsiveContainer width="100%" height={300}>
+                <div className="chart-section">
+                  <h3 className="chart-title">Verified Accounts (at selected time)</h3>
+                  <div className="chart-container pie">
+                    <ResponsiveContainer>
                     <PieChart>
                     <Pie
                         data={[
@@ -370,13 +391,13 @@ export default function ManagerStatistics() {
                     <Legend />
                     <Tooltip />
                     </PieChart>
-                </ResponsiveContainer>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
                 </>
             );
             })()}
-        </div>
-
-        
+          </div>
         )}
 
         
@@ -384,8 +405,10 @@ export default function ManagerStatistics() {
       {category === "events" && (
         <>
           {/* ---- BAR CHART: Started / Not Started / Ended / Not Ended ---- */}
-          <h3 style={{ marginTop: 20 }}>Event Timeline Status</h3>
-          <ResponsiveContainer width="100%" height={350}>
+          <div className="chart-section">
+            <h3 className="chart-title">Event Timeline Status</h3>
+            <div className="chart-container">
+              <ResponsiveContainer>
             <BarChart data={graphData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
@@ -397,12 +420,16 @@ export default function ManagerStatistics() {
                   <Cell key={index} fill={entry.fill} />
                 ))}
               </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+              </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
 
           {/* ---- PIE CHART: Full vs Not Full ---- */}
-          <h3 style={{ marginTop: 40 }}>Event Capacity</h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <div className="chart-section">
+            <h3 className="chart-title">Event Capacity</h3>
+            <div className="chart-container pie">
+              <ResponsiveContainer>
             <PieChart>
               <Pie
                 data={[
@@ -415,12 +442,16 @@ export default function ManagerStatistics() {
               />
               <Legend />
               <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+              </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
 
           {/* ---- PIE CHART: Published vs Unpublished ---- */}
-          <h3 style={{ marginTop: 40 }}>Publication Status</h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <div className="chart-section">
+            <h3 className="chart-title">Publication Status</h3>
+            <div className="chart-container pie">
+              <ResponsiveContainer>
             <PieChart>
               <Pie
                 data={[
@@ -433,16 +464,20 @@ export default function ManagerStatistics() {
               />
               <Legend />
               <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+              </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </>
       )}
 
       {category === "promotions" && (
         <>
           {/* ---- BAR CHART: Started / Not Started / Ended / Not Ended ---- */}
-          <h3 style={{ marginTop: 20 }}>Promotion Timeline Status</h3>
-          <ResponsiveContainer width="100%" height={350}>
+          <div className="chart-section">
+            <h3 className="chart-title">Promotion Timeline Status</h3>
+            <div className="chart-container">
+              <ResponsiveContainer>
             <BarChart data={graphData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
@@ -454,12 +489,16 @@ export default function ManagerStatistics() {
                   <Cell key={index} fill={entry.fill} />
                 ))}
               </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+              </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
 
           {/* ---- PIE CHART: Automatic vs onetime ---- */}
-          <h3 style={{ marginTop: 40 }}>Promotion Types</h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <div className="chart-section">
+            <h3 className="chart-title">Promotion Types</h3>
+            <div className="chart-container pie">
+              <ResponsiveContainer>
             <PieChart>
               <Pie
                 data={[
@@ -484,8 +523,10 @@ export default function ManagerStatistics() {
               />
               <Legend />
               <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+              </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </>
       )}
 
@@ -493,8 +534,10 @@ export default function ManagerStatistics() {
     {category === "transactions" && (
       <>
         {/* ---- BAR CHART: Transaction Types ---- */}
-        <h3 style={{ marginTop: 20 }}>Transaction Type Breakdown</h3>
-        <ResponsiveContainer width="100%" height={350}>
+        <div className="chart-section">
+          <h3 className="chart-title">Transaction Type Breakdown</h3>
+          <div className="chart-container">
+            <ResponsiveContainer>
           <BarChart data={graphData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
@@ -506,12 +549,16 @@ export default function ManagerStatistics() {
                 <Cell key={index} fill={entry.fill} />
               ))}
             </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+            </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
 
         {/* ---- PIE CHART: Suspicious vs Not Suspicious ---- */}
-        <h3 style={{ marginTop: 40 }}>Suspicious Transactions</h3>
-        <ResponsiveContainer width="100%" height={300}>
+        <div className="chart-section">
+          <h3 className="chart-title">Suspicious Transactions</h3>
+          <div className="chart-container pie">
+            <ResponsiveContainer>
           <PieChart>
             <Pie
               data={[
@@ -536,8 +583,10 @@ export default function ManagerStatistics() {
             />
             <Legend />
             <Tooltip />
-          </PieChart>
-        </ResponsiveContainer>
+            </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </>
     )}
       </div>

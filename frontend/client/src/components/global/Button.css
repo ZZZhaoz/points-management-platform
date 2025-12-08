@@ -33,14 +33,13 @@
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.2);
-  color: var(--text-inverse);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: var(--gray-200);
+  color: var(--text-primary);
+  border: none;
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: var(--gray-300);
 }
 
 .btn-success {

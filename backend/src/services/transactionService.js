@@ -158,7 +158,7 @@ class TransactionService {
 
 
   async getAllTransactions(params) {
-    const { name, createdBy, suspicious, promotionId, type, relatedId, amount, operator, page, limit } = params;
+    const { name, createdBy, suspicious, promotionId, type, relatedId, id, amount, operator, page, limit } = params;
 
     const filters = {};
 
@@ -185,6 +185,9 @@ class TransactionService {
       filters.type = type;
     }
 
+    if (id) {
+      filters.id = Number(id);
+    }
 
     if (relatedId) {
       filters.relatedId = Number(relatedId);

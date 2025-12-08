@@ -86,7 +86,11 @@ class UserService {
         }
         
         const whereClause = {};
-        if (name !== undefined) whereClause.name = name;
+        if (name) {
+            whereClause.name = {
+                contains: name,
+            };
+        }
         if (role !== undefined) whereClause.role = role;
         if (verified !== undefined) whereClause.verified = verified;
         if (activated !== undefined) whereClause.activated = activated;

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import "./TransactionsList.css";
 
 function getQuery(filters) {
   const params = new URLSearchParams();
@@ -10,6 +11,7 @@ function getQuery(filters) {
   if (filters.promotionId) params.set("promotionId", filters.promotionId);
   if (filters.type) params.set("type", filters.type);
   if (filters.relatedId) params.set("relatedId", filters.relatedId);
+  if (filters.id) params.set("id", filters.id);
   if (filters.amount) params.set("amount", filters.amount);
   if (filters.operator) params.set("operator", filters.operator);
 
@@ -46,6 +48,7 @@ export default function TransactionsList() {
     promotionId: "",
     type: "",
     relatedId: "",
+    id: "",
     amount: "",
     operator: "",
     page: 1,
@@ -85,214 +88,271 @@ export default function TransactionsList() {
       .finally(() => setLoading(false));
   }, [filters, BACKEND_URL, token]);
 
-  if (loading) return <p>Loading transactions...</p>;
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading transactions...</p>
+      </div>
+    );
+  }
 
   const sortedTransactions = sortTransactions(transactions, sortBy, sortOrder);
   const totalPages = Math.ceil(totalCount / filters.limit);
 
   return (
-    <div>
-      <h1>All Transactions</h1>
-
-      {error && <p>{error}</p>}
-      {success && <p >{success}</p>}
-
-      <div>
-        <label>Name: </label>
-        <input
-          value={filters.name}
-          onChange={(e) =>
-            setFilters({ ...filters, name: e.target.value, page: 1 })
-          }
-        />
-        <br />
-
-        <label>Created By (utorid): </label>
-        <input
-          value={filters.createdBy}
-          onChange={(e) =>
-            setFilters({ ...filters, createdBy: e.target.value, page: 1 })
-          }
-        />
-        <br />
-
-        <label>Suspicious: </label>
-        <select
-          value={filters.suspicious}
-          onChange={(e) =>
-            setFilters({ ...filters, suspicious: e.target.value, page: 1 })
-          }
-        >
-          <option value="">All</option>
-          <option value="true">Suspicious Only</option>
-          <option value="false">Not Suspicious</option>
-        </select>
-        <br />
-
-        <label>Promotion ID: </label>
-        <input
-          type="number"
-          value={filters.promotionId}
-          onChange={(e) =>
-            setFilters({ ...filters, promotionId: e.target.value, page: 1 })
-          }
-        />
-        <br />
-
-        <label>Type: </label>
-        <select
-          value={filters.type}
-          onChange={(e) =>
-            setFilters({ ...filters, type: e.target.value, page: 1 })
-          }
-        >
-          <option value="">All</option>
-          <option value="purchase">Purchase</option>
-          <option value="adjustment">Adjustment</option>
-          <option value="redemption">Redemption</option>
-          <option value="transfer">Transfer</option>
-          <option value="event">Event</option>
-        </select>
-        <br />
-
-        <label>Transaction ID: </label>
-        <input
-          type="number"
-          value={filters.relatedId}
-          onChange={(e) =>
-            setFilters({ ...filters, relatedId: e.target.value, page: 1 })
-          }
-        />
-        <br />
-
-        <label>Amount: </label>
-        <input
-          type="number"
-          value={filters.amount}
-          onChange={(e) =>
-            setFilters({ ...filters, amount: e.target.value, page: 1 })
-          }
-        />
-        <br />
-
-        
-        <label>Operator: </label>
-        <label>Operator: </label>
-        <select
-          value={filters.operator}
-          onChange={(e) =>
-            setFilters({ ...filters, operator: e.target.value, page: 1 })
-          }
-        >
-          <option value="">All</option>
-          <option value="gte">Greater Than or Equal</option>
-          <option value="lte">Less Than or Equal</option>
-        </select>
-
+    <div className="transactions-list-page">
+      <div className="transactions-list-header">
+        <h1 className="transactions-list-title">💸 All Transactions</h1>
+        <p className="transactions-list-subtitle">View and manage all system transactions</p>
       </div>
 
-      <br />
+      {error && (
+        <div className="alert alert-error">
+          {error}
+        </div>
+      )}
 
-      {/* SORTING */}
-      <div>
-        <label>Sort By: </label>
-        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-          <option value="createdAt">Created Date</option>
-          <option value="amount">Amount</option>
-          <option value="id">ID</option>
-          <option value="type">Type</option>
-        </select>
+      {success && (
+        <div className="alert alert-success">
+          {success}
+        </div>
+      )}
 
-        <select
-          value={sortOrder}
-          onChange={(e) => setSortOrder(e.target.value)}
-        >
-          <option value="asc">Ascending</option>
-          <option value="desc">Descending</option>
-        </select>
+      <div className="filters-card">
+        <h2 className="filters-title">Filters & Search</h2>
+        <div className="filters-grid">
+          <div className="filter-group">
+            <label className="filter-label">Name</label>
+            <input
+              type="text"
+              className="filter-input"
+              value={filters.name}
+              onChange={(e) =>
+                setFilters({ ...filters, name: e.target.value, page: 1 })
+              }
+              placeholder="Enter name..."
+            />
+          </div>
+
+          <div className="filter-group">
+            <label className="filter-label">Created By (utorid)</label>
+            <input
+              type="text"
+              className="filter-input"
+              value={filters.createdBy}
+              onChange={(e) =>
+                setFilters({ ...filters, createdBy: e.target.value, page: 1 })
+              }
+              placeholder="Enter UTORid..."
+            />
+          </div>
+
+          <div className="filter-group">
+            <label className="filter-label">Suspicious</label>
+            <select
+              className="filter-select"
+              value={filters.suspicious}
+              onChange={(e) =>
+                setFilters({ ...filters, suspicious: e.target.value, page: 1 })
+              }
+            >
+              <option value="">All</option>
+              <option value="true">Suspicious Only</option>
+              <option value="false">Not Suspicious</option>
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label className="filter-label">Promotion ID</label>
+            <input
+              type="number"
+              className="filter-input"
+              value={filters.promotionId}
+              onChange={(e) =>
+                setFilters({ ...filters, promotionId: e.target.value, page: 1 })
+              }
+              placeholder="Enter ID..."
+            />
+          </div>
+
+          <div className="filter-group">
+            <label className="filter-label">Type</label>
+            <select
+              className="filter-select"
+              value={filters.type}
+              onChange={(e) =>
+                setFilters({ ...filters, type: e.target.value, page: 1 })
+              }
+            >
+              <option value="">All Types</option>
+              <option value="purchase">Purchase</option>
+              <option value="adjustment">Adjustment</option>
+              <option value="redemption">Redemption</option>
+              <option value="transfer">Transfer</option>
+              <option value="event">Event</option>
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label className="filter-label">Transaction ID</label>
+            <input
+              type="number"
+              className="filter-input"
+              value={filters.id}
+              onChange={(e) =>
+                setFilters({ ...filters, id: e.target.value, page: 1 })
+              }
+              placeholder="Enter ID..."
+            />
+          </div>
+
+          <div className="filter-group">
+            <label className="filter-label">Amount</label>
+            <input
+              type="number"
+              className="filter-input"
+              value={filters.amount}
+              onChange={(e) =>
+                setFilters({ ...filters, amount: e.target.value, page: 1 })
+              }
+              placeholder="Enter amount..."
+            />
+          </div>
+
+          <div className="filter-group">
+            <label className="filter-label">Operator</label>
+            <select
+              className="filter-select"
+              value={filters.operator}
+              onChange={(e) =>
+                setFilters({ ...filters, operator: e.target.value, page: 1 })
+              }
+            >
+              <option value="">All</option>
+              <option value="gte">Greater Than or Equal</option>
+              <option value="lte">Less Than or Equal</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="sort-controls">
+          <div className="sort-group">
+            <label className="filter-label">Sort By:</label>
+            <select
+              className="filter-select"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              style={{ minWidth: "150px" }}
+            >
+              <option value="createdAt">Created Date</option>
+              <option value="amount">Amount</option>
+              <option value="id">ID</option>
+              <option value="type">Type</option>
+            </select>
+          </div>
+
+          <div className="sort-group">
+            <label className="filter-label">Order:</label>
+            <select
+              className="filter-select"
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+            >
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
+
+          <div className="sort-group">
+            <label className="filter-label">Items per page:</label>
+            <select
+              className="filter-select"
+              value={filters.limit}
+              onChange={(e) =>
+                setFilters({ ...filters, limit: parseInt(e.target.value), page: 1 })
+              }
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="25">25</option>
+            </select>
+          </div>
+        </div>
       </div>
-        
-      <br></br>
-
-      <label>Items per page: </label>
-      <select
-        value={filters.limit}
-        onChange={(e) =>
-          setFilters({ ...filters, limit: parseInt(e.target.value), page: 1 })
-        }
-      >
-        <option value="5">5</option>
-        <option value="5">5</option>
-        <option value="10">10</option>
-        <option value="20">20</option>
-        <option value="25">25</option>
-      </select>
-
-
 
       {sortedTransactions.length === 0 ? (
-        <p>No transactions found.</p>
+        <div className="empty-state">
+          <div className="empty-state-icon">💸</div>
+          <div className="empty-state-text">No transactions found.</div>
+        </div>
       ) : (
+        <div className="data-table-container">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>UtorID</th>
+                <th>Amount</th>
+                <th>Type</th>
+                <th>Spent</th>
+                <th>Created By</th>
+                <th>Suspicious</th>
+                <th>Promotion IDs</th>
+                <th>Remark</th>
+                <th>Edit</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedTransactions.map((t) => (
+                <tr key={t.id}>
+                  <td><strong>{t.id}</strong></td>
+                  <td>{t.utorid}</td>
+                  <td className={t.amount >= 0 ? "amount-positive" : "amount-negative"}>
+                    {t.amount >= 0 ? "+" : ""}{t.amount}
+                  </td>
+                  <td>
+                    <span className={`type-badge ${t.type}`}>{t.type}</span>
+                  </td>
+                  <td>{t.spent || "-"}</td>
+                  <td>{t.createdBy}</td>
+                  <td>
+                    <span className={`suspicious-badge ${t.suspicious ? "yes" : "no"}`}>
+                      {t.suspicious ? "Yes" : "No"}
+                    </span>
+                  </td>
+                  <td>
+                    {t.promotionIds && t.promotionIds.length > 0
+                      ? t.promotionIds.join(", ")
+                      : "None"}
+                  </td>
+                  <td>{t.remark ? t.remark : "No remarks"}</td>
+                  <td>
+                    <Link to={`/manager/transactions/${t.id}`} className="edit-link">Edit</Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
-      
-      <table border="1" style={{ marginTop: "20px" }}>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>UtorID</th>
-            <th>Amount</th>
-            <th>Type</th>
-            <th>Spent</th>
-            <th>Created By</th>
-            <th>Suspicious</th>
-            <th>Promotion IDs</th>
-            <th>Remark</th>
-            <th>Edit</th>
-      
-          </tr>
-        </thead>
-
-        <tbody>
-          {sortedTransactions.map((t) => (
-            <tr key={t.id}>
-              <td>{t.id}</td>
-              <th>{t.utorid}</th>
-              <td>{t.amount}</td>
-              <td>{t.type}</td>
-              <td>{t.spent}</td>
-              <td>{t.createdBy}</td>
-              <td>{t.suspicious ? "Yes" : "No"}</td>
-              <td>
-                {t.promotionIds && t.promotionIds.length > 0
-                  ? t.promotionIds.join(", ")
-                  : "None"}
-              </td>
-              <td>{t.remark ? t.remark : "No remarks"}</td>
-              <td>
-                <Link to={`/manager/transactions/${t.id}`}>Edit</Link>
-            </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-        )}
-
-      {/* PAGINATION */}
-      <br />
-      <div>
+      <div className="pagination">
         <button
+          className="pagination-button"
           disabled={filters.page === 1}
           onClick={() => setFilters({ ...filters, page: filters.page - 1 })}
         >
           Previous
         </button>
 
-        <span style={{ margin: "0 10px" }}>
+        <span className="pagination-info">
           Page {filters.page} of {totalPages || 1}
         </span>
 
         <button
+          className="pagination-button"
           disabled={filters.page >= totalPages}
           onClick={() => setFilters({ ...filters, page: filters.page + 1 })}
         >

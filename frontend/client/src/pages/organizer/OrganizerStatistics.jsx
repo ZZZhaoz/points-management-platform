@@ -16,6 +16,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import "./OrganizerStatistics.css";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8", "#82ca9d"];
 
@@ -43,22 +44,35 @@ export default function OrganizerStatistics() {
   };
 
   if (loading) {
-    return <div style={{ padding: "2rem" }}>Loading...</div>;
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading statistics...</p>
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div style={{ padding: "2rem" }}>
-        <div style={{ color: "red" }}>Error: {error}</div>
+      <div className="organizer-statistics">
+        <div className="error-container">
+          <div className="error-message">Error: {error}</div>
+        </div>
       </div>
     );
   }
 
   if (events.length === 0) {
     return (
-      <div style={{ padding: "2rem" }}>
-        <h1>Event Statistics</h1>
-        <p>You are not organizing any events yet.</p>
+      <div className="organizer-statistics">
+        <div className="statistics-header">
+          <h1 className="statistics-title">Event Statistics</h1>
+        </div>
+        <div className="empty-state">
+          <div className="empty-state-icon">📅</div>
+          <h2 className="empty-state-title">No Events Yet</h2>
+          <p className="empty-state-text">You are not organizing any events yet.</p>
+        </div>
       </div>
     );
   }
@@ -101,16 +115,19 @@ export default function OrganizerStatistics() {
   }));
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "1400px", margin: "0 auto" }}>
-      <h1 style={{ marginBottom: "2rem" }}>Event Statistics</h1>
+    <div className="organizer-statistics">
+      <div className="statistics-header">
+        <h1 className="statistics-title">📊 Event Statistics</h1>
+      </div>
 
       <div style={{ display: "grid", gap: "2rem" }}>
         {/* Chart 1: Participants per Event (Bar Chart) */}
-        <Card style={{ padding: "2rem" }}>
-          <h2 style={{ marginBottom: "1.5rem" }}>
+        <Card className="chart-section">
+          <h2 className="chart-title">
             Number of Participants per Event
           </h2>
-          <ResponsiveContainer width="100%" height={400}>
+          <div className="chart-container">
+            <ResponsiveContainer>
             <BarChart data={participantsData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
@@ -130,15 +147,17 @@ export default function OrganizerStatistics() {
               <Legend />
               <Bar dataKey="participants" fill="#8884d8" name="Participants" />
             </BarChart>
-          </ResponsiveContainer>
+            </ResponsiveContainer>
+          </div>
         </Card>
 
         {/* Chart 2: Participants Distribution (Pie Chart) */}
-        <Card style={{ padding: "2rem" }}>
-          <h2 style={{ marginBottom: "1.5rem" }}>
+        <Card className="chart-section">
+          <h2 className="chart-title">
             Participants Distribution (Pie Chart)
           </h2>
-          <ResponsiveContainer width="100%" height={400}>
+          <div className="chart-container">
+            <ResponsiveContainer>
             <PieChart>
               <Pie
                 data={pieData}
@@ -167,15 +186,17 @@ export default function OrganizerStatistics() {
                 }}
               />
             </PieChart>
-          </ResponsiveContainer>
+            </ResponsiveContainer>
+          </div>
         </Card>
 
         {/* Chart 3: Attendance Trends (Line Chart) */}
-        <Card style={{ padding: "2rem" }}>
-          <h2 style={{ marginBottom: "1.5rem" }}>
+        <Card className="chart-section">
+          <h2 className="chart-title">
             Attendance Trends for Popular Events
           </h2>
-          <ResponsiveContainer width="100%" height={400}>
+          <div className="chart-container">
+            <ResponsiveContainer>
             <LineChart data={attendanceTrendsData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
@@ -201,15 +222,17 @@ export default function OrganizerStatistics() {
                 name="Participants"
               />
             </LineChart>
-          </ResponsiveContainer>
+            </ResponsiveContainer>
+          </div>
         </Card>
 
         {/* Chart 4: Points Awarded per Event */}
-        <Card style={{ padding: "2rem" }}>
-          <h2 style={{ marginBottom: "1.5rem" }}>
+        <Card className="chart-section">
+          <h2 className="chart-title">
             Points Awarded vs Remaining per Event
           </h2>
-          <ResponsiveContainer width="100%" height={400}>
+          <div className="chart-container">
+            <ResponsiveContainer>
             <BarChart data={pointsData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
@@ -265,36 +288,29 @@ export default function OrganizerStatistics() {
                 name="Points Remaining"
               />
             </BarChart>
-          </ResponsiveContainer>
+            </ResponsiveContainer>
+          </div>
         </Card>
 
         {/* Summary Statistics */}
-        <Card style={{ padding: "2rem" }}>
-          <h2 style={{ marginBottom: "1.5rem" }}>Summary Statistics</h2>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-              gap: "1.5rem",
-            }}
-          >
-            <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#8884d8" }}>
-                {events.length}
-              </div>
-              <div style={{ color: "#666" }}>Total Events</div>
+        <Card className="chart-section">
+          <h2 className="chart-title">Summary Statistics</h2>
+          <div className="summary-grid">
+            <div className="summary-item">
+              <div className="summary-value events">{events.length}</div>
+              <div className="summary-label">Total Events</div>
             </div>
-            <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#00C49F" }}>
+            <div className="summary-item">
+              <div className="summary-value participants">
                 {events.reduce((sum, e) => sum + (e.numGuests || 0), 0)}
               </div>
-              <div style={{ color: "#666" }}>Total Participants</div>
+              <div className="summary-label">Total Participants</div>
             </div>
-            <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#0088FE" }}>
+            <div className="summary-item">
+              <div className="summary-value points">
                 {events.reduce((sum, e) => sum + (e.pointsRemain || 0), 0)}
               </div>
-              <div style={{ color: "#666" }}>Total Points Remaining</div>
+              <div className="summary-label">Total Points Remaining</div>
             </div>
           </div>
         </Card>

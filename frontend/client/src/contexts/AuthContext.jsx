@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setViewRole(null);
     });
-}, [BACKEND_URL]); 
+}, [BACKEND_URL, token]); 
 
   // --------------------------
   // Login
@@ -113,6 +113,11 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
     localStorage.removeItem("viewRole");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("utorid");
+    localStorage.removeItem("avatarUrl");
+    localStorage.removeItem("isOrganizer");
+
     setUser(null);
     setViewRole(null);
     setToken(null);

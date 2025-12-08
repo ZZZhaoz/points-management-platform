@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import Input from "../components/global/Input";
 import Button from "../components/global/Button";
-import { Card } from "../components/global/Card";
+import "./RegisterUser.css";
 
 export default function RegisterUser() {
   const { token } = useAuth();
@@ -91,43 +91,61 @@ export default function RegisterUser() {
     }
   };
 
+  const message = error || success;
+  const isSuccess = !!success && !error;
+
   return (
-    <Card className="max-w-md mx-auto mt-8 p-6">
-      <h2 className="text-xl font-semibold mb-4">Register New User</h2>
+    <div className="register-user-page">
+      <div className="register-user-header">
+        <h1 className="register-user-title">Register New User 👤</h1>
+        <p className="register-user-subtitle">Create a new user account for the loyalty program</p>
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="register-user-card">
+        <div className="register-user-icon">🎯</div>
 
-        <Input
-          label="UTORid"
-          value={utorid}
-          onChange={setUtorid}
-          placeholder="e.g., johndoe1"
-          required
-        />
+        <form onSubmit={handleSubmit}>
+          <Input
+            label="UTORid"
+            value={utorid}
+            onChange={setUtorid}
+            placeholder="e.g., johndoe1"
+            required
+          />
 
-        <Input
-          label="Full Name"
-          value={name}
-          onChange={setName}
-          placeholder="John Doe"
-          required
-        />
+          <Input
+            label="Full Name"
+            value={name}
+            onChange={setName}
+            placeholder="John Doe"
+            required
+          />
 
-        <Input
-          label="UofT Email"
-          value={email}
-          onChange={setEmail}
-          placeholder="example@mail.utoronto.ca"
-          required
-        />
+          <Input
+            label="UofT Email"
+            type="email"
+            value={email}
+            onChange={setEmail}
+            placeholder="example@mail.utoronto.ca"
+            required
+          />
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-        {success && <p className="text-green-600 text-sm">{success}</p>}
+          {message && (
+            <div className={`alert ${isSuccess ? "alert-success" : "alert-error"}`} style={{ marginTop: "1rem" }}>
+              {message}
+            </div>
+          )}
 
-        <Button type="submit" disabled={loading}>
-          {loading ? "Creating..." : "Create User"}
-        </Button>
-      </form>
-    </Card>
+          <Button 
+            type="submit" 
+            variant="primary"
+            disabled={loading}
+            style={{ width: "100%", marginTop: "1.5rem" }}
+          >
+            {loading ? "Creating..." : "✨ Create User"}
+          </Button>
+        </form>
+      </div>
+    </div>
   );
 }

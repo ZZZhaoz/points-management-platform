@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import "./EventList.css";
 
 function getQuery(filters) {
   const params = new URLSearchParams();
@@ -75,167 +76,241 @@ export default function EventsList() {
       .finally(() => setLoading(false));
   }, [filters, BACKEND_URL, token]);
 
-  if (loading) return <p>Loading events...</p>;
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading events...</p>
+      </div>
+    );
+  }
 
   const totalPages = Math.ceil(totalCount / filters.limit);
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    return date.toLocaleString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   return (
-    <div>
-      <h1>All Events</h1>
+    <div className="events-list-page">
+      <div className="events-list-header">
+        <h1 className="events-list-title">🎪 All Events</h1>
+        <p className="events-list-subtitle">View and manage all events in the system</p>
+      </div>
 
-      {error && <p >{error}</p>}
-      {success && <p >{success}</p>}
+      {error && (
+        <div className="alert alert-error">
+          {error}
+        </div>
+      )}
 
-      {/* NAME FILTER */}
-      <label>Name: </label>
-      <input
-        value={filters.name}
-        onChange={(e) => setFilters({ ...filters, name: e.target.value, page: 1 })}
-      />
+      {success && (
+        <div className="alert alert-success">
+          {success}
+        </div>
+      )}
 
-      <br />
+      <div className="filters-card">
+        <h2 className="filters-title">Filters & Search</h2>
+        <div className="filters-grid">
+          <div className="filter-group">
+            <label className="filter-label">Name</label>
+            <input
+              type="text"
+              className="filter-input"
+              value={filters.name}
+              onChange={(e) =>
+                setFilters({ ...filters, name: e.target.value, page: 1 })
+              }
+              placeholder="Enter event name..."
+            />
+          </div>
 
-      {/* LOCATION FILTER */}
-      <label>Location: </label>
-      <input
-        value={filters.location}
-        onChange={(e) => setFilters({ ...filters, location: e.target.value, page: 1 })}
-      />
+          <div className="filter-group">
+            <label className="filter-label">Location</label>
+            <input
+              type="text"
+              className="filter-input"
+              value={filters.location}
+              onChange={(e) =>
+                setFilters({ ...filters, location: e.target.value, page: 1 })
+              }
+              placeholder="Enter location..."
+            />
+          </div>
 
-      <br />
+          <div className="filter-group">
+            <label className="filter-label">Started</label>
+            <select
+              className="filter-select"
+              value={filters.started}
+              onChange={(e) =>
+                setFilters({ ...filters, started: e.target.value, page: 1 })
+              }
+            >
+              <option value="">All</option>
+              <option value="true">Started</option>
+              <option value="false">Not Started</option>
+            </select>
+          </div>
 
-      {/* STARTED FILTER */}
-      <label>Started: </label>
-      <select
-        value={filters.started}
-        onChange={(e) => setFilters({ ...filters, started: e.target.value, page: 1 })}
-      >
-        <option value="">All</option>
-        <option value="true">Started</option>
-        <option value="false">Not Started</option>
-      </select>
+          <div className="filter-group">
+            <label className="filter-label">Ended</label>
+            <select
+              className="filter-select"
+              value={filters.ended}
+              onChange={(e) =>
+                setFilters({ ...filters, ended: e.target.value, page: 1 })
+              }
+            >
+              <option value="">All</option>
+              <option value="true">Ended</option>
+              <option value="false">Not Ended</option>
+            </select>
+          </div>
 
-      <br />
+          <div className="filter-group">
+            <label className="filter-label">Show Full</label>
+            <select
+              className="filter-select"
+              value={filters.showFull}
+              onChange={(e) =>
+                setFilters({ ...filters, showFull: e.target.value, page: 1 })
+              }
+            >
+              <option value="">All</option>
+              <option value="true">Full</option>
+              <option value="false">Not Full</option>
+            </select>
+          </div>
 
-      {/* ENDED FILTER */}
-      <label>Ended: </label>
-      <select
-        value={filters.ended}
-        onChange={(e) => setFilters({ ...filters, ended: e.target.value, page: 1 })}
-      >
-        <option value="">All</option>
-        <option value="true">Ended</option>
-        <option value="false">Not Ended</option>
-      </select>
+          <div className="filter-group">
+            <label className="filter-label">Published</label>
+            <select
+              className="filter-select"
+              value={filters.published}
+              onChange={(e) =>
+                setFilters({ ...filters, published: e.target.value, page: 1 })
+              }
+            >
+              <option value="">All</option>
+              <option value="true">Published</option>
+              <option value="false">Not Published</option>
+            </select>
+          </div>
 
-      <br />
+          <div className="filter-group">
+            <label className="filter-label">Items per page</label>
+            <select
+              className="filter-select"
+              value={filters.limit}
+              onChange={(e) =>
+                setFilters({
+                  ...filters,
+                  limit: parseInt(e.target.value),
+                  page: 1,
+                })
+              }
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="25">25</option>
+            </select>
+          </div>
+        </div>
+      </div>
 
-      {/* FULL FILTER */}
-      <label>Show Full: </label>
-      <select
-        value={filters.showFull}
-        onChange={(e) => setFilters({ ...filters, showFull: e.target.value, page: 1 })}
-      >
-        <option value="">All</option>
-        <option value="true">Full</option>
-        <option value="false">Not Full</option>
-      </select>
-
-      <br />
-
-      {/* PUBLISHED FILTER */}
-      <label>Published: </label>
-      <select
-        value={filters.published}
-        onChange={(e) => setFilters({ ...filters, published: e.target.value, page: 1 })}
-      >
-        <option value="">All</option>
-        <option value="true">Published</option>
-        <option value="false">Not Published</option>
-      </select>
-
-      <br /><br />
-
-      <label>Items per page: </label>
-      <select
-        value={filters.limit}
-        onChange={(e) =>
-          setFilters({ ...filters, limit: parseInt(e.target.value), page: 1 })
-        }
-      >
-        <option value="5">5</option>
-        <option value="10">10</option>
-        <option value="20">20</option>
-        <option value="25">25</option>
-      </select>
-
-      <br /><br />
-
-
-        
-      {/* TABLE */}
       {events.length === 0 ? (
-          <p>No events found.</p>
-        ) : (
-      <table border="1">
-        <thead>
-            <tr>
-            <th>Name</th>
-            <th>Location</th>
-            <th>Start</th>
-            <th>End</th>
-            <th>Capacity</th>
-            <th>Guests</th>
-            <th>Points Remain</th>
-            <th>Points Awarded</th>
-            <th>Published</th>
-            <th>Actions</th>
-            </tr>
-        </thead>
+        <div className="empty-state">
+          <div className="empty-state-icon">📅</div>
+          <div className="empty-state-text">No Events Found. Try a Different Filter!</div>
+        </div>
+      ) : (
+        <div className="data-table-container">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Capacity</th>
+                <th>Guests</th>
+                <th>Points Remain</th>
+                <th>Points Awarded</th>
+                <th>Published</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {events.map((ev) => (
+                <tr key={ev.id}>
+                  <td style={{ fontWeight: 600, color: "var(--text-primary)" }}>
+                    {ev.name}
+                  </td>
+                  <td>{ev.location}</td>
+                  <td>{formatDate(ev.startTime)}</td>
+                  <td>{formatDate(ev.endTime)}</td>
+                  <td>{ev.capacity ?? "-"}</td>
+                  <td>{ev.numGuests}</td>
+                  <td>{ev.pointsRemain}</td>
+                  <td>{ev.pointsAwarded}</td>
+                  <td>
+                    <span
+                      style={{
+                        padding: "0.25rem 0.75rem",
+                        borderRadius: "var(--radius-full)",
+                        fontSize: "0.75rem",
+                        fontWeight: 600,
+                        background: ev.published
+                          ? "var(--success-light)"
+                          : "var(--gray-200)",
+                        color: ev.published ? "var(--success)" : "var(--gray-600)",
+                      }}
+                    >
+                      {ev.published ? "Yes" : "No"}
+                    </span>
+                  </td>
+                  <td>
+                    <Link to={`/manager/events/${ev.id}`} className="edit-link">Edit</Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
-        <tbody>
-            {events.map((ev) => (
-            <tr key={ev.id}>
-                <td>{ev.name}</td>
-                <td>{ev.location}</td>
-                <td>{ev.startTime}</td>
-                <td>{ev.endTime}</td>
-                <td>{ev.capacity ?? "-"}</td>
-                <td>{ev.numGuests}</td>
-                <td>{ev.pointsRemain}</td>
-                <td>{ev.pointsAwarded}</td>
-                <td>{ev.published ? "Yes" : "No"}</td>
+      <div className="pagination">
+        <button
+          className="pagination-button"
+          disabled={filters.page === 1}
+          onClick={() => setFilters({ ...filters, page: filters.page - 1 })}
+        >
+          Previous
+        </button>
 
-                <td>
-                <Link to={`/manager/events/${ev.id}`}>Edit</Link>
-                </td>
-            </tr>
-            ))}
-        </tbody>
-      </table>
-        )}
+        <span className="pagination-info">
+          Page {filters.page} of {totalPages || 1}
+        </span>
 
-  
-
-      {/* PAGINATION */}
-      <br />
-      <button
-        disabled={filters.page === 1}
-        onClick={() => setFilters({ ...filters, page: filters.page - 1 })}
-      >
-        Previous
-      </button>
-
-      <span>
-        Page {filters.page} of {totalPages || 1}
-      </span>
-
-      <button
-        disabled={filters.page >= totalPages}
-        onClick={() => setFilters({ ...filters, page: filters.page + 1 })}
-      >
-        Next
-      </button>
+        <button
+          className="pagination-button"
+          disabled={filters.page >= totalPages}
+          onClick={() => setFilters({ ...filters, page: filters.page + 1 })}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 }

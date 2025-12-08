@@ -119,7 +119,7 @@ export default function EventsListPage() {
       {/* Filters */}
       <div className="filters-card">
         <div className="filters-title">
-          🔍 Filter Events
+          Filter Events
         </div>
 
         {filterMessage && (

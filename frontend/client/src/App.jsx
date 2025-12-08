@@ -125,6 +125,7 @@ export default function App() {
 
                   {/* Superuser */}
                   <Route path="/superuser/user-promotion" element={<UserPromotion />} />
+                  <Route path="/superuser/statistics" element={<ManagerStatistics />} />
                 </Route>
               </Route>
 

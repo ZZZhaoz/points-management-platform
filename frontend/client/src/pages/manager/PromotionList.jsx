@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import "./PromotionList.css";
 
 function getQuery(filters) {
   const params = new URLSearchParams();
 
-  if (filters.name.trim() !== "") params.set("name", filters.name);
-  if (filters.type && filters.type.trim() !== ""){
-                params.set("type", filters.type);
+  if (filters.name && filters.name.trim() !== "") {
+    params.set("name", filters.name.trim());
+  }
+  if (filters.type && filters.type.trim() !== "") {
+    params.set("type", filters.type);
   }
 
   params.set("page", filters.page);
@@ -79,129 +82,175 @@ export default function PromotionsList() {
       .finally(() => setLoading(false));
   }, [filters, BACKEND_URL, token]);
 
-  if (loading) return <p>Loading promotions...</p>;
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading promotions...</p>
+      </div>
+    );
+  }
 
   const sortedPromotions = sortPromotions(promotions, sortBy, sortOrder);
   const totalPages = Math.ceil(totalCount / filters.limit);
 
+  // Format date for display
+  const formatDate = (dateString) => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   return (
-    <div>
-      <h1>All Promotions</h1>
+    <div className="promotions-list-page">
+      <div className="promotions-list-header">
+        <h1 className="promotions-list-title">All Promotions</h1>
+        <p className="promotions-list-subtitle">Manage and view all system promotions</p>
+      </div>
 
-      <label>Search Name: </label>
-      <input
-      value={filters.name}
-      onChange={(e) =>
-          setFilters({ ...filters, name: e.target.value, page: 1 })
-      }
-      />
+      <div className="filters-card">
+        <h2 className="filters-title">Filters & Search</h2>
+        <div className="filters-grid">
+          <div className="filter-group">
+            <label htmlFor="name" className="filter-label">Search By Name</label>
+            <input
+              id="name"
+              type="text"
+              className="filter-input"
+              value={filters.name}
+              onChange={(e) =>
+                setFilters({ ...filters, name: e.target.value, page: 1 })
+              }
+              placeholder="Enter promotion name..."
+            />
+          </div>
 
-      <br />
+          <div className="filter-group">
+            <label htmlFor="type" className="filter-label">Type</label>
+            <select
+              id="type"
+              className="filter-select"
+              value={filters.type}
+              onChange={(e) =>
+                setFilters({ ...filters, type: e.target.value, page: 1 })
+              }
+            >
+              <option value="">All</option>
+              <option value="automatic">Automatic</option>
+              <option value="onetime">One-Time</option>
+            </select>
+          </div>
+        </div>
 
-      <label>Type: </label>
-      <select
-        value={filters.type}
-        onChange={(e) =>
-          setFilters({ ...filters, type: e.target.value, page: 1 })
-        }
-      >
-        <option value="">All</option>
-        <option value="automatic">Automatic</option>
-        <option value="oneztime">One-Time</option>
-      </select>
+        <div className="sort-controls">
+          <div className="sort-group">
+            <label className="filter-label">Sort By:</label>
+            <select
+              className="filter-select"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              style={{ minWidth: "150px" }}
+            >
+              <option value="name">Name</option>
+              <option value="type">Type</option>
+              <option value="startTime">Starting Date</option>
+              <option value="endTime">Expiry Date</option>
+            </select>
+          </div>
 
-      <br />
-      <br />
+          <div className="sort-group">
+            <label className="filter-label">Order:</label>
+            <select
+              className="filter-select"
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+            >
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
 
-      {/* SORTING */}
-      <label>Sort By: </label>
-        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-        <option value="name">Name</option>
-        <option value="type">Type</option>
-        <option value="startTime">Starting Date</option>
-        <option value="endTime">Expiry Date</option>
-        </select>
+          <div className="sort-group">
+            <label className="filter-label">Items per page:</label>
+            <select
+              className="filter-select"
+              value={filters.limit}
+              onChange={(e) =>
+                setFilters({ ...filters, limit: parseInt(e.target.value), page: 1 })
+              }
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="25">25</option>
+            </select>
+          </div>
+        </div>
+      </div>
 
-        <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
-        <option value="asc">Ascending</option>
-        <option value="desc">Descending</option>
-        </select>
+      {sortedPromotions.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-state-icon">🎁</div>
+          <div className="empty-state-text">No Promotions Found. Try a Different Filter!</div>
+        </div>
+      ) : (
+        <div className="data-table-container">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Starting Date</th>
+                <th>Expiry Date</th>
+                <th>Min Spending</th>
+                <th>Rate</th>
+                <th>Points</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedPromotions.map((p) => (
+                <tr key={p.id}>
+                  <td><strong>{p.name}</strong></td>
+                  <td>
+                    <span className={`type-badge ${p.type}`}>{p.type}</span>
+                  </td>
+                  <td>{formatDate(p.startTime)}</td>
+                  <td>{formatDate(p.endTime)}</td>
+                  <td>{p.minSpending !== null ? p.minSpending : "-"}</td>
+                  <td>{p.rate !== null ? p.rate : "-"}</td>
+                  <td>{p.points !== null ? p.points : "-"}</td>
+                  <td>
+                    <Link to={`/manager/promotions/${p.id}`} className="edit-link">Edit</Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
-        <br></br>
-
-        <label>Items per page: </label>
-
-        <select
-          value={filters.limit}
-          onChange={(e) =>
-            setFilters({ ...filters, limit: parseInt(e.target.value), page: 1 })
-          }
-        >
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="20">20</option>
-          <option value="25">25</option>
-        </select>
-
-
-
-        {/* TABLE */}
-
-        {sortedPromotions.length === 0 ? (
-            <p>No promotions found.</p>
-          ) : (
-
-        <table border="1" style={{ marginTop: "20px" }}>
-        <thead>
-            <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Starting Date</th>
-            <th>Expiry Date</th>
-            <th>Min Spending</th>
-            <th>Rate</th>
-            <th>Points</th>
-            <th>Actions</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {sortedPromotions.map((p) => (
-            <tr key={p.id}>
-                <td>{p.name}</td>
-                <td>{p.type}</td>
-                <td>{p.startTime}</td>
-                <td>{p.endTime}</td>
-
-                {/* OPTIONAL FIELDS — may be null */}
-                <td>{p.minSpending !== null ? p.minSpending : "-"}</td>
-                <td>{p.rate !== null ? p.rate : "-"}</td>
-                <td>{p.points !== null ? p.points : "-"}</td>
-
-                <td>
-                <Link to={`/manager/promotions/${p.id}`}>Edit</Link>
-                </td>
-            </tr>
-            ))}
-        </tbody>
-        </table>
-          )}
-
-      {/* PAGINATION */}
-      <br />
-      <div>
+      <div className="pagination">
         <button
+          className="pagination-button"
           disabled={filters.page === 1}
           onClick={() => setFilters({ ...filters, page: filters.page - 1 })}
         >
           Previous
         </button>
 
-        <span>
+        <span className="pagination-info">
           Page {filters.page} of {totalPages || 1}
         </span>
 
         <button
+          className="pagination-button"
           disabled={filters.page >= totalPages}
           onClick={() => setFilters({ ...filters, page: filters.page + 1 })}
         >

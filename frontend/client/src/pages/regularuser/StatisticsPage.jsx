@@ -4,6 +4,7 @@ import {
   PieChart, Pie, Cell, Legend,
   BarChart, Bar
 } from "recharts";
+import "./StatisticsPage.css";
 
 function getDateRange(mode) {
   const now = new Date();
@@ -160,120 +161,98 @@ export default function StatisticsPage() {
   }
 
   return (
-    <div style={{ width: "100%" }}>
+    <div className="statistics-page">
+      <div className="statistics-header">
+        <h1 className="statistics-title">Statistics</h1>
+        <p className="statistics-subtitle">View your transaction trends and patterns</p>
+      </div>
 
       {/* Mode Switch */}
-      <div style={{ marginBottom: 20, display: "flex", gap: "10px" }}>
+      <div className="mode-switch">
         {["week", "month", "year"].map((m) => (
           <button
             key={m}
             onClick={() => setMode(m)}
-            style={{
-              padding: "8px 16px",
-              borderRadius: "8px",
-              border: "1px solid #d0d0d0",
-              cursor: "pointer",
-              background: mode === m ? "#4f8ef7" : "#f0f0f0",
-              color: mode === m ? "white" : "#333",
-              fontWeight: mode === m ? "bold" : "normal",
-              transition: "0.2s",
-            }}
+            className={`mode-button ${mode === m ? "active" : ""}`}
           >
             {m.charAt(0).toUpperCase() + m.slice(1)}
           </button>
         ))}
       </div>
 
-      {/* ------------------ LINE CHART ------------------ */}
-      <h3>Points Trend ({mode})</h3>
-      <div style={{ width: "100%", height: 350, marginBottom: 40 }}>
-        <ResponsiveContainer>
-          <LineChart data={lineData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey={mode === "year" ? "month" : "date"} />
-            <YAxis />
-            <Tooltip />
-            <Line type="monotone" dataKey="points" stroke="#4f8ef7" strokeWidth={3} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* ------------------ PIE CHART ------------------ */}
-      <h3>Transaction Type Distribution ({mode})</h3>
-      <div style={{ width: "100%", height: 350 }}>
-        <ResponsiveContainer>
-          <PieChart>
-            <Pie data={pieData} dataKey="value" nameKey="name" outerRadius={120} label>
-              {pieData.map((entry, index) => (
-                <Cell key={index} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* ------------------ BAR CHART ------------------ */}
-      <h3>Transaction Volume ({mode})</h3>
-      <div style={{ width: "100%", height: 350, marginTop: 40 }}>
-        <ResponsiveContainer>
-          <BarChart data={barData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey={mode === "year" ? "month" : "date"} />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="count" fill="#8884d8" />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-
-     {/* ------------------ SUMMARY CARDS ------------------ */}
-    <h3 style={{ marginBottom: "1rem" }}>Summary ({mode})</h3>
-
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-        gap: "1.5rem",
-        marginBottom: "2rem",
-      }}
-    >
-    {/* Total Transactions */}
-      <div
-        style={{
-          textAlign: "center",
-          padding: "1.5rem",
-          borderRadius: "12px",
-          background: "#f5f7ff",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-        }}
-      >
-        <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#8884d8" }}>
-          {totalTransactions}
+      {/* Summary Cards */}
+      <div className="summary-grid">
+        <div className="summary-card transactions">
+          <div className="summary-value">{totalTransactions}</div>
+          <div className="summary-label">Total Transactions</div>
         </div>
-        <div style={{ color: "#666" }}>Total Transactions</div>
-      </div>
-
-        {/* Total Points */}
-        <div
-          style={{
-            textAlign: "center",
-            padding: "1.5rem",
-            borderRadius: "12px",
-            background: "#fff7f0",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-          }}
-        >
-          <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#FF8042" }}>
-            {totalPoints}
-          </div>
-          <div style={{ color: "#666" }}>Total Points Change</div>
+        <div className="summary-card points">
+          <div className="summary-value">{totalPoints}</div>
+          <div className="summary-label">Total Points Change</div>
         </div>
       </div>
 
+      {/* LINE CHART */}
+      <div className="chart-section">
+        <h3 className="chart-title">Points Trend ({mode})</h3>
+        <div className="chart-container">
+          <ResponsiveContainer>
+            <LineChart data={lineData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey={mode === "year" ? "month" : "date"} />
+              <YAxis />
+              <Tooltip />
+              <Line 
+                type="monotone" 
+                dataKey="points" 
+                stroke="#6366f1" 
+                strokeWidth={3}
+                dot={{ fill: "#6366f1", r: 4 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
 
+      {/* PIE CHART */}
+      <div className="chart-section">
+        <h3 className="chart-title">Transaction Type Distribution ({mode})</h3>
+        <div className="chart-container">
+          <ResponsiveContainer>
+            <PieChart>
+              <Pie 
+                data={pieData} 
+                dataKey="value" 
+                nameKey="name" 
+                outerRadius={120} 
+                label
+              >
+                {pieData.map((entry, index) => (
+                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
 
+      {/* BAR CHART */}
+      <div className="chart-section">
+        <h3 className="chart-title">Transaction Volume ({mode})</h3>
+        <div className="chart-container">
+          <ResponsiveContainer>
+            <BarChart data={barData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey={mode === "year" ? "month" : "date"} />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="count" fill="#a855f7" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
     </div>
   );
 }

@@ -27,7 +27,7 @@
   position: absolute;
   top: 100%;
   left: 0;
-  margin-top: var(--space-xs);
+  margin-top: 4px;
   background: var(--bg-primary);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
@@ -46,7 +46,8 @@
   margin-bottom: 0;
 }
 
-.dropdown-item a {
+.dropdown-item a,
+.dropdown-item > div {
   display: block;
   padding: var(--space-sm) var(--space-md);
   color: var(--text-primary);
@@ -56,7 +57,8 @@
   font-size: 0.9375rem;
 }
 
-.dropdown-item a:hover {
+.dropdown-item a:hover,
+.dropdown-item > div:hover {
   background: var(--gray-100);
   color: var(--primary);
   transform: translateX(4px);

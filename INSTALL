@@ -3,31 +3,33 @@
 # You should write detailed description on:
 
 # 1. All the packages you need to install
+
 # 2. How to configure various servers (e.g., Nginx, Apache, etc)
 
 1. Install the dependencies:
-cd backend
-npm install
-npm install dotenv
-npm install --save-dev nodemon (Optional for development mode)
+   cd backend
+   npm install
+   npm install dotenv
+   npm install --save-dev nodemon (Optional for development mode)
 
 2. Create a .env file in the backend directory with:
-   JWT_SECRET=your-secret-key-here-make-it-long-and-random
+   JWT_SECRET=my_csc309_secret_12345
+   DATABASE_URL="file:./dev.db"
    PORT=8000
 
 3. Set up the database:
    npx prisma generate
-   npx prisma generate   npx prisma migrate deploy
-Or if you want to reset and apply all migrations:
+   npx prisma migrate deploy
+   Or if you want to reset and apply all migrations:
    npx prisma migrate dev
 
 (Optional) Seed the database with sample data:
-   npm run seed
+npm run seed
 This creates test users (password: pass), events, promotions, and transactions.
 (Optional) Create a superuser:
-   npm run createsuperuser <utorid> <email> <password>
+npm run createsuperuser <utorid> <email> <password>
 Example:
-   npm run createsuperuser admin admin@mail.utoronto.ca Admin123!
+npm run createsuperuser admin admin@mail.utoronto.ca Admin123!
 
 4. Start the server:
    npm run start
@@ -36,6 +38,8 @@ Example:
 
 5. Frontend setup:
    cd frontend/client
+   Create a .env file in the frontend/client directory with:
+   REACT_APP_BACKEND_URL=http://localhost:8000
    npm i
    npm start
    The app opens at http://localhost:3000
@@ -43,23 +47,22 @@ Example:
 6. Summary:
 
    Access the application
-Frontend: http://localhost:3000
-Backend API: http://localhost:8000
+   Frontend: http://localhost:3000
+   Backend API: http://localhost:8000
 
    Test accounts (if you ran the seed script)
-Regular users: alice1, bob2, charlie3 (password: pass)
-Cashier: cashier01 (password: pass)
-Manager: manager01 (password: pass)
-Superuser: super01 (password: pass)
+   Regular users: alice1, bob2, charlie3 (password: pass)
+   Cashier: cashier01 (password: pass)
+   Manager: manager01 (password: pass)
+   Superuser: super01 (password: pass)
 
    Additional notes
-Backend CORS is configured for http://localhost:3000
-The database is SQLite at backend/prisma/dev.db
-Uploads directory: backend/uploads (for user avatars)
-To clean/reset: npm run clean in the backend directory (removes database and migrations)
+   Backend CORS is configured for http://localhost:3000
+   The database is SQLite at backend/prisma/dev.db
+   Uploads directory: backend/uploads (for user avatars)
+   To clean/reset: npm run clean in the backend directory (removes database and migrations)
 
    Troubleshooting
-If the backend fails to start, ensure .env exists with JWT_SECRET
-If Prisma errors occur, run npx prisma generate again
-If the frontend can't connect, verify the backend is running on port 8000
-
+   If the backend fails to start, ensure .env exists with JWT_SECRET
+   If Prisma errors occur, run npx prisma generate again
+   If the frontend can't connect, verify the backend is running on port 8000

@@ -143,12 +143,120 @@ export default function EventEdit() {
 
   if (loading) {
     return (
-      <div className="page-container">
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Loading event...</p>
+        <div className="organizer-page">
+            <div className="back-button-container">
+                <Button onClick={() => navigate(`/organizer/events/${eventId}`)} variant="secondary">
+                    ← Back to Event
+                </Button>
+            </div>
+
+            <div className="organizer-header">
+                <h1 className="organizer-title">Edit Event ✏️</h1>
+                <p className="organizer-subtitle">Update event details</p>
+            </div>
+
+            <Card>
+                <Input
+                    label="Event Name"
+                    value={formData.name}
+                    onChange={(value) => handleInputChange("name", value)}
+                />
+
+                <Input
+                    label="Description"
+                    value={formData.description}
+                    onChange={(value) => handleInputChange("description", value)}
+                />
+
+                <Input
+                    label="Location"
+                    value={formData.location}
+                    onChange={(value) => handleInputChange("location", value)}
+                />
+
+                <Input
+                    label="Start Time"
+                    type="datetime-local"
+                    value={formData.startTime}
+                    onChange={(value) =>
+                        handleInputChange("startTime", value)
+                    }
+                />
+
+                <Input
+                    label="End Time"
+                    type="datetime-local"
+                    value={formData.endTime}
+                    onChange={(value) => handleInputChange("endTime", value)}
+                />
+
+                <Input
+                    label="Capacity"
+                    type="number"
+                    value={formData.capacity}
+                    onChange={(value) =>
+                        handleInputChange("capacity", value)
+                    }
+                    placeholder="Leave empty for unlimited"
+                />
+
+                <Input
+                    label="Points"
+                    type="number"
+                    value={formData.points}
+                    onChange={(value) => handleInputChange("points", value)}
+                    placeholder="Total points for event"
+                />
+
+                <label
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.5rem",
+                        marginTop: "1rem",
+                        marginBottom: "1rem",
+                    }}
+                >
+                    <input
+                        type="checkbox"
+                        checked={formData.published}
+                        onChange={(e) =>
+                            handleInputChange("published", e.target.checked)
+                        }
+                    />
+                    <span>Published</span>
+                    </label>
+
+                {error && (
+                    <div className="alert alert-error" style={{ marginTop: "1rem" }}>
+                        {error}
+                    </div>
+                )}
+
+                <div className="action-buttons" style={{ marginTop: "1.5rem" }}>
+                    <Button onClick={handleSave} disabled={saving} variant="success">
+                        {saving ? "Saving..." : "💾 Save Changes"}
+                    </Button>
+                    <Button onClick={handleCancel} variant="secondary" disabled={saving}>
+                        ❌ Cancel
+                    </Button>
+                </div>
+            </Card>
+
+            <Card style={{ marginTop: "2rem" }}>
+                <h3 style={{ marginBottom: "1rem" }}>👥 Add Guest</h3>
+                <Input
+                    label="UTORid"
+                    value={utorid || ""}
+                    onChange={setUtorid}
+                    placeholder="Enter guest's UTORid"
+                />
+
+                <Button onClick={addUser} variant="primary" style={{ marginTop: "1rem" }}>
+                    ➕ Add Guest
+                </Button>
+            </Card>
         </div>
-      </div>
     );
   }
 
