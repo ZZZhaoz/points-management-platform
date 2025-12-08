@@ -133,7 +133,7 @@ export default function ChangePasswordPage() {
               variant="primary"
               size="lg"
             >
-              {loading ? "Updating..." : "🔑 Change Password"}
+              {loading ? "Updating..." : "Change Password"}
             </Button>
           </div>
         </form>

@@ -132,7 +132,7 @@ export default function TransactionsListPage() {
       {/* Filters */}
       <div className="filters-card">
         <div className="filters-title">
-          🔍 Filter Transactions
+          Filter Transactions
         </div>
         
         <div className="filters-grid">
