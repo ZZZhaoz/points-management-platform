@@ -1,0 +1,7 @@
+AI tools were used in the following ways during the development of our project:
+
+Frontend guidance and code structure: Assistance in organizing React components, improving hook usage patterns and state management, designing context structure, creating reusable UI components, using APIs such as Recharts and QR code generation libraries, and shaping the overall frontend architecture.
+
+Backend seeding and error Handling: Help generating seed data for testing purposes and improving backend logic to produce detailed and consistent error messages across our API.
+
+Bug diagnosis and fix Suggestions: Assistance in identifying issues such as backend logic bugs, frontend behavior bugs, Prisma query errors, missing dependencies, and deployment configuration problems, as well as providing suggestions for correct fixes.
