@@ -1,11 +1,22 @@
 # Loyalty Rewards Web Application (points-management-platform)
 
-A production-ready **full-stack loyalty rewards platform** showcasing modern web development, role-based access control, and real-world transactional workflows.  
-Designed and implemented as a **portfolio project** to demonstrate professional system design, robust backend logic, and seamless frontend integration.
+[![Live Demo](https://img.shields.io/badge/demo-live-green)](https://inspiring-expression-production.up.railway.app/)
+[![GitHub](https://img.shields.io/badge/github-repo-blue)](https://github.com/ZZZhaoz/points-management-platform)
 
 ---
 
-## 🌟 Overview
+## Demo Accounts
+
+To explore the application without registration, you may use the following pre-seeded accounts:
+
+| Role     | Username        | Password  |
+|----------|-----------------|-----------|
+| User     | demo_user       | Demo123! |
+| Cashier  | demo_cashier    | Demo123! |
+| Manager  | demo_manager    | Demo123! |
+
+
+## Overview
 
 This application models a real-world loyalty program where users can earn, transfer, and redeem points. It supports multiple user roles with complex permission logic and enforces strict business rules at the API level.
 
@@ -17,7 +28,7 @@ The project emphasizes:
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 ### Frontend
 - **React 18** (Functional components, Hooks)
@@ -34,7 +45,7 @@ The project emphasizes:
 
 ---
 
-## 🏗 System Architecture
+## System Architecture
 ```text
        [ React Client ]
               │
@@ -64,31 +75,31 @@ The project emphasizes:
 
 ---
 
-## 🚀 Core Features
+## Core Features
 
-### 🔐 Authentication & Authorization
+### Authentication & Authorization
 - Secure login with JWT.
 - **Role-Based Permissions:** Granular control for regular user, cashier, manager, event organizer, and superuser.
 
-### 💸 Transactions Engine
+### Transactions Engine
 - **Automatic Calculation:** Purchase-to-point conversion logic.
 - **Redemption Workflow:** Customer-initiated requests with required Cashier approval.
 - **Peer-to-Peer (P2P):** Secure point transfers between users.
 - **Auditing:** Adjustment transactions for manual corrections and logging.
 
-### 📅 Events & Promotions
+### Events & Promotions
 - **Event Management:** RSVP systems with capacity and time constraints.
 - **Rewards Distribution:** Organizer-controlled point distribution for participation.
 - **Promotions:** Handling of automatic validation, one-time use cases, and expiration.
 
-### 📊 UX & Data Handling
+### UX & Data Handling
 - **QR Code System:** Real-time generation and processing for user identification/redemption.
 - **Advanced Filtering:** Server-side pagination and filtering for transaction logs.
 - **Responsive Navigation:** Smooth URL-driven UI flow via React Router.
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 ```
 .
 ├── backend/                # Express API & Server logic
@@ -104,7 +115,7 @@ The project emphasizes:
 
 ---
 
-## 💻 Local Setup
+## Local Setup
 
 ### 1. Backend Setup
 ```bash
@@ -138,21 +149,8 @@ npm start
 
 ---
 
-## 🌐 Deployment
+## Deployment
 
 - **Infrastructure:** Frontend and backend are architected for cloud deployment (e.g., Vercel, Render, or AWS).
 - **Environment:** Production-ready configuration for PostgreSQL and Docker with minimal changes.
 
----
-
-## 🎯 What This Project Demonstrates
-
-- **System Design:** Designing backend systems with complex business rules.
-- **Security:** Implementing secure role-based access control and JWT handling.
-- **API Design:** Building scalable, well-documented REST APIs.
-- **Technical Depth:** Handling concurrent transactional logic and data consistency.
-- **Engineering Excellence:** Writing maintainable, modular, and production-quality JavaScript.
-
----
-
-⭐️ **Developed by Jason Zhao**
