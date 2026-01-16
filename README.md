@@ -1,7 +1,7 @@
-# Loyalty Rewards Web Application (points-management-platform)
+# Loyalty Rewards Web Application 
 
 [![Live Demo](https://img.shields.io/badge/demo-live-green)](https://inspiring-expression-production.up.railway.app/)
-[![GitHub](https://img.shields.io/badge/github-repo-blue)](https://github.com/ZZZhaoz/points-management-platform)
+[![GitHub](https://img.shields.io/badge/github-repo-blue)](https://github.com/ZZZhaoz/loyalty-rewards-web-application)
 
 ---
 
@@ -9,19 +9,18 @@
 
 To explore the application without registration, you may use the following pre-seeded accounts:
 
-| Role     | Username        | Password  |
-|----------|-----------------|-----------|
-| User     | demo_user       | Demo123! |
-| Cashier  | demo_cashier    | Demo123! |
-| Manager  | demo_manager    | Demo123! |
-
+| Role      | Username   | Password |
+|-----------|------------|----------|
+| User      | alice1     | pass     |
+| Cashier   | cashier01  | pass     |
+| Manager   | manager01  | pass     |
+| Superuser | super01    | pass     |
 
 ## Overview
 
 This application models a real-world loyalty program where users can earn, transfer, and redeem points. It supports multiple user roles with complex permission logic and enforces strict business rules at the API level.
 
 The project emphasizes:
-- **Clean Architecture:** High separation of concerns between business logic and infrastructure.
 - **Maintainable Backend:** Service-oriented logic for complex transactions.
 - **Scalable Data Modeling:** Relational schema designed for auditing and consistency.
 - **Full-Stack Engineering:** Practical implementation of end-to-end security and UX.
@@ -127,30 +126,58 @@ Create a `.env` file in the backend folder:
 ```
 JWT_SECRET=your_secret_here
 DATABASE_URL="file:./dev.db"
+PORT=8000
 ```
 
-Initialize the database and seed demo data:
+Initialize the database:
 ```bash
+npx prisma generate
 npx prisma migrate dev
-node prisma/seed.js
+```
+
+(Optional) Seed the database with demo data:
+```bash
+npm run seed
 ```
 
 Start the server:
 ```bash
-node index.js
+npm start
+# Server runs on http://localhost:8000
 ```
 
 ### 2. Frontend Setup
 ```bash
-cd frontend
+cd frontend/client
 npm install
+```
+
+Create a `.env` file in the frontend/client folder:
+```
+REACT_APP_BACKEND_URL=http://localhost:8000
+```
+
+Start the development server:
+```bash
 npm start
+# App opens at http://localhost:3000
 ```
 
 ---
 
+## Access the Application
+
+- **Frontend:** http://localhost:3000
+- **Backend API:** http://localhost:8000
+---
+
 ## Deployment
 
-- **Infrastructure:** Frontend and backend are architected for cloud deployment (e.g., Vercel, Render, or AWS).
-- **Environment:** Production-ready configuration for PostgreSQL and Docker with minimal changes.
+Our application is currently deployed on **Railway** with the following setup:
+
+- **Frontend:** React app served as static files  
+  - Production URL: https://inspiring-expression-production.up.railway.app
+- **Backend:** Node.js/Express API with Prisma ORM  
+  - Production URL: https://csc309-project-production-f77a.up.railway.app
+- **Database:** SQLite (upgradable to PostgreSQL for production scale)
 
